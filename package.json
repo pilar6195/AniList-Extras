@@ -1,0 +1,36 @@
+{
+  "name": "anilist-extras",
+  "version": "0.4.3",
+  "description": "Adds shit to anilist",
+  "scripts": {
+    "test": "eslint ."
+  },
+  "repository": "https://github.com/pilar6195/AniList-Extras.git",
+  "author": "pilar6195 (https://github.com/pilar6195)",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-aqua": "^3.0.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "aqua"
+    ],
+    "env": {
+      "browser": true
+    },
+    "rules": {
+      "func-names": 0,
+      "capitalized-comments": 0,
+      "max-len": 0,
+      "id-length": 0,
+      "no-warning-comments": 0,
+	  "no-throw-literal": 0,
+	  "no-invalid-this": 0,
+	  "no-console": 0
+    }
+  }
+}
