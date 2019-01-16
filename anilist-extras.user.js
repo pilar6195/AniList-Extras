@@ -148,27 +148,28 @@
 			}
 
 			/* Toggles */
+			if ($('.characters')) {
+				$('.characters .link').remove(); // This is to remove the click listener
+				$('.characters .grid-wrap').insertAdjacentHTML('beforebegin', '<h2 class="link">AniList Characters</h2>');
 
-			$('.characters .link').remove(); // This is to remove the click listener
-			$('.characters .grid-wrap').insertAdjacentHTML('beforebegin', '<h2 class="link">AniList Characters</h2>');
+				$('.characters .link').addEventListener('click', () => {
+					event.preventDefault();
+					$('.characters').style.display = 'none';
+					$('.malCharacters').style.display = 'block';
+					localStorage.setItem('hidden', 'anilist');
+				});
 
-			$('.characters .link').addEventListener('click', () => {
-				event.preventDefault();
-				$('.characters').style.display = 'none';
-				$('.malCharacters').style.display = 'block';
-				localStorage.setItem('hidden', 'anilist');
-			});
+				$('.malCharacters .link').addEventListener('click', () => {
+					$('.malCharacters').style.display = 'none';
+					$('.characters').style.display = 'block';
+					localStorage.setItem('hidden', 'mal');
+				});
 
-			$('.malCharacters .link').addEventListener('click', () => {
-				$('.malCharacters').style.display = 'none';
-				$('.characters').style.display = 'block';
-				localStorage.setItem('hidden', 'mal');
-			});
-
-			if (localStorage.getItem('hidden') === 'anilist') {
-				$('.characters').style.display = 'none';
-			} else {
-				$('.malCharacters').style.display = 'none';
+				if (localStorage.getItem('hidden') === 'anilist') {
+					$('.characters').style.display = 'none';
+				} else {
+					$('.malCharacters').style.display = 'none';
+				}
 			}
 		} catch (err) {
 			console.error(err);
