@@ -3,7 +3,7 @@
 // @name         AniList Extras
 // @namespace    https://github.com/pilar6195
 // @version      0.4.4
-// @description  Adds shit to anilist.
+// @description  Adds a few additional features to AniList.
 // @author       pilar6195
 // @match        https://anilist.co/*
 // @connect      graphql.anilist.co
