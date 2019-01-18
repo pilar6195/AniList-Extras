@@ -32,3 +32,8 @@ On the synopsis page of an anime you will be able to toggle between AniList and 
 - Add indication on how to toggle between character lists.
 - `/characters` support.
 - Chrome/Firefox standalone extensions.
+
+### Credits
+
+- [Kana](https://github.com/Pitu) For this readme, the banner, and improvements to the script itself.
+- [Jikan](https://jikan.moe/) For the MAL API. Made my life sooo much easier.
