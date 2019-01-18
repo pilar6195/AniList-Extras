@@ -21,3 +21,13 @@
 - [Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
 - [Firefox](https://addons.mozilla.org/firefox/addon/tampermonkey/)
 - [Edge](https://www.microsoft.com/store/apps/9NBLGGH5162S)
+
+### Usage
+
+On the synopsis page of an anime you will be able to toggle between AniList and MAL character lists by clicking on the Characters header.
+
+### Planned Features (maybe)
+
+- Manga Support.
+- Add indication on how to toggle between character lists.
+- `/characters` support.
