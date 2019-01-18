@@ -31,3 +31,4 @@ On the synopsis page of an anime you will be able to toggle between AniList and 
 - Manga Support.
 - Add indication on how to toggle between character lists.
 - `/characters` support.
+- Chrome/Firefox standalone extensions.
