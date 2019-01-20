@@ -45,10 +45,36 @@
 		const malID = await getMalID();
 		if (!malID) return stopRunning();
 
+		addMalLink(malID);
 		await displayCharacters(malID);
 		await displayOpEd(malID);
 
 		return stopRunning();
+	}
+
+	function addMalLink(malID) {
+		if ($('.MyAnimeList')) return;
+
+		const extLinksEl = $('.external-links');
+
+		if (!extLinksEl) return;
+
+		const attrEl = $('.external-links > a');
+
+		if (!attrEl) return;
+
+		const attrName = attrEl.attributes[0].name;
+
+		const malLink = createElement('a', {
+			[attrName]: '',
+			class: 'external-link MyAnimeList',
+			target: '_blank',
+			href: `https://myanimelist.net/anime/${malID}/`
+		});
+
+		malLink.innerText = 'MyAnimeList';
+
+		extLinksEl.append(malLink);
 	}
 
 	async function displayCharacters(malID) {
