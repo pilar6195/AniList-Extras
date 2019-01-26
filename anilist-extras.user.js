@@ -6,6 +6,7 @@
 // @description  Adds a few additional features to AniList.
 // @author       pilar6195
 // @match        https://anilist.co/*
+// @match        https://myanimelist.net/*
 // @connect      graphql.anilist.co
 // @connect      api.jikan.moe
 // @grant        GM_xmlhttpRequest
@@ -22,14 +23,16 @@
 	GM_addStyle('.hidden { display:none !important; }'); // eslint-disable-line
 
 	const observer = new MutationObserver(() => {
-		if (/anime\/\d+/.test(location.pathname) && $('.overview')) {
+		if (/anime\/\d+/.test(location.pathname)) {
 			init();
 		}
 	});
 	observer.observe(document, { childList: true, subtree: true });
 
 	document.addEventListener('DOMContentLoaded', () => {
-		if (/anime\/\d+/.test(location.pathname) && $('.overview')) init();
+		if (/anime\/\d+/.test(location.pathname)) {
+			init();
+		}
 	});
 
 	let running = false;
@@ -42,12 +45,23 @@
 		if (running) return null;
 		running = true;
 
-		const malID = await getMalID();
-		if (!malID) return stopRunning();
+		// AniList
+		if ($('.overview')) {
+			const malID = await getMalID();
+			if (!malID) return stopRunning();
 
-		addMalLink(malID);
-		await displayCharacters(malID);
-		await displayOpEd(malID);
+			addMalLink(malID);
+			await displayCharacters(malID);
+			await displayOpEd(malID);
+		}
+
+		// MAL
+		if ($('[itemtype="http://schema.org/Product"]')) {
+			const aniListID = await getAnilistID();
+			if (!aniListID) return stopRunning();
+
+			addAniListLink(aniListID);
+		}
 
 		return stopRunning();
 	}
@@ -75,6 +89,30 @@
 		malLink.innerText = 'MyAnimeList';
 
 		extLinksEl.append(malLink);
+	}
+
+	function addAniListLink(aniListID) {
+		if ($('.AniListLink')) return;
+
+		const extLinksEl = $('.pb16');
+
+		if (!extLinksEl) return;
+
+		if (extLinksEl.children.length > 0) {
+			const separatorNode = document.createTextNode(', ');
+
+			extLinksEl.append(separatorNode);
+		}
+
+		const aniListLink = createElement('a', {
+			class: 'AniListLink',
+			target: '_blank',
+			href: `https://anilist.co/anime/${aniListID}/`
+		});
+
+		aniListLink.innerText = 'AniList';
+
+		extLinksEl.append(aniListLink);
 	}
 
 	async function displayCharacters(malID) {
@@ -325,11 +363,19 @@
 	}
 
 	async function getMalID() {
-		const query = 'query ($id: Int) { Media(id: $id, type: ANIME) { idMal } }';
-		let aniListID = location.pathname.match(/anime\/(\d+)/);
-		if (aniListID === null) return false;
+		return getID('id', 'idMal');
+	}
 
-		aniListID = parseInt(aniListID[1], 10);
+	async function getAnilistID() {
+		return getID('idMal', 'id');
+	}
+
+	async function getID(fromIDName, toIDName) {
+		const query = `query ($${fromIDName}: Int) { Media(${fromIDName}: $${fromIDName}, type: ANIME) { ${toIDName} } }`;
+		let fromID = location.pathname.match(/anime\/(\d+)/);
+		if (fromID === null) return false;
+
+		fromID = parseInt(fromID[1], 10);
 
 		const res = await request({
 			url: 'https://graphql.anilist.co',
@@ -340,12 +386,12 @@
 			},
 			data: JSON.stringify({
 				query,
-				variables: { id: aniListID }
+				variables: { [fromIDName]: fromID }
 			})
 		});
 
 		const { data } = JSON.parse(res.response);
-		return data.Media.idMal || false;
+		return data.Media[toIDName] || false;
 	}
 
 	function createElement(tag, attrs, styles) {
