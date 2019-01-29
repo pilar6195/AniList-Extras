@@ -159,15 +159,32 @@
 							class: `role-card view-character-staff ${index > 11 ? 'showmore hidden' : ''}`
 						});
 
-						charCard.innerHTML = `
-							<div ${attrName} class="character">
-								<a ${attrName} href="${character.url}" class="cover" style="background-image: url(${character.image_url});"></a>
-								<a ${attrName} href="${character.url}" class="content">
-									<div ${attrName} class="name">${character.name}</div>
-									<div ${attrName} class="role">${character.role}</div>
-								</a>
-							</div>
-						`;
+						const charContainer = anilist.helpers.createElement('div', {
+							[attrName]: '',
+							class: 'character'
+						});
+
+						const charCover = anilist.helpers.createElement('a', {
+							[attrName]: '',
+							href: character.url,
+							class: 'cover'
+						}, { backgroundImage: `url(${character.image_url})` });
+
+						const charContent = anilist.helpers.createElement('a', {
+							[attrName]: '',
+							href: character.url,
+							class: 'content'
+						});
+
+						const charName = anilist.helpers.createElement('div', { [attrName]: '', class: 'name' });
+						const charRole = anilist.helpers.createElement('div', { [attrName]: '', class: 'role' });
+
+						charName.innerText = character.name;
+						charRole.innerText = character.role;
+
+						charContent.append(charName, charRole);
+						charContainer.append(charCover, charContent);
+						charCard.append(charContainer);
 
 						if (isAnime) {
 							const voiceActor = character.voice_actors.find(va => va.language === 'Japanese');
@@ -177,14 +194,30 @@
 									? `https://myanimelist.cdn-dena.com/images/voiceactors/${something[1]}.jpg`
 									: voiceActor.image_url;
 
-								charCard.innerHTML = `${charCard.innerHTML}
-									<div ${attrName} class="staff">
-										<a ${attrName} href="${voiceActor.url}" class="cover" style="background-image: url(${imageUrl});"></a>
-										<a ${attrName} href="${voiceActor.url}" class="content">
-											<div ${attrName} class="name">${voiceActor.name}</div>
-										</a>
-									</div>
-								`;
+								const vaContainer = anilist.helpers.createElement('div', {
+									[attrName]: '',
+									class: 'staff'
+								});
+
+								const vaCover = anilist.helpers.createElement('a', {
+									[attrName]: '',
+									href: voiceActor.url,
+									class: 'cover'
+								}, { backgroundImage: `url(${imageUrl})` });
+
+								const vaContent = anilist.helpers.createElement('a', {
+									[attrName]: '',
+									href: voiceActor.url,
+									class: 'content'
+								});
+
+								const vaName = anilist.helpers.createElement('div', { [attrName]: '', class: 'name' });
+
+								vaName.innerText = voiceActor.name;
+
+								vaContent.append(vaName);
+								vaContainer.append(vaCover, vaContent);
+								charCard.append(vaContainer);
 							}
 						}
 
