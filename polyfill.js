@@ -1,7 +1,5 @@
 /* Polyfill for non userscript environments */
-/* global chrome */
 /* eslint-disable camelcase, no-unused-vars */
-var browser = browser || chrome;
 
 function GM_addStyle(styles) {
 	const style = document.createElement('style');
