@@ -28,7 +28,7 @@
 		.characters.mal #toggleCharacters {
 			display: block;
 		}
-		.hidden {
+		.hide {
 			display: none !important;
 		}
 		.toggle {
@@ -156,7 +156,7 @@
 
 						const charCard = anilist.helpers.createElement('div', {
 							[attrName]: '',
-							class: `role-card view-character-staff ${index > 11 ? 'showmore hidden' : ''}`
+							class: `role-card view-character-staff ${index > 11 ? 'showmore hide' : ''}`
 						});
 
 						const charContainer = anilist.helpers.createElement('div', {
@@ -243,9 +243,9 @@
 						button.addEventListener('click', function() {
 							$$('.characters .showmore').forEach(a => {
 								if (this.dataset.visible === '0') {
-									a.classList.remove('hidden');
+									a.classList.remove('hide');
 								} else {
-									a.classList.add('hidden');
+									a.classList.add('hide');
 								}
 							});
 							if (this.dataset.visible === '0') {
@@ -322,7 +322,7 @@
 							const song = animeData.opening_themes[index];
 							const opCard = anilist.helpers.createElement('div', {
 								[attrName]: '',
-								class: `tag ${index > 5 ? 'showmore hidden' : ''}`
+								class: `tag ${index > 5 ? 'showmore hide' : ''}`
 							}, { marginBottom: '10px' });
 							opCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
 							opContainer.append(opCard);
@@ -337,9 +337,9 @@
 							button.addEventListener('click', function() {
 								$$('.openings .showmore').forEach(a => {
 									if (this.dataset.visible === '0') {
-										a.classList.remove('hidden');
+										a.classList.remove('hide');
 									} else {
-										a.classList.add('hidden');
+										a.classList.add('hide');
 									}
 								});
 								if (this.dataset.visible === '0') {
@@ -371,7 +371,7 @@
 							const song = animeData.ending_themes[index];
 							const edCard = anilist.helpers.createElement('div', {
 								[attrName]: '',
-								class: `tag ${index > 5 ? 'showmore hidden' : ''}`
+								class: `tag ${index > 5 ? 'showmore hide' : ''}`
 							}, { marginBottom: '10px' });
 							edCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
 							edContainer.append(edCard);
@@ -386,9 +386,9 @@
 							button.addEventListener('click', function() {
 								$$('.endings .showmore').forEach(a => {
 									if (this.dataset.visible === '0') {
-										a.classList.remove('hidden');
+										a.classList.remove('hide');
 									} else {
-										a.classList.add('hidden');
+										a.classList.add('hide');
 									}
 								});
 								if (this.dataset.visible === '0') {
