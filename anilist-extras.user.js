@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         AniList Extras
 // @namespace    https://github.com/pilar6195
-// @version      0.5.0
+// @version      0.5.1
 // @description  Adds a few additional features to AniList.
 // @author       pilar6195
 // @match        https://anilist.co/*
@@ -678,7 +678,7 @@
 
 		if (window.location.hostname === 'anilist.co') {
 
-			if (anilist.helpers.page(/^\/(anime|manga)\/\d+\/.+\/$/)) {
+			if (anilist.helpers.page(/^\/(anime|manga)\/\d+\/[\w\d-_]+(\/)?$/)) {
 
 				anilist.overview.init();
 
