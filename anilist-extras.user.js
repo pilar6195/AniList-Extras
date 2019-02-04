@@ -59,6 +59,9 @@
 		.view-switcher span.active {
 			color: rgb(var(--color-blue))
 		}
+		.mal-anilist-link {
+			margin-left: 1em;
+		}
 	`);
 	/* eslint-enable */
 
@@ -492,26 +495,21 @@
 			},
 
 			addAniListLink(aniListID, isAnime = true) {
-				if ($('.AniListLink')) return;
+				if ($('.mal-anilist-link')) return;
 
-				const extLinksEl = $('.pb16');
+				const headerEl = $('.header-right');
 
-				if (!extLinksEl) return;
-
-				if (extLinksEl.children.length > 0) {
-					const separatorNode = document.createTextNode(', ');
-					extLinksEl.append(separatorNode);
-				}
+				if (!headerEl) return;
 
 				const aniListLink = anilist.helpers.createElement('a', {
-					class: 'AniListLink',
+					class: 'mal-anilist-link',
 					target: '_blank',
 					href: `https://anilist.co/${isAnime ? 'anime' : 'manga'}/${aniListID}/`
 				});
 
 				aniListLink.innerText = 'AniList';
 
-				extLinksEl.append(aniListLink);
+				headerEl.append(aniListLink);
 			}
 
 		},
