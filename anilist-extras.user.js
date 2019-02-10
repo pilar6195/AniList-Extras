@@ -301,7 +301,7 @@
 				if ($('.openings')) return;
 
 				const attrEl = $('.sidebar > .tags .tag');
-				const target = $('.overview > .staff');
+				const target = $('.overview > .staff') || $('.overview > .characters');
 
 				if (!attrEl || !target) return;
 
@@ -358,7 +358,11 @@
 							opContainer.append(toggleOpenings);
 						}
 
-						target.parentNode.insertBefore(opContainer, target);
+						if (target.classList.contains('staff')) {
+							target.parentNode.insertBefore(opContainer, target);
+						} else {
+							target.parentNode.insertBefore(opContainer, target.nextSibling);
+						}
 					}
 
 					/* == == */
@@ -407,7 +411,13 @@
 							edContainer.append(toggleEndings);
 						}
 
-						target.parentNode.insertBefore(edContainer, target);
+						if (target.classList.contains('staff')) {
+							target.parentNode.insertBefore(edContainer, target);
+						} else if ($('.openings')) {
+							$('.openings').parentNode.insertBefore(edContainer, $('.openings').nextSibling);
+						} else {
+							target.parentNode.insertBefore(edContainer, target.nextSibling);
+						}
 					}
 				} catch (err) {
 					console.error(err);
