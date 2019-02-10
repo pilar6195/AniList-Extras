@@ -104,6 +104,7 @@
 				}
 
 				this.addMalLink(malID, isAnime);
+				this.addMalScore();
 
 				if ($('.overview')) {
 					await this.displayCharacters(malID, isAnime);
@@ -135,6 +136,43 @@
 				malLink.innerText = 'MyAnimeList';
 
 				extLinksEl.append(malLink);
+			},
+
+			addMalScore() {
+				if ($('.mal-score')) return;
+
+				const attrEl = $('.data-set');
+
+				if (!attrEl) return;
+
+				const attrName = attrEl.attributes[0].name;
+
+				const malScoreContainer = anilist.helpers.createElement('div', {
+					[attrName]: '',
+					class: 'data-set mal-score'
+				});
+
+				const malScoreHeader = anilist.helpers.createElement('div', {
+					[attrName]: '',
+					class: 'type'
+				});
+
+
+				malScoreHeader.innerText = 'MyAnimeList Score';
+
+				const malScoreValue = anilist.helpers.createElement('div', {
+					[attrName]: '',
+					class: 'value'
+				});
+
+				malScoreValue.innerText = this.currentData.score !== null
+					? this.currentData.score
+					: 'N/A';
+
+				malScoreContainer.append(malScoreHeader, malScoreValue);
+
+				$('.data').append(malScoreContainer);
+
 			},
 
 			async displayCharacters(malID, isAnime = true) {
