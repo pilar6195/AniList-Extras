@@ -78,6 +78,8 @@
 
 			running: false,
 
+			currentData: null,
+
 			stopRunning() {
 				this.running = false;
 			},
@@ -96,6 +98,10 @@
 
 				const malID = await anilist.helpers.getMalID(isAnime);
 				if (!malID) return this.stopRunning();
+
+				if (!this.currentData) {
+					this.currentData = await anilist.helpers.getMalData(malID, isAnime);
+				}
 
 				this.addMalLink(malID, isAnime);
 
@@ -297,7 +303,7 @@
 				}
 			},
 
-			async displayOpEd(malID) {
+			displayOpEd() {
 				if ($('.openings')) return;
 
 				const attrEl = $('.sidebar > .tags .tag');
@@ -307,128 +313,120 @@
 
 				const attrName = attrEl.attributes[0].name;
 
-				try {
-					const res = await anilist.helpers.request({
-						url: `https://api.jikan.moe/v3/anime/${malID}`,
-						method: 'GET'
-					});
+				const animeData = this.currentData;
 
-					const animeData = JSON.parse(res.response);
+				if (animeData.opening_themes.length) {
+					const opContainer = anilist.helpers.createElement('div', { class: 'openings' }, { marginBottom: '30px' });
+					const opHeader = anilist.helpers.createElement('h2');
+					opHeader.innerText = 'Openings';
+					opContainer.append(opHeader);
 
-					if (animeData.opening_themes.length) {
-						const opContainer = anilist.helpers.createElement('div', { class: 'openings' }, { marginBottom: '30px' });
-						const opHeader = anilist.helpers.createElement('h2');
-						opHeader.innerText = 'Openings';
-						opContainer.append(opHeader);
-
-						for (const index in animeData.opening_themes) {
-							const song = animeData.opening_themes[index];
-							const opCard = anilist.helpers.createElement('div', {
-								[attrName]: '',
-								class: `tag ${index > 5 ? 'showmore hide' : ''}`
-							}, { marginBottom: '10px' });
-							opCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
-							opContainer.append(opCard);
-						}
-
-						if (animeData.opening_themes.length > 5) {
-							const toggleOpenings = anilist.helpers.createElement('div', {}, { textAlign: 'center' });
-							const button = anilist.helpers.createElement('a', { id: 'toggleOpenings', href: 'javascript:void(0);', 'data-visible': '0' });
-
-							button.innerText = 'Show more';
-
-							button.addEventListener('click', function() {
-								$$('.openings .showmore').forEach(a => {
-									if (this.dataset.visible === '0') {
-										a.classList.remove('hide');
-									} else {
-										a.classList.add('hide');
-									}
-								});
-								if (this.dataset.visible === '0') {
-									this.dataset.visible = '1';
-									this.innerText = 'Hide';
-								} else {
-									this.dataset.visible = '0';
-									this.innerText = 'Show more';
-								}
-							});
-
-							toggleOpenings.append(button);
-							opContainer.append(toggleOpenings);
-						}
-
-						if (target.classList.contains('staff')) {
-							target.parentNode.insertBefore(opContainer, target);
-						} else {
-							target.parentNode.insertBefore(opContainer, target.nextSibling);
-						}
+					for (const index in animeData.opening_themes) {
+						const song = animeData.opening_themes[index];
+						const opCard = anilist.helpers.createElement('div', {
+							[attrName]: '',
+							class: `tag ${index > 5 ? 'showmore hide' : ''}`
+						}, { marginBottom: '10px' });
+						opCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
+						opContainer.append(opCard);
 					}
 
-					/* == == */
+					if (animeData.opening_themes.length > 5) {
+						const toggleOpenings = anilist.helpers.createElement('div', {}, { textAlign: 'center' });
+						const button = anilist.helpers.createElement('a', { id: 'toggleOpenings', href: 'javascript:void(0);', 'data-visible': '0' });
 
-					if (animeData.ending_themes.length) {
-						const edContainer = anilist.helpers.createElement('div', { class: 'endings' }, { marginBottom: '30px' });
-						const edHeader = anilist.helpers.createElement('h2');
+						button.innerText = 'Show more';
 
-						edHeader.innerText = 'Endings';
-						edContainer.append(edHeader);
-
-						for (const index in animeData.ending_themes) {
-							const song = animeData.ending_themes[index];
-							const edCard = anilist.helpers.createElement('div', {
-								[attrName]: '',
-								class: `tag ${index > 5 ? 'showmore hide' : ''}`
-							}, { marginBottom: '10px' });
-							edCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
-							edContainer.append(edCard);
-						}
-
-						if (animeData.ending_themes.length > 5) {
-							const toggleEndings = anilist.helpers.createElement('div', {}, { textAlign: 'center' });
-							const button = anilist.helpers.createElement('a', { id: 'toggleEndings', href: 'javascript:void(0);', 'data-visible': '0' });
-
-							button.innerText = 'Show more';
-
-							button.addEventListener('click', function() {
-								$$('.endings .showmore').forEach(a => {
-									if (this.dataset.visible === '0') {
-										a.classList.remove('hide');
-									} else {
-										a.classList.add('hide');
-									}
-								});
+						button.addEventListener('click', function() {
+							$$('.openings .showmore').forEach(a => {
 								if (this.dataset.visible === '0') {
-									this.dataset.visible = '1';
-									this.innerText = 'Hide';
+									a.classList.remove('hide');
 								} else {
-									this.dataset.visible = '0';
-									this.innerText = 'Show more';
+									a.classList.add('hide');
 								}
 							});
+							if (this.dataset.visible === '0') {
+								this.dataset.visible = '1';
+								this.innerText = 'Hide';
+							} else {
+								this.dataset.visible = '0';
+								this.innerText = 'Show more';
+							}
+						});
 
-							toggleEndings.append(button);
-							edContainer.append(toggleEndings);
-						}
-
-						if (target.classList.contains('staff')) {
-							target.parentNode.insertBefore(edContainer, target);
-						} else if ($('.openings')) {
-							$('.openings').parentNode.insertBefore(edContainer, $('.openings').nextSibling);
-						} else {
-							target.parentNode.insertBefore(edContainer, target.nextSibling);
-						}
+						toggleOpenings.append(button);
+						opContainer.append(toggleOpenings);
 					}
-				} catch (err) {
-					console.error(err);
+
+					if (target.classList.contains('staff')) {
+						target.parentNode.insertBefore(opContainer, target);
+					} else {
+						target.parentNode.insertBefore(opContainer, target.nextSibling);
+					}
+				}
+
+				/* == == */
+
+				if (animeData.ending_themes.length) {
+					const edContainer = anilist.helpers.createElement('div', { class: 'endings' }, { marginBottom: '30px' });
+					const edHeader = anilist.helpers.createElement('h2');
+
+					edHeader.innerText = 'Endings';
+					edContainer.append(edHeader);
+
+					for (const index in animeData.ending_themes) {
+						const song = animeData.ending_themes[index];
+						const edCard = anilist.helpers.createElement('div', {
+							[attrName]: '',
+							class: `tag ${index > 5 ? 'showmore hide' : ''}`
+						}, { marginBottom: '10px' });
+						edCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
+						edContainer.append(edCard);
+					}
+
+					if (animeData.ending_themes.length > 5) {
+						const toggleEndings = anilist.helpers.createElement('div', {}, { textAlign: 'center' });
+						const button = anilist.helpers.createElement('a', { id: 'toggleEndings', href: 'javascript:void(0);', 'data-visible': '0' });
+
+						button.innerText = 'Show more';
+
+						button.addEventListener('click', function() {
+							$$('.endings .showmore').forEach(a => {
+								if (this.dataset.visible === '0') {
+									a.classList.remove('hide');
+								} else {
+									a.classList.add('hide');
+								}
+							});
+							if (this.dataset.visible === '0') {
+								this.dataset.visible = '1';
+								this.innerText = 'Hide';
+							} else {
+								this.dataset.visible = '0';
+								this.innerText = 'Show more';
+							}
+						});
+
+						toggleEndings.append(button);
+						edContainer.append(toggleEndings);
+					}
+
+					if (target.classList.contains('staff')) {
+						target.parentNode.insertBefore(edContainer, target);
+					} else if ($('.openings')) {
+						$('.openings').parentNode.insertBefore(edContainer, $('.openings').nextSibling);
+					} else {
+						target.parentNode.insertBefore(edContainer, target.nextSibling);
+					}
 				}
 			},
 
 			cleanUp() {
 				if ($('.characters')) $('.characters').classList.remove('mal');
 				if ($('.character-header')) $('.character-header').innerText = 'Characters';
-				const elements = $$('.MyAnimeList, .toggle, .grid-wrap.mal, #toggleCharacters, .openings, .endings');
+				const elements = $$('.MyAnimeList, .mal-score, .toggle, .grid-wrap.mal, #toggleCharacters, .openings, .endings');
 				for (const el of elements) el.remove();
+				this.currentData = null;
 			}
 
 		},
@@ -639,6 +637,19 @@
 				return data.Media[toIDName] || false;
 			},
 
+			async getMalData(malID, isAnime = true) {
+				try {
+					const res = await anilist.helpers.request({
+						url: `https://api.jikan.moe/v3/${isAnime ? 'anime' : 'manga'}/${malID}`,
+						method: 'GET'
+					});
+					return JSON.parse(res.response);
+				} catch (err) {
+					console.error(err);
+					return null;
+				}
+			},
+
 			request(options) {
 				return new Promise((resolve, reject) => {
 					options.onload = res => resolve(res);
@@ -690,11 +701,15 @@
 
 				anilist.overview.init();
 
-			} else if (anilist.helpers.page(/^\/(anime|manga)\/.+\/characters$/)) {
+			}
+
+			if (anilist.helpers.page(/^\/(anime|manga)\/.+\/characters$/)) {
 
 				anilist.characters.init();
 
-			} else if (anilist.helpers.page(/^(\/staff)|(\/(anime|manga)\/\d+\/.+\/staff$)/)) {
+			}
+
+			if (anilist.helpers.page(/^(\/staff)|(\/(anime|manga)\/\d+\/.+\/staff$)/)) {
 
 				anilist.staff.init();
 
