@@ -28,7 +28,7 @@
 		.characters.mal #toggleCharacters {
 			display: block;
 		}
-		.hide {
+		.hide:not(#nav) {
 			display: none !important;
 		}
 		.toggle {
