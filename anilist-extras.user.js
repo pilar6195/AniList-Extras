@@ -108,7 +108,7 @@
 
 				if ($('.overview')) {
 					await this.displayCharacters(malID, isAnime);
-					anilist.helpers.addViewToggle('.characters .link, .staff .link', '.grid-wrap');
+					anilist.helpers.addViewToggle('.characters .link, .staff .link', '.characters .grid-wrap, .staff .grid-wrap');
 					if (isAnime) await this.displayOpEd(malID);
 				}
 
