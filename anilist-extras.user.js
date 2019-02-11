@@ -158,16 +158,18 @@
 				});
 
 
-				malScoreHeader.innerText = 'MyAnimeList Score';
+				malScoreHeader.innerText = 'MAL Score';
 
 				const malScoreValue = anilist.helpers.createElement('div', {
 					[attrName]: '',
 					class: 'value'
 				});
 
-				malScoreValue.innerText = this.currentData.score !== null
-					? this.currentData.score
-					: 'N/A';
+                if (this.currentData.score !== null) {
+                    malScoreValue.innerHTML = '<a href="' + this.currentData.url + '">' + this.currentData.score + '</a>';
+                } else {
+                    malScoreValue.innerHTML = 'N/A';
+                }
 
 				malScoreContainer.append(malScoreHeader, malScoreValue);
 
