@@ -353,7 +353,7 @@
 
 				const animeData = this.currentData;
 
-				if (animeData.opening_themes.length) {
+				if (!$('.openings') && animeData.opening_themes.length) {
 					const opContainer = anilist.helpers.createElement('div', { class: 'openings' }, { marginBottom: '30px' });
 					const opHeader = anilist.helpers.createElement('h2');
 					opHeader.innerText = 'Openings';
@@ -405,7 +405,7 @@
 
 				/* == == */
 
-				if (animeData.ending_themes.length) {
+				if (!$('.endings') && animeData.ending_themes.length) {
 					const edContainer = anilist.helpers.createElement('div', { class: 'endings' }, { marginBottom: '30px' });
 					const edHeader = anilist.helpers.createElement('h2');
 
