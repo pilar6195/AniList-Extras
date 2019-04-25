@@ -238,7 +238,7 @@
 							if (voiceActor) {
 								const something = voiceActor.image_url.match(/voiceactors\/(\d+\/\d+)/);
 								const imageUrl = something && something.length
-									? `https://myanimelist.cdn-dena.com/images/voiceactors/${something[1]}.jpg`
+									? `https://cdn.myanimelist.net/images/voiceactors/${something[1]}.jpg`
 									: voiceActor.image_url;
 
 								const vaContainer = anilist.helpers.createElement('div', {
