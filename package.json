@@ -1,6 +1,6 @@
 {
 	"name": "anilist-extras",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Adds a few additional features to AniList.",
 	"scripts": {
 		"test": "eslint ."
