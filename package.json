@@ -12,15 +12,17 @@
 		"node": ">=8.0.0"
 	},
 	"devDependencies": {
-		"eslint": "^4.19.1",
-		"eslint-config-aqua": "^3.0.0"
+		"eslint": "^6.1.0",
+		"eslint-config-aqua": "^6.0.1"
 	},
 	"eslintConfig": {
 		"extends": [
 			"aqua"
 		],
 		"env": {
-			"browser": true
+			"browser": true,
+			"es6": true,
+			"webextensions": true
 		},
 		"rules": {
 			"func-names": 0,
@@ -31,7 +33,8 @@
 			"no-throw-literal": 0,
 			"no-invalid-this": 0,
 			"no-console": 0,
-			"padded-blocks": 0
+			"padded-blocks": 0,
+			"quote-props": 0
 		}
 	}
 }
