@@ -16,7 +16,7 @@
 
 (function() { // eslint-disable-line wrap-iife
 
-	'use strict';
+	'use strict'; // eslint-disable-line strict
 
 	/* eslint-disable */
 	GM_addStyle(`
@@ -118,7 +118,7 @@
 			addMalLink(malID, isAnime) {
 				if ($('.MyAnimeList')) return;
 
-				let extLinksEl = $('.external-links');
+				const extLinksEl = $('.external-links');
 
 				const attrEl = $('.external-links > a');
 
@@ -165,9 +165,9 @@
 					class: 'value'
 				});
 
-				malScoreValue.innerText = this.currentData.score !== null
-					? this.currentData.score
-					: 'N/A';
+				malScoreValue.innerText = this.currentData.score === null
+					? 'N/A'
+					: this.currentData.score;
 
 				malScoreContainer.append(malScoreHeader, malScoreValue);
 
@@ -199,6 +199,8 @@
 					const attrName = attrEl.attributes[0].name;
 
 					for (const index in characterData.characters) {
+						if (!Object.prototype.hasOwnProperty.call(characterData.characters, index)) continue;
+
 						const character = characterData.characters[index];
 
 						const charCard = anilist.helpers.createElement('div', {
@@ -321,10 +323,12 @@
 							$('.characters').classList.remove('mal');
 							$('.characters .toggle').innerText = 'Switch to MyAnimeList';
 							$('.characters .character-header').innerText = 'AniList Characters';
+							anilist.storage.set('activeCharacters', 'anilist');
 						} else {
 							$('.characters').classList.add('mal');
 							$('.characters .toggle').innerText = 'Switch to AniList';
 							$('.characters .character-header').innerText = 'MAL Characters';
+							anilist.storage.set('activeCharacters', 'mal');
 						}
 					});
 
@@ -360,6 +364,8 @@
 					opContainer.append(opHeader);
 
 					for (const index in animeData.opening_themes) {
+						if (!Object.prototype.hasOwnProperty.call(animeData.opening_themes, index)) continue;
+
 						const song = animeData.opening_themes[index];
 						const opCard = anilist.helpers.createElement('div', {
 							[attrName]: '',
@@ -413,6 +419,8 @@
 					edContainer.append(edHeader);
 
 					for (const index in animeData.ending_themes) {
+						if (!Object.prototype.hasOwnProperty.call(animeData.ending_themes, index)) continue;
+
 						const song = animeData.ending_themes[index];
 						const edCard = anilist.helpers.createElement('div', {
 							[attrName]: '',
@@ -699,9 +707,11 @@
 			createElement(tag, attrs, styles) {
 				const element = document.createElement(tag);
 				for (const aKey in attrs) {
+					if (!Object.prototype.hasOwnProperty.call(attrs, aKey)) continue;
 					element.setAttribute(aKey, attrs[aKey]);
 				}
 				for (const sKey in styles) {
+					if (!Object.prototype.hasOwnProperty.call(styles, sKey)) continue;
 					element.style[sKey] = styles[sKey];
 				}
 				return element;
