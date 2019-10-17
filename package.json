@@ -12,8 +12,8 @@
 		"node": ">=8.0.0"
 	},
 	"devDependencies": {
-		"eslint": "^6.1.0",
-		"eslint-config-aqua": "^6.0.1"
+		"eslint": "^6.5.1",
+		"eslint-config-aqua": "^7.0.1"
 	},
 	"eslintConfig": {
 		"extends": [
