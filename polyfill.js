@@ -21,15 +21,17 @@ function GM_xmlhttpRequest(options) {
 	request.open(options.method, options.url);
 
 	if (options.headers) {
-		for (let header in options.headers) {
-			request.setRequestHeader(header, options.headers[header]);
+		for (const header in options.headers) {
+			if (options.headers.hasOwnProperty(header)) {
+				request.setRequestHeader(header, options.headers[header]);
+			}
 		}
 	}
 
-	if (typeof options.data !== 'undefined') {
-		request.send(options.data);
-	} else {
+	if (typeof options.data === 'undefined') {
 		request.send();
+	} else {
+		request.send(options.data);
 	}
 }
 

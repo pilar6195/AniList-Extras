@@ -1,4 +1,4 @@
-/* global GM_xmlhttpRequest FontAwesome inject */
+/* global GM_xmlhttpRequest */
 // ==UserScript==
 // @name         AniList Extras
 // @namespace    https://github.com/pilar6195
