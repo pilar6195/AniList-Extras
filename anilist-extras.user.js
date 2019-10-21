@@ -888,6 +888,7 @@
 				return new Promise((resolve, reject) => {
 					options.onload = res => resolve(res);
 					options.onerror = err => reject(err);
+					options.ontimeout = err => reject(err);
 					GM_xmlhttpRequest(options); // eslint-disable-line new-cap
 				});
 			},

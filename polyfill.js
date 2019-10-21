@@ -18,6 +18,10 @@ function GM_xmlhttpRequest(options) {
 		options.onerror(this);
 	};
 
+	request.ontimeout = function() {
+		options.ontimeout(this);
+	};
+
 	request.open(options.method, options.url);
 
 	if (options.headers) {
