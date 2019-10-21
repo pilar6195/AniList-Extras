@@ -28,6 +28,10 @@ function GM_xmlhttpRequest(options) {
 		}
 	}
 
+	if (typeof options.timeout !== 'undefined') {
+		request.timeout = options.timeout;
+	}
+
 	if (typeof options.data === 'undefined') {
 		request.send();
 	} else {

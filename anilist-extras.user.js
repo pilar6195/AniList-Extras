@@ -631,6 +631,7 @@
 							'content-type': 'application/json',
 							accept: 'application/json'
 						},
+						timeout: 5000,
 						data: JSON.stringify({
 							query,
 							variables: { userId }
