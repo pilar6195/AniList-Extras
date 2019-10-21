@@ -10,6 +10,7 @@
  - Adds character data from MyAnimeList since most of the time AniList does not have a complete character list.
  - Adds OP/ED data from MyAnimeList.
  - Adds MAL scores.
+ - Adds total amount of following, followers, forum threads, and forum comments a user has to the social tab of the user's profile.
  - Toggle to display character lists as grid (default) or as a list.
  - Adds Anilist link to MyAnimeList pages.
 
