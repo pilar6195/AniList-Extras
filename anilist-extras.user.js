@@ -99,20 +99,23 @@
 
 				const isAnime = /^\/anime/.test(location.pathname);
 
-				const malID = await anilist.helpers.getMalID(isAnime);
-				if (!malID) return this.stopRunning();
-
 				if (!this.currentData) {
+					const malID = await anilist.helpers.getMalID(isAnime);
+
+					if (!malID) {
+						return this.stopRunning();
+					}
+
 					this.currentData = await anilist.helpers.getMalData(malID, isAnime);
 				}
 
-				this.addMalLink(malID, isAnime);
+				this.addMalLink(this.currentData.mal_id, isAnime);
 				this.addMalScore();
 
 				if ($('.overview')) {
-					await this.displayCharacters(malID, isAnime);
+					await this.displayCharacters(this.currentData.mal_id, isAnime);
 					anilist.helpers.addViewToggle('.characters .link, .staff .link', '.characters .grid-wrap, .staff .grid-wrap');
-					if (isAnime) await this.displayOpEd(malID);
+					if (isAnime) await this.displayOpEd(this.currentData.mal_id);
 				}
 
 				return this.stopRunning();
