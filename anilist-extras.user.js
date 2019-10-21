@@ -62,6 +62,9 @@
 		.mal-anilist-link {
 			margin-left: 1em;
 		}
+		.user-social {
+			grid-template-columns: 180px auto !important;
+		}
 	`);
 	/* eslint-enable */
 
@@ -85,7 +88,7 @@
 			},
 
 			async init() {
-				if (this.running) return null;
+				if (this.running) return;
 
 				this.running = true;
 
@@ -486,7 +489,7 @@
 			},
 
 			init() {
-				if (this.running) return null;
+				if (this.running) return;
 
 				this.running = true;
 
@@ -506,6 +509,144 @@
 
 		},
 
+		social: {
+
+			lastLocation: window.location.pathname,
+
+			running: false,
+
+			stopRunning() {
+				this.running = false;
+			},
+
+			async init() {
+
+				if (this.running) return;
+
+				if (!$('.user-social .filter-group span')) return;
+
+				this.running = true;
+
+				const username = window.location.pathname.match(/\/user\/(.+)\/social/)[1];
+				const userId = await anilist.helpers.getUserID(username);
+
+				await this.addTotalFollowing(userId);
+				await this.addTotalFollowers(userId);
+				await this.addTotalThreads(userId);
+				await this.addTotalComments(userId);
+
+				return this.stopRunning();
+
+			},
+
+			async addTotalFollowing(userId) {
+				const target = $('.user-social .filter-group span:nth-of-type(1)');
+
+				if ($('.following-total') || !target) return;
+
+				const data = await this.getTotal('following', userId);
+
+				if (!data) return;
+
+				const totalElement = anilist.helpers.createElement('span', { class: 'following-total' });
+
+				totalElement.innerText = ` (${data.pageInfo.total})`;
+
+				if (target) {
+					target.append(totalElement);
+				}
+			},
+
+			async addTotalFollowers(userId) {
+				const target = $('.user-social .filter-group span:nth-of-type(2)');
+
+				if ($('.followers-total') || !target) return;
+
+				const data = await this.getTotal('followers', userId);
+
+				if (!data) return;
+
+				const totalElement = anilist.helpers.createElement('span', { class: 'followers-total' });
+
+				totalElement.innerText = ` (${data.pageInfo.total})`;
+
+				if (target) {
+					target.append(totalElement);
+				}
+			},
+
+			async addTotalThreads(userId) {
+				const target = $('.user-social .filter-group span:nth-of-type(3)');
+
+				if ($('.threads-total') || !target) return;
+
+				const data = await this.getTotal('threads', userId);
+
+				if (!data) return;
+
+				const totalElement = anilist.helpers.createElement('span', { class: 'threads-total' });
+
+				totalElement.innerText = ` (${data.pageInfo.total})`;
+
+				if (target) {
+					target.append(totalElement);
+				}
+			},
+
+			async addTotalComments(userId) {
+				const target = $('.user-social .filter-group span:nth-of-type(4)');
+
+				if ($('.comments-total') || !target) return;
+
+				const data = await this.getTotal('threadComments', userId);
+
+				if (!data) return;
+
+				const totalElement = anilist.helpers.createElement('span', { class: 'comments-total' });
+
+				totalElement.innerText = ` (${data.pageInfo.total})`;
+
+				if (target) {
+					target.append(totalElement);
+				}
+			},
+
+			async getTotal(type, userId) {
+				const query = `query ($userId: Int!) {
+					Page {
+						pageInfo {
+							total
+						}
+						${type}(userId: $userId) {
+							id
+						}
+					}
+				}`;
+
+				try {
+					const res = await anilist.helpers.request({
+						url: 'https://graphql.anilist.co',
+						method: 'POST',
+						headers: {
+							'content-type': 'application/json',
+							accept: 'application/json'
+						},
+						data: JSON.stringify({
+							query,
+							variables: { userId }
+						})
+					});
+
+					const { data } = JSON.parse(res.response);
+
+					return data.Page;
+				} catch (err) {
+					// console.error(err);
+				}
+			}
+
+		},
+
 		staff: {
 
 			running: false,
@@ -515,7 +656,7 @@
 			},
 
 			init() {
-				if (this.running) return null;
+				if (this.running) return;
 
 				this.running = true;
 
@@ -711,6 +852,37 @@
 				}
 			},
 
+			async getUserID(username) {
+
+				if (typeof username !== 'string') throw new Error('Missing username.');
+
+				username = username.toLowerCase();
+
+				const query = `query ($username: String) {
+					User(name: $username) {
+						id
+					}
+				}`;
+
+				const res = await this.request({
+					url: 'https://graphql.anilist.co',
+					method: 'POST',
+					headers: {
+						'content-type': 'application/json',
+						accept: 'application/json'
+					},
+					data: JSON.stringify({
+						query,
+						variables: { username }
+					})
+				});
+
+				const { data } = JSON.parse(res.response);
+
+				if (data.User) {
+					return data.User.id;
+				}
+			},
 			request(options) {
 				return new Promise((resolve, reject) => {
 					options.onload = res => resolve(res);
@@ -775,6 +947,12 @@
 			if (anilist.helpers.page(/^(\/staff)|(\/(anime|manga)\/\d+\/.+\/staff$)/)) {
 
 				anilist.staff.init();
+
+			}
+
+			if (anilist.helpers.page(/^\/user\/.+\/social$/)) {
+
+				anilist.social.init();
 
 			}
 
