@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         AniList Extras
 // @namespace    https://github.com/pilar6195
-// @version      1.1.1
+// @version      1.2.0
 // @description  Adds a few additional features to AniList.
 // @author       pilar6195
 // @match        https://anilist.co/*
