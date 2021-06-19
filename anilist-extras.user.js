@@ -177,7 +177,18 @@
 
 				malScoreContainer.append(malScoreHeader, malScoreValue);
 
-				$('.data').append(malScoreContainer);
+				const dataNodes = $('.data').childNodes;
+				
+				for(var i = 0; i < dataNodes.length; i++){
+					if(dataNodes[i].innerHTML != null && dataNodes[i].innerHTML.includes('Mean Score')){
+						var node = dataNodes[i];
+						var origClass = node.className;
+						node.className = "meanscore";
+						$('.meanscore').after(malScoreContainer);
+						node.className = origClass; 
+						break;
+					}
+				}
 
 			},
 
