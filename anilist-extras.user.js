@@ -38,14 +38,14 @@
 			padding: 3px 6px;
 			margin-left: 5px;
 		}
-		.characters .grid-wrap{
+		.characters .grid-wrap, .staff .grid-wrap{
 			margin-top: 10px;
 		}
 		.characters .character-header{
 			font-size: 1.4rem;
 			font-weight: 500;
 		}
-		.characters .switcher-holder{
+		.characters .switcher-holder, .staff .switcher-holder, .staff .link{
 			display: inline;
 		}
 		.characters .toggle {
@@ -119,7 +119,8 @@
 
 				if ($('.overview')) {
 					await this.displayCharacters(this.currentData.mal_id, isAnime);
-					anilist.helpers.addViewToggle('.characters .switcher-holder, .staff .link', '.characters .grid-wrap, .staff .grid-wrap');
+					this.displayStaffViewSwitcher();
+					anilist.helpers.addViewToggle('.characters .switcher-holder, .staff .switcher-holder', '.characters .grid-wrap, .staff .grid-wrap');
 					if (isAnime) await this.displayOpEd(this.currentData.mal_id);
 				}
 
@@ -366,6 +367,18 @@
 						$('.characters .character-header').style.display = 'inline';
 						$('.characters .link').style.display = 'none';
 					}
+				} catch (err) {
+					console.error(err);
+				}
+			},
+
+			displayStaffViewSwitcher(){
+				if ($('.staff .switcher-holder')) return;
+
+				try {
+					$('.staff .link').insertAdjacentHTML('afterend', `
+						<div class="switcher-holder"></div>
+					`);
 				} catch (err) {
 					console.error(err);
 				}
