@@ -410,7 +410,12 @@
 							[attrName]: '',
 							class: `tag ${index > 5 ? 'showmore hide' : ''}`
 						}, { marginBottom: '10px' });
-						opCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
+						// Only add num if not already
+						const title = song;
+						if (!title.startsWith("#")){
+							title = "#" + parseInt(index, 10) + 1 + title;
+						}
+						opCard.innerText = `${title}`;
 						opContainer.append(opCard);
 					}
 
@@ -465,7 +470,12 @@
 							[attrName]: '',
 							class: `tag ${index > 5 ? 'showmore hide' : ''}`
 						}, { marginBottom: '10px' });
-						edCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
+						// Only add num if not already
+						const title = song;
+						if (!title.startsWith("#")){
+							title = "#" + parseInt(index, 10) + 1 + title;
+						}
+						edCard.innerText = `${title}`;
 						edContainer.append(edCard);
 					}
 
