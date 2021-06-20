@@ -374,6 +374,7 @@
 
 			displayStaffViewSwitcher(){
 				if ($('.staff .switcher-holder')) return;
+				if (!$('.staff .link')) return;
 
 				try {
 					$('.staff .link').insertAdjacentHTML('afterend', `
@@ -410,12 +411,11 @@
 							[attrName]: '',
 							class: `tag ${index > 5 ? 'showmore hide' : ''}`
 						}, { marginBottom: '10px' });
-						// Only add num if not already
-						const title = song;
-						if (!title.startsWith("#")){
-							title = "#" + parseInt(index, 10) + 1 + title;
+						if (!song.startsWith("#")){
+							opCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
+						}else{
+							opCard.innerText = `${song}`;
 						}
-						opCard.innerText = `${title}`;
 						opContainer.append(opCard);
 					}
 
@@ -471,11 +471,11 @@
 							class: `tag ${index > 5 ? 'showmore hide' : ''}`
 						}, { marginBottom: '10px' });
 						// Only add num if not already
-						const title = song;
-						if (!title.startsWith("#")){
-							title = "#" + parseInt(index, 10) + 1 + title;
+						if (!song.startsWith("#")){
+							edCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
+						}else{
+							edCard.innerText = `${song}`;
 						}
-						edCard.innerText = `${title}`;
 						edContainer.append(edCard);
 					}
 
