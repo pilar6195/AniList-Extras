@@ -183,17 +183,33 @@
 
 				malScoreContainer.append(malScoreHeader, malScoreValue);
 
+				var added = false;
 				const dataNodes = $('.data').childNodes;
 
 				for(var i = 0; i < dataNodes.length; i++){
 					if(dataNodes[i].innerHTML != null && dataNodes[i].innerHTML.includes('Mean Score')){
+						// probably not necessary with the if below, but I want it to be after the mean score for sure
 						var node = dataNodes[i];
 						var origClass = node.className;
 						node.className = "meanscore";
 						$('.meanscore').after(malScoreContainer);
 						node.className = origClass; 
+						added = true;
+						break;
+					}else if (dataNodes[i].innerHTML != null && dataNodes[i].innerHTML.includes('Popularity')){
+						// this will append in the correct place if there is no anilist score
+						var node = dataNodes[i];
+						var origClass = node.className;
+						node.className = "popularity";
+						$('.popularity').before(malScoreContainer);
+						node.className = origClass; 
+						added = true;
 						break;
 					}
+				}
+				if (added == false){
+					// this will append just in case it didn't get caught before
+					$('.data').append(malScoreContainer);
 				}
 
 			},
