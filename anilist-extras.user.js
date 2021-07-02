@@ -381,8 +381,13 @@
 					$('.characters .link').insertAdjacentHTML('afterend', `
 						<span class="character-header">MAL Characters</span>
 						<span class="toggle"></span>
+					`);
+
+					if ($('.characters .toggle') && $('.characters .switcher-holder') == null){
+						$('.characters .toggle').insertAdjacentHTML('afterend', `
 						<div class="switcher-holder"></div>
 					`);
+					}
 					
 					$('.characters .toggle').addEventListener('click', () => {
 						if ($('.characters').classList.contains('mal')) {
