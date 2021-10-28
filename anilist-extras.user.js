@@ -459,8 +459,10 @@
 							[attrName]: '',
 							class: `tag ${index > 5 ? 'showmore hide' : ''}`
 						}, { marginBottom: '10px' });
-						if (!song.startsWith("#")){
-							opCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
+						if (song.match(/(^[0-9])/)){
+							opCard.innerText = `#${song}`;
+						}else if (!song.startsWith("#")){
+							opCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`; 
 						}else{
 							opCard.innerText = `${song}`;
 						}
@@ -519,7 +521,9 @@
 							class: `tag ${index > 5 ? 'showmore hide' : ''}`
 						}, { marginBottom: '10px' });
 						// Only add num if not already
-						if (!song.startsWith("#")){
+						if (song.match(/(^[0-9])/)){
+							edCard.innerText = `#${song}`;
+						}else if (!song.startsWith("#")){
 							edCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
 						}else{
 							edCard.innerText = `${song}`;
