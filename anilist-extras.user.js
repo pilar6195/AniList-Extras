@@ -748,6 +748,53 @@
 
 		},
 
+		seasonal:{
+			running: false,
+
+			stopRunning() {
+				this.running = false;
+			},
+
+			init() {
+				if (this.running) return;
+
+				this.running = true;
+
+				this.addSeasonLink();
+
+				return this.stopRunning();
+			},
+
+			addSeasonLink() {
+				if (!$('.browse-wrap .dropdown .primary-links .secondary-links')) return;
+				if ($('.seasonal-anime')) return;
+ 
+				const linksEl = $('.secondary-links')
+				const attrName = linksEl.childNodes[0].attributes[0].name;
+
+				// Determine the year and season
+				const year = new Date().getFullYear();
+				const month = new Date().getMonth();
+				var season = "";
+				if (month <= 2){
+					season = "WINTER";
+				}else if(month <= 5){
+					season = "SPRING";
+				}else if(month <= 8){
+					season = "SUMMER";
+				}else{
+					season = "FALL";
+				}
+				var ref = "/search/anime?year=" + year + "&season=" + season;
+
+				// Create the new element and add to the dropdown
+				const link = anilist.helpers.createElement('a', { class: 'seasonal-anime', [attrName]: '', href: ref});
+				link.innerHTML = "Seasonal"
+
+				linksEl.append(link);
+			}
+		},
+
 		staff: {
 
 			running: false,
@@ -1036,7 +1083,6 @@
 			if (anilist.helpers.page(/^\/(anime|manga)\/\d+\/[\w\d-_]+(\/)?$/)) {
 
 				anilist.overview.init();
-
 			}
 
 			if (anilist.helpers.page(/^\/(anime|manga)\/.+\/characters$/)) {
@@ -1056,7 +1102,7 @@
 				anilist.social.init();
 
 			}
-
+			anilist.seasonal.init();
 		}
 
 	});
