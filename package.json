@@ -1,12 +1,12 @@
 {
 	"name": "anilist-extras",
-	"version": "1.2.0",
+	"version": "1.3.0",
 	"description": "Adds a few additional features to AniList.",
 	"scripts": {
 		"test": "eslint ."
 	},
-	"repository": "https://github.com/pilar6195/AniList-Extras.git",
-	"author": "pilar6195 (https://github.com/pilar6195)",
+	"repository": "https://github.com/duncanlang/AniList-Extras.git",
+	"author": "Duncan Lang (https://github.com/duncanlang) (Original https://github.com/pilar6195))",
 	"license": "MIT",
 	"engines": {
 		"node": ">=8.0.0"
