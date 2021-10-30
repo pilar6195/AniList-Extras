@@ -214,20 +214,14 @@
 				malScoreContainer.append(malScoreHeader, malScoreValue);
 
 				var added = false;
-				const dataNodes = $('.data').childNodes;
+				const dataNodes = $('.data').children;
 
 				for(var i = 0; i < dataNodes.length; i++){
-					if(dataNodes[i].innerHTML != null && dataNodes[i].innerHTML.includes('Mean Score')){
-						// probably not necessary with the if below, but I want it to be after the mean score for sure
-						var node = dataNodes[i];
-						var origClass = node.className;
-						node.className = "meanscore";
-						$('.meanscore').after(malScoreContainer);
-						node.className = origClass; 
-						added = true;
-						break;
-					}else if (dataNodes[i].innerHTML != null && dataNodes[i].innerHTML.includes('Popularity')){
-						// this will append in the correct place if there is no anilist score
+					if (dataNodes[i].innerHTML != null && dataNodes[i].innerHTML.includes('Popularity')){
+						// Place the MAL score before the anilist popularity, this will ensure it is just after the AL score
+						// In the case where there is no AL score, this will still ensure it is in the expected location
+
+						// So we can do the .before, the popularity element needs a unique class name
 						var node = dataNodes[i];
 						var origClass = node.className;
 						node.className = "popularity";
