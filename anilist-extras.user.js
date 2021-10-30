@@ -455,13 +455,17 @@
 							[attrName]: '',
 							class: `tag ${index > 5 ? 'showmore hide' : ''}`
 						}, { marginBottom: '10px' });
-						if (song.match(/(^[0-9])/)){
-							opCard.innerText = `#${song}`;
+
+						// Determine prefix and add the song
+						var prefix = "";
+						if (song.includes("No opening themes")){
+							// No prefix
+						}else if (song.match(/(^[0-9])/)){
+							prefix = "#";
 						}else if (!song.startsWith("#")){
-							opCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`; 
-						}else{
-							opCard.innerText = `${song}`;
+							prefix = "#" + (parseInt(index, 10) + 1).toString() + ": ";
 						}
+						opCard.innerText = `${prefix}${song}`;
 						opContainer.append(opCard);
 					}
 
@@ -516,14 +520,17 @@
 							[attrName]: '',
 							class: `tag ${index > 5 ? 'showmore hide' : ''}`
 						}, { marginBottom: '10px' });
-						// Only add num if not already
-						if (song.match(/(^[0-9])/)){
-							edCard.innerText = `#${song}`;
+						
+						// Determine prefix and add the song
+						var prefix = "";
+						if (song.includes("No ending themes")){
+							// No prefix
+						}else if (song.match(/(^[0-9])/)){
+							prefix = "#";
 						}else if (!song.startsWith("#")){
-							edCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
-						}else{
-							edCard.innerText = `${song}`;
+							prefix = "#" + (parseInt(index, 10) + 1).toString() + ": ";
 						}
+						edCard.innerText = `${prefix}${song}`;
 						edContainer.append(edCard);
 					}
 
