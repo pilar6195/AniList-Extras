@@ -128,27 +128,27 @@
 			},
 
 			addMalLink(malID, isAnime) {
-				if ($('.MyAnimeList')) return;
+				// If for some reason there are two external links containers, remove the second one
+				// This is usually caused by this script running before Anilist's javascript can add the external links
+				if ($('.MyAnimeList') && $$('.external-links').length == 2){
+					if ($('.external-links-extras > a') != null){
+						$('.external-links').append($('.external-links-extras > a'));
+					}
+					$('.external-links-extras').parentNode.removeChild($('.external-links-extras'));
+				}
+
+				if ($('.MyAnimeList')) return; // If already added, return
 
 				var extLinksEl = $('.external-links');
-
 				const attrEl = $('.external-links > a');
+				var attrName = 'data-v-1a2276d0';
 
 				if (attrEl){
-					// Like normal, add MAL link below streaming links
-					const attrName = attrEl.attributes[0].name;
+					// Like normal, add MAL link below streaming links, get the attribute name of the other links
+					attrName = attrEl.attributes[0].name;
 
-					const malLink = anilist.helpers.createElement('a', {
-						[attrName]: '',
-						class: 'external-link MyAnimeList',
-						target: '_blank',
-						href: `https://myanimelist.net/${isAnime ? 'anime' : 'manga'}/${malID}/`
-					});
-	
-					malLink.innerText = 'MyAnimeList';
-	
-					extLinksEl.append(malLink);
-				}else{			
+				}else{	
+					// No external links, lets create the header
 					if (!$('.sidebar')) return;
 					const sidebarEl = $('.sidebar');
 
@@ -156,7 +156,7 @@
 						// There are no external or streaming links then recreate the div		
 						extLinksEl = anilist.helpers.createElement('div', {
 							['data-v-1a2276d0']: '',
-							class: 'external-links'
+							class: 'external-links external-links-extras'
 						});
 						sidebarEl.append(extLinksEl);
 
@@ -166,17 +166,18 @@
 						extLinksTitle.innerText = "External & Streaming Links";
 						extLinksEl.append(extLinksTitle);
 					}
-
-					const malLink = anilist.helpers.createElement('a', {
-						['data-v-1a2276d0']: '',
-						class: 'external-link MyAnimeList',
-						target: '_blank',
-						href: `https://myanimelist.net/${isAnime ? 'anime' : 'manga'}/${malID}/`
-					});
-					malLink.innerText = 'MyAnimeList';
-					
-					extLinksEl.append(malLink);
 				}
+
+				// Create the link
+				const malLink = anilist.helpers.createElement('a', {
+					[attrName]: '',
+					class: 'external-link MyAnimeList',
+					target: '_blank',
+					href: `https://myanimelist.net/${isAnime ? 'anime' : 'manga'}/${malID}/`
+				});
+				malLink.innerText = 'MyAnimeList';
+				
+				extLinksEl.append(malLink);
 			},
 
 			addMalScore() {
@@ -240,7 +241,6 @@
 					// this will append just in case it didn't get caught before
 					$('.data').append(malScoreContainer);
 				}
-
 			},
 
 			async displayCharacters(malID, isAnime = true) {
