@@ -796,6 +796,124 @@
 			}
 		},
 
+		reviewRatings:{
+			running: false,
+
+			stopRunning() {
+				this.running = false;
+			},
+
+			async init() {
+				if (this.running) return;
+
+				this.running = true;
+
+				await this.addReviewRatings();
+
+				return this.stopRunning();
+			},
+
+			async addReviewRatings(){
+				if(!$('.review-wrap')) return;
+
+				const reviews = $('.review-wrap').children;
+				for (var i = 0; i < reviews.length; i++){
+					const content = reviews[i].querySelector('.content');
+
+					if (!content.querySelector('.review-score')){
+						var home = false;
+						// Get the review ID
+						var reviewId = "";
+						if (reviews[i].getAttribute("href") != null){
+							reviewId = reviews[i].getAttribute("href");
+							home = true;
+						}else{
+							reviewId = content.getAttribute("href");
+						}
+						reviewId = reviewId.replace('/review/','');
+	
+						// Get the review score
+						const data = await this.getReview(reviewId);
+	
+						if (data != null && !content.querySelector('.review-score')){
+							// Create holding div
+							const div =  anilist.helpers.createElement('div', { class: 'review-score-holder' });
+							div.style.position = "absolute";
+							if (home == true){
+								div.style.bottom = "10px";
+								div.style.right = "45px";
+							}else{
+								div.style.bottom = "30px";
+								div.style.right = "10px";
+							}
+							div.style.lineHeight = "1.2";
+							
+							// Create score p
+							const score = anilist.helpers.createElement('p', { class: 'review-score' });
+							score.innerHTML = data.score.toString();
+							if (data.score < 50){
+								score.style.background = "rgb(var(--color-red))";
+							}else if (data.score <= 65){
+								score.style.background = "rgb(var(--color-orange))";
+							}else{
+								score.style.background = "rgb(var(--color-green))";
+							}
+							score.style.color = "rgb(var(--color-white))";
+							score.style.textAlign = "center";
+							score.style.paddingLeft = "5px";
+							score.style.paddingRight = "5px";
+							score.style.margin = "0px";
+							score.style.fontSize = "1.3rem";
+							score.style.height = "15px";
+							score.style.borderRadius = "4px";
+							score.style.fontWeight = "bold";
+							div.append(score);
+	
+							content.append(div);
+	
+							// Set padding for summary
+							if (home == true){
+								content.querySelector(".summary").style.paddingBottom = "15px";
+							}else{
+								content.querySelector(".summary").style.paddingRight = "40px";
+							}
+						}
+					}
+				}
+			},
+
+			async getReview(reviewId) {
+				const query = `query ($reviewId: Int!) {
+					Review(id: $reviewId) {
+						score
+					}
+				}`;
+
+				try {
+					const res = await anilist.helpers.request({
+						url: 'https://graphql.anilist.co',
+						method: 'POST',
+						headers: {
+							'content-type': 'application/json',
+							accept: 'application/json'
+						},
+						timeout: 5000,
+						data: JSON.stringify({
+							query,
+							variables: { reviewId }
+						})
+					});
+
+					const { data } = JSON.parse(res.response);
+
+					return data.Review;
+				} catch (err) {
+					// console.error(err);
+				}
+			},
+
+		},
+
 		staff: {
 
 			running: false,
@@ -1084,6 +1202,14 @@
 			if (anilist.helpers.page(/^\/(anime|manga)\/\d+\/[\w\d-_]+(\/)?$/)) {
 
 				anilist.overview.init();
+			}
+
+			if (anilist.helpers.page(/^\/(anime|manga)\/\d+\/[\w\d-_]+(\/)?$/) || 
+				anilist.helpers.page(/^\/(anime|manga)\/\d+\/[\w\d-_]+(\/reviews)?$/) ||
+				anilist.helpers.page(/^\/(home)?$/) ||
+				anilist.helpers.page(/\/(reviews)?$/)){
+
+				anilist.reviewRatings.init();
 			}
 
 			if (anilist.helpers.page(/^\/(anime|manga)\/.+\/characters$/)) {
