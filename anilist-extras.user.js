@@ -850,7 +850,7 @@
 							
 							// Create score p
 							const score = anilist.helpers.createElement('p', { class: 'review-score' });
-							score.innerHTML = data.score.toString();
+							score.innerText = data.score.toString();
 							if (data.score < 50){
 								score.style.background = "rgb(var(--color-red))";
 							}else if (data.score <= 65){
