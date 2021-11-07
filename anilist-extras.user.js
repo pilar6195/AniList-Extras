@@ -456,16 +456,9 @@
 							class: `tag ${index > 5 ? 'showmore hide' : ''}`
 						}, { marginBottom: '10px' });
 
-						// Determine prefix and add the song
-						var prefix = "";
-						if (song.includes("No opening themes")){
-							// No prefix
-						}else if (song.match(/(^[0-9])/)){
-							prefix = "#";
-						}else if (!song.startsWith("#")){
-							prefix = "#" + (parseInt(index, 10) + 1).toString() + ": ";
-						}
-						opCard.innerText = `${prefix}${song}`;
+						opCard.innerText = song.includes('No opening themes')
+							? song.replace('Help improve our database by adding an opening theme here.', '') // This probably should not be displayed on anilist
+							: `#${parseInt(index, 10) + 1}: ${song.replace(/^(#)?\d+:/, '')}`;
 						opContainer.append(opCard);
 					}
 
@@ -520,17 +513,10 @@
 							[attrName]: '',
 							class: `tag ${index > 5 ? 'showmore hide' : ''}`
 						}, { marginBottom: '10px' });
-						
-						// Determine prefix and add the song
-						var prefix = "";
-						if (song.includes("No ending themes")){
-							// No prefix
-						}else if (song.match(/(^[0-9])/)){
-							prefix = "#";
-						}else if (!song.startsWith("#")){
-							prefix = "#" + (parseInt(index, 10) + 1).toString() + ": ";
-						}
-						edCard.innerText = `${prefix}${song}`;
+
+						edCard.innerText = song.includes('No ending themes')
+							? song.replace('Help improve our database by adding an ending theme here.', '') // This probably should not be displayed on anilist
+							: `#${parseInt(index, 10) + 1}: ${song.replace(/^(#)?\d+:/, '')}`;
 						edContainer.append(edCard);
 					}
 
