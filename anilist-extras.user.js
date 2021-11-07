@@ -199,7 +199,6 @@
 					class: 'type'
 				});
 
-
 				malScoreHeader.innerText = 'MyAnimeList Score';
 
 				const malScoreValue = anilist.helpers.createElement('div', {
@@ -213,26 +212,12 @@
 
 				malScoreContainer.append(malScoreHeader, malScoreValue);
 
-				var added = false;
-				const dataNodes = $('.data').children;
+				const dataNodes = Array.from($$('.data-set'));
+				const targetNode = dataNodes.find(el => /popularity/i.test(el.innerText));
 
-				for(var i = 0; i < dataNodes.length; i++){
-					if (dataNodes[i].innerHTML != null && dataNodes[i].innerHTML.includes('Popularity')){
-						// Place the MAL score before the anilist popularity, this will ensure it is just after the AL score
-						// In the case where there is no AL score, this will still ensure it is in the expected location
-
-						// So we can do the .before, the popularity element needs a unique class name
-						var node = dataNodes[i];
-						var origClass = node.className;
-						node.className = "popularity";
-						$('.popularity').before(malScoreContainer);
-						node.className = origClass; 
-						added = true;
-						break;
-					}
-				}
-				if (added == false){
-					// this will append just in case it didn't get caught before
+				if (targetNode) {
+					targetNode.before(malScoreContainer);
+				} else {
 					$('.data').append(malScoreContainer);
 				}
 			},
