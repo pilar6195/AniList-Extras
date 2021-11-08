@@ -70,6 +70,33 @@
 		.user-social {
 			grid-template-columns: 180px auto !important;
 		}
+
+		/* Reviews */
+		.review-card:not(.is-home) .summary {
+			padding-right: 45px;
+		}
+		.review-card.is-home .summary {
+			padding-bottom: 20px;
+		}
+		.review-card .review-score-container {
+			position: absolute;
+			line-height: 1.2;
+			bottom: 30px;
+			right: 10px;
+		}
+		.review-card.is-home .review-score-container {
+			bottom: 10px;
+			right: 45px;
+		}
+		.review-card .review-score {
+			color: rgb(var(--color-white));
+			text-align: center;
+			padding: 0px 5px;
+			margin: 0px;
+			border-radius: 4px;
+			font-size: 1.3rem;
+			font-weight: bold;
+		}
 	`);
 	/* eslint-enable */
 
@@ -751,7 +778,7 @@
 			}
 		},
 
-		reviewRatings:{
+		reviewRatings: {
 			running: false,
 
 			stopRunning() {
@@ -768,80 +795,67 @@
 				return this.stopRunning();
 			},
 
-			async addReviewRatings(){
+			async addReviewRatings() {
 				if(!$('.review-wrap')) return;
 
-				const reviews = $('.review-wrap').children;
-				for (var i = 0; i < reviews.length; i++){
-					const content = reviews[i].querySelector('.content');
+				const reviews = $$('.review-wrap .review-card');
+				const isHome = /^\/home/i.test(window.location.pathname);
+				const reviewContainers = {};
 
-					if (!content.querySelector('.review-score')){
-						var home = false;
-						// Get the review ID
-						var reviewId = "";
-						if (reviews[i].getAttribute("href") != null){
-							reviewId = reviews[i].getAttribute("href");
-							home = true;
-						}else{
-							reviewId = content.getAttribute("href");
-						}
-						reviewId = reviewId.replace('/review/','');
-	
-						// Get the review score
-						const data = await this.getReview(reviewId);
-	
-						if (data != null && !content.querySelector('.review-score')){
-							// Create holding div
-							const div =  anilist.helpers.createElement('div', { class: 'review-score-holder' });
-							div.style.position = "absolute";
-							if (home == true){
-								div.style.bottom = "10px";
-								div.style.right = "45px";
-							}else{
-								div.style.bottom = "30px";
-								div.style.right = "10px";
-							}
-							div.style.lineHeight = "1.2";
-							
-							// Create score p
-							const score = anilist.helpers.createElement('p', { class: 'review-score' });
-							score.innerText = data.score.toString();
-							if (data.score < 50){
-								score.style.background = "rgb(var(--color-red))";
-							}else if (data.score <= 65){
-								score.style.background = "rgb(var(--color-orange))";
-							}else{
-								score.style.background = "rgb(var(--color-green))";
-							}
-							score.style.color = "rgb(var(--color-white))";
-							score.style.textAlign = "center";
-							score.style.paddingLeft = "5px";
-							score.style.paddingRight = "5px";
-							score.style.margin = "0px";
-							score.style.fontSize = "1.3rem";
-							score.style.height = "15px";
-							score.style.borderRadius = "4px";
-							score.style.fontWeight = "bold";
-							div.append(score);
-	
-							content.append(div);
-	
-							// Set padding for summary
-							if (home == true){
-								content.querySelector(".summary").style.paddingBottom = "15px";
-							}else{
-								content.querySelector(".summary").style.paddingRight = "40px";
-							}
-						}
+				for (const review of reviews) {
+					isHome && review.classList.add('is-home');
+					const content = review.querySelector('.content');
+					if (content.dataset['scoreFetched']) continue;
+
+					let reviewId = review.getAttribute('href') || content.getAttribute('href');
+					reviewId = reviewId.replace(/\D+/, ''), 10;
+					reviewContainers[reviewId] = content;
+				}
+
+				const reviewIds = Object.keys(reviewContainers);
+				
+				// Don't continue if theres nothing
+				if (!reviewIds.length) return;
+				
+				const reviewsData = await this.getReviews(reviewIds);
+
+				for (const reviewData of reviewsData) {
+					if (!reviewData) continue;
+
+					const { id: reivewId, score: reviewScore } = reviewData;
+
+					// We are marking the reviews as fetched to avoid fetching them again.
+					reviewContainers[reivewId].dataset['scoreFetched'] = true;
+
+					// The public api cannot fetch adult content without auth so it will return nothing
+					if (reviewScore === null) continue;
+
+					// Create holding div
+					const div = anilist.helpers.createElement('div', { class: 'review-score-container' });
+
+					// Create score p
+					const score = anilist.helpers.createElement('p', { class: 'review-score' });
+					score.innerText = reviewScore;
+
+					if (reviewScore < 50) {
+						score.style.background = "rgb(var(--color-red))";
+					} else if (reviewScore <= 65) {
+						score.style.background = "rgb(var(--color-orange))";
+					} else {
+						score.style.background = "rgb(var(--color-green))";
 					}
+
+					div.append(score);
+
+					reviewContainers[reivewId].append(div);
 				}
 			},
 
-			async getReview(reviewId) {
-				const query = `query ($reviewId: Int!) {
-					Review(id: $reviewId) {
-						score
-					}
+			async getReviews(reviewIds) {
+				// This is a bit funky but trust me that it works.
+				const queries = reviewIds.map(r => `reivew_${r}: Page { reviews(id: ${r}) { id, score } }`);
+				const query = `{
+					${queries.join('\n')}
 				}`;
 
 				try {
@@ -855,13 +869,17 @@
 						timeout: 5000,
 						data: JSON.stringify({
 							query,
-							variables: { reviewId }
 						})
 					});
 
 					const { data } = JSON.parse(res.response);
 
-					return data.Review;
+					const reviews = Object.values(data).map(r => r.reviews[0]);
+					return reviewIds.map(rId => {
+						rId = parseInt(rId, 10);
+						const review = reviews.find(r => r && r.id === rId);
+						return review || { id: rId, score: null };
+					});
 				} catch (err) {
 					// console.error(err);
 				}
@@ -1159,11 +1177,11 @@
 				anilist.overview.init();
 			}
 
-			if (anilist.helpers.page(/^\/(anime|manga)\/\d+\/[\w\d-_]+(\/)?$/) || 
+			if (
 				anilist.helpers.page(/^\/(anime|manga)\/\d+\/[\w\d-_]+(\/reviews)?$/) ||
 				anilist.helpers.page(/^\/(home)?$/) ||
-				anilist.helpers.page(/\/(reviews)?$/)){
-
+				anilist.helpers.page(/\/(reviews)?$/)
+			) {
 				anilist.reviewRatings.init();
 			}
 
