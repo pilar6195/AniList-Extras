@@ -841,7 +841,7 @@
 					const score = anilist.helpers.createElement('p', { class: 'review-score' });
 					score.innerText = reviewScore;
 
-					if (reviewScore < 50) {
+					if (reviewScore < 35) {
 						score.style.background = "rgb(var(--color-red))";
 					} else if (reviewScore <= 65) {
 						score.style.background = "rgb(var(--color-orange))";
