@@ -128,47 +128,31 @@
 			},
 
 			addMalLink(malID, isAnime) {
-				// If for some reason there are two external links containers, remove the second one
-				// This is usually caused by this script running before Anilist's javascript can add the external links
-				if ($('.MyAnimeList') && $$('.external-links').length == 2){
-					if ($('.external-links-extras > a') != null){
-						$('.external-links').append($('.external-links-extras > a'));
-					}
-					$('.external-links-extras').parentNode.removeChild($('.external-links-extras'));
-				}
+				if ($('.MyAnimeList') || !$('.sidebar')) return;
 
-				if ($('.MyAnimeList')) return; // If already added, return
-
-				var extLinksEl = $('.external-links');
+				let extLinksEl = $('.external-links');
 				const attrEl = $('.external-links > a');
-				var attrName = 'data-v-1a2276d0';
+				let attrName;
 
-				if (attrEl){
-					// Like normal, add MAL link below streaming links, get the attribute name of the other links
+				if (attrEl) {
 					attrName = attrEl.attributes[0].name;
+				} else {
+					// Setting the "data-v-" attribute manually is not ideal as
+					// this could change in the future but it'll do for now.
+					attrName = 'data-v-1a2276d0';
 
-				}else{	
-					// No external links, lets create the header
-					if (!$('.sidebar')) return;
-					const sidebarEl = $('.sidebar');
+					extLinksEl = anilist.helpers.createElement('div', {
+						[attrName]: '',
+						class: 'external-links external-links-extras'
+					});
 
-					if (extLinksEl == null){
-						// There are no external or streaming links then recreate the div		
-						extLinksEl = anilist.helpers.createElement('div', {
-							['data-v-1a2276d0']: '',
-							class: 'external-links external-links-extras'
-						});
-						sidebarEl.append(extLinksEl);
+					const extLinksTitle = anilist.helpers.createElement('h2');
+					extLinksTitle.innerText = "External & Streaming links";
+					extLinksEl.append(extLinksTitle);
 
-						// Create the title
-						const extLinksTitle = anilist.helpers.createElement('h2', {
-						});
-						extLinksTitle.innerText = "External & Streaming Links";
-						extLinksEl.append(extLinksTitle);
-					}
+					$('.sidebar').append(extLinksEl);
 				}
 
-				// Create the link
 				const malLink = anilist.helpers.createElement('a', {
 					[attrName]: '',
 					class: 'external-link MyAnimeList',
@@ -176,7 +160,7 @@
 					href: `https://myanimelist.net/${isAnime ? 'anime' : 'manga'}/${malID}/`
 				});
 				malLink.innerText = 'MyAnimeList';
-				
+
 				extLinksEl.append(malLink);
 			},
 
@@ -545,7 +529,7 @@
 			cleanUp() {
 				if ($('.characters')) $('.characters').classList.remove('mal');
 				if ($('.character-header')) $('.character-header').innerText = 'Characters';
-				const elements = $$('.MyAnimeList, .mal-score, .toggle, .grid-wrap.mal, #toggleCharacters, .openings, .endings');
+				const elements = $$('.MyAnimeList, .external-links-extras, .mal-score, .toggle, .grid-wrap.mal, #toggleCharacters, .openings, .endings');
 				for (const el of elements) el.remove();
 				this.currentData = null;
 			}
