@@ -755,26 +755,11 @@
 				const linksEl = $('.secondary-links');
 				const attrName = $('.secondary-links > a').attributes[0].name;
 
-				// Determine the year and season
-				const year = new Date().getFullYear();
-				const month = new Date().getMonth();
-
-				let season = '';
-				if (month <= 2) {
-					season = 'WINTER';
-				} else if (month <= 5) {
-					season = 'SPRING';
-				} else if (month <= 8) {
-					season = 'SUMMER';
-				} else {
-					season = 'FALL';
-				}
-
 				// Create the new element and add to the dropdown
 				const link = anilist.helpers.createElement('a', {
 					class: 'seasonal-anime',
 					[attrName]: '',
-					href: `/search/anime?year=${year}&season=${season}`,
+					href: '/search/anime/this-season',
 				}, { marginTop: '5px' });
 				link.innerText = "Seasonal"
 
