@@ -1,8 +1,8 @@
 {
 	"manifest_version": 2,
-	"name": "AniList Extras",
+	"name": "AniList Extras (Updated)",
 	"description": "Adds a few additional features to AniList.",
-	"version": "1.2.0",
+	"version": "1.4.1",
 	"minimum_chrome_version": "60.0.3112",
 
 	"icons": {

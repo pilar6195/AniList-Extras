@@ -38,12 +38,17 @@
 			padding: 3px 6px;
 			margin-left: 5px;
 		}
-		.characters .link,
-		.staff .link {
-			pointer-events: none;
-			cursor: initial !important;
+		.characters .grid-wrap, .staff .grid-wrap{
+			margin-top: 10px;
 		}
-		.characters .link .toggle {
+		.characters .character-header{
+			font-size: 1.4rem;
+			font-weight: 500;
+		}
+		.characters .switcher-holder, .staff .switcher-holder, .staff .link{
+			display: inline;
+		}
+		.characters .toggle {
 			cursor: pointer;
 		}
 		.characters .link *,
@@ -64,6 +69,33 @@
 		}
 		.user-social {
 			grid-template-columns: 180px auto !important;
+		}
+
+		/* Reviews */
+		.review-card:not(.is-home) .summary {
+			padding-right: 45px;
+		}
+		.review-card.is-home .summary {
+			padding-bottom: 20px;
+		}
+		.review-card .review-score-container {
+			position: absolute;
+			line-height: 1.2;
+			bottom: 30px;
+			right: 10px;
+		}
+		.review-card.is-home .review-score-container {
+			bottom: 10px;
+			right: 45px;
+		}
+		.review-card .review-score {
+			color: rgb(var(--color-white));
+			text-align: center;
+			padding: 0px 5px;
+			margin: 0px;
+			border-radius: 4px;
+			font-size: 1.3rem;
+			font-weight: bold;
 		}
 	`);
 	/* eslint-enable */
@@ -114,7 +146,8 @@
 
 				if ($('.overview')) {
 					await this.displayCharacters(this.currentData.mal_id, isAnime);
-					anilist.helpers.addViewToggle('.characters .link, .staff .link', '.characters .grid-wrap, .staff .grid-wrap');
+					this.displayStaffViewSwitcher();
+					anilist.helpers.addViewToggle('.characters .switcher-holder, .staff .switcher-holder', '.characters .grid-wrap, .staff .grid-wrap');
 					if (isAnime) await this.displayOpEd(this.currentData.mal_id);
 				}
 
@@ -122,15 +155,33 @@
 			},
 
 			addMalLink(malID, isAnime) {
-				if ($('.MyAnimeList')) return;
+				if ($('.MyAnimeList') || !$('.sidebar')) return;
 
-				const extLinksEl = $('.external-links');
+				let extLinksWrapEl = $('.external-links .external-links-wrap');
+				const attrEl = $('.external-links .external-links-wrap > a');
+				let attrName;
 
-				const attrEl = $('.external-links > a');
+				if (attrEl) {
+					attrName = attrEl.attributes[0].name;
+				} else {
+					// Setting the "data-v-" attribute manually is not ideal as
+					// this could change in the future but it'll do for now.
+					attrName = 'data-v-7a1f9df8';
 
-				if (!attrEl) return;
+					const extLinksEl = anilist.helpers.createElement('div', {
+						[attrName]: '',
+						class: 'external-links external-links-extras'
+					});
 
-				const attrName = attrEl.attributes[0].name;
+					const extLinksTitle = anilist.helpers.createElement('h2');
+					extLinksTitle.innerText = "External & Streaming links";
+					extLinksEl.append(extLinksTitle);
+
+					extLinksWrapEl = anilist.helpers.createElement('div', { class: 'external-links-wrap' });
+					extLinksEl.append(extLinksWrapEl);
+
+					$('.sidebar').append(extLinksEl);
+				}
 
 				const malLink = anilist.helpers.createElement('a', {
 					[attrName]: '',
@@ -138,10 +189,9 @@
 					target: '_blank',
 					href: `https://myanimelist.net/${isAnime ? 'anime' : 'manga'}/${malID}/`
 				});
-
 				malLink.innerText = 'MyAnimeList';
 
-				extLinksEl.append(malLink);
+				extLinksWrapEl.append(malLink);
 			},
 
 			addMalScore() {
@@ -163,7 +213,6 @@
 					class: 'type'
 				});
 
-
 				malScoreHeader.innerText = 'MyAnimeList Score';
 
 				const malScoreValue = anilist.helpers.createElement('div', {
@@ -177,8 +226,14 @@
 
 				malScoreContainer.append(malScoreHeader, malScoreValue);
 
-				$('.data').append(malScoreContainer);
+				const dataNodes = Array.from($$('.data-set'));
+				const targetNode = dataNodes.find(el => /popularity/i.test(el.innerText));
 
+				if (targetNode) {
+					targetNode.before(malScoreContainer);
+				} else {
+					$('.data').append(malScoreContainer);
+				}
 			},
 
 			async displayCharacters(malID, isAnime = true) {
@@ -316,36 +371,58 @@
 						$('.characters').append(toggleCharacters);
 					}
 
-					$('.characters .link').remove(); // This is to remove the click listener
-					$('.characters .grid-wrap').insertAdjacentHTML('beforebegin', `
-						<h2 class="link">
-							<span class="character-header">Characters</span>
-							<span class="toggle"></span>
-						</h2>
+
+					$('.characters .link').innerHTML = "AniList Characters";
+					$('.characters .link').insertAdjacentHTML('afterend', `
+						<span class="character-header">MAL Characters</span>
+						<span class="toggle"></span>
 					`);
 
-					$('.characters .link .toggle').addEventListener('click', () => {
+					if ($('.characters .toggle') && $('.characters .switcher-holder') == null){
+						$('.characters .toggle').insertAdjacentHTML('afterend', `
+						<div class="switcher-holder"></div>
+					`);
+					}
+					
+					$('.characters .toggle').addEventListener('click', () => {
 						if ($('.characters').classList.contains('mal')) {
 							$('.characters').classList.remove('mal');
 							$('.characters .toggle').innerText = 'Switch to MyAnimeList';
-							$('.characters .character-header').innerText = 'AniList Characters';
+							$('.characters .character-header').style.display = 'none';
+							$('.characters .link').style.display = 'inline';
 							anilist.storage.set('activeCharacters', 'anilist');
 						} else {
 							$('.characters').classList.add('mal');
 							$('.characters .toggle').innerText = 'Switch to AniList';
-							$('.characters .character-header').innerText = 'MAL Characters';
+							$('.characters .character-header').style.display = 'inline';
+							$('.characters .link').style.display = 'none';
 							anilist.storage.set('activeCharacters', 'mal');
 						}
 					});
 
 					if (anilist.storage.get('activeCharacters') === 'anilist') {
 						$('.characters .toggle').innerText = 'Switch to MyAnimeList';
-						$('.characters .character-header').innerText = 'AniList Characters';
+						$('.characters .character-header').style.display = 'none';
+						$('.characters .link').style.display = 'inline';
 					} else {
 						$('.characters').classList.add('mal');
 						$('.characters .toggle').innerText = 'Switch to AniList';
-						$('.characters .character-header').innerText = 'MAL Characters';
+						$('.characters .character-header').style.display = 'inline';
+						$('.characters .link').style.display = 'none';
 					}
+				} catch (err) {
+					console.error(err);
+				}
+			},
+
+			displayStaffViewSwitcher(){
+				if ($('.staff .switcher-holder')) return;
+				if (!$('.staff .link')) return;
+
+				try {
+					$('.staff .link').insertAdjacentHTML('afterend', `
+						<div class="switcher-holder"></div>
+					`);
 				} catch (err) {
 					console.error(err);
 				}
@@ -377,7 +454,10 @@
 							[attrName]: '',
 							class: `tag ${index > 5 ? 'showmore hide' : ''}`
 						}, { marginBottom: '10px' });
-						opCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
+
+						opCard.innerText = song.includes('No opening themes')
+							? song.replace('Help improve our database by adding an opening theme here.', '') // This probably should not be displayed on anilist
+							: `#${parseInt(index, 10) + 1}: ${song.replace(/^(#)?\d+:/, '')}`;
 						opContainer.append(opCard);
 					}
 
@@ -432,7 +512,10 @@
 							[attrName]: '',
 							class: `tag ${index > 5 ? 'showmore hide' : ''}`
 						}, { marginBottom: '10px' });
-						edCard.innerText = `#${parseInt(index, 10) + 1}: ${song}`;
+
+						edCard.innerText = song.includes('No ending themes')
+							? song.replace('Help improve our database by adding an ending theme here.', '') // This probably should not be displayed on anilist
+							: `#${parseInt(index, 10) + 1}: ${song.replace(/^(#)?\d+:/, '')}`;
 						edContainer.append(edCard);
 					}
 
@@ -476,7 +559,7 @@
 			cleanUp() {
 				if ($('.characters')) $('.characters').classList.remove('mal');
 				if ($('.character-header')) $('.character-header').innerText = 'Characters';
-				const elements = $$('.MyAnimeList, .mal-score, .toggle, .grid-wrap.mal, #toggleCharacters, .openings, .endings');
+				const elements = $$('.MyAnimeList, .external-links-extras, .mal-score, .toggle, .grid-wrap.mal, #toggleCharacters, .openings, .endings');
 				for (const el of elements) el.remove();
 				this.currentData = null;
 			}
@@ -651,6 +734,151 @@
 
 		},
 
+		seasonal: {
+			running: false,
+
+			stopRunning() {
+				this.running = false;
+			},
+
+			init() {
+				if (this.running) return;
+
+				this.running = true;
+
+				this.addSeasonLink();
+
+				return this.stopRunning();
+			},
+
+			addSeasonLink() {
+				if (!$('.browse-wrap .dropdown .primary-links .secondary-links')) return;
+				if ($('.seasonal-anime')) return;
+ 
+				const linksEl = $('.secondary-links');
+				const attrName = $('.secondary-links > a').attributes[0].name;
+
+				// Create the new element and add to the dropdown
+				const link = anilist.helpers.createElement('a', {
+					class: 'seasonal-anime',
+					[attrName]: '',
+					href: '/search/anime/this-season',
+				}, { marginTop: '5px' });
+				link.innerText = "Seasonal"
+
+				linksEl.append(link);
+			}
+		},
+
+		reviewRatings: {
+			running: false,
+
+			stopRunning() {
+				this.running = false;
+			},
+
+			async init() {
+				if (this.running) return;
+
+				this.running = true;
+
+				await this.addReviewRatings();
+
+				return this.stopRunning();
+			},
+
+			async addReviewRatings() {
+				if(!$('.review-wrap')) return;
+
+				const reviews = $$('.review-wrap .review-card');
+				const isHome = /^\/home/i.test(window.location.pathname);
+				const reviewContainers = {};
+
+				for (const review of reviews) {
+					isHome && review.classList.add('is-home');
+					const content = review.querySelector('.content');
+					if (content.dataset['scoreFetched']) continue;
+
+					let reviewId = review.getAttribute('href') || content.getAttribute('href');
+					reviewId = reviewId.replace(/\D+/, ''), 10;
+					reviewContainers[reviewId] = content;
+				}
+
+				const reviewIds = Object.keys(reviewContainers);
+				
+				// Don't continue if theres nothing
+				if (!reviewIds.length) return;
+				
+				const reviewsData = await this.getReviews(reviewIds);
+
+				for (const reviewData of reviewsData) {
+					if (!reviewData) continue;
+
+					const { id: reivewId, score: reviewScore } = reviewData;
+
+					// We are marking the reviews as fetched to avoid fetching them again.
+					reviewContainers[reivewId].dataset['scoreFetched'] = true;
+
+					// The public api cannot fetch adult content without auth so it will return nothing
+					if (reviewScore === null) continue;
+
+					// Create holding div
+					const div = anilist.helpers.createElement('div', { class: 'review-score-container' });
+
+					// Create score p
+					const score = anilist.helpers.createElement('p', { class: 'review-score' });
+					score.innerText = reviewScore;
+
+					if (reviewScore < 35) {
+						score.style.background = "rgb(var(--color-red))";
+					} else if (reviewScore <= 65) {
+						score.style.background = "rgb(var(--color-orange))";
+					} else {
+						score.style.background = "rgb(var(--color-green))";
+					}
+
+					div.append(score);
+
+					reviewContainers[reivewId].append(div);
+				}
+			},
+
+			async getReviews(reviewIds) {
+				// This is a bit funky but trust me that it works.
+				const queries = reviewIds.map(r => `reivew_${r}: Page { reviews(id: ${r}) { id, score } }`);
+				const query = `{
+					${queries.join('\n')}
+				}`;
+
+				try {
+					const res = await anilist.helpers.request({
+						url: 'https://graphql.anilist.co',
+						method: 'POST',
+						headers: {
+							'content-type': 'application/json',
+							accept: 'application/json'
+						},
+						timeout: 5000,
+						data: JSON.stringify({
+							query,
+						})
+					});
+
+					const { data } = JSON.parse(res.response);
+
+					const reviews = Object.values(data).map(r => r.reviews[0]);
+					return reviewIds.map(rId => {
+						rId = parseInt(rId, 10);
+						const review = reviews.find(r => r && r.id === rId);
+						return review || { id: rId, score: null };
+					});
+				} catch (err) {
+					// console.error(err);
+				}
+			},
+
+		},
+
 		staff: {
 
 			running: false,
@@ -779,7 +1007,6 @@
 					});
 
 					container.append(viewSwitcher);
-
 				}
 
 				switch (anilist.storage.get('view')) {
@@ -940,7 +1167,14 @@
 			if (anilist.helpers.page(/^\/(anime|manga)\/\d+\/[\w\d-_]+(\/)?$/)) {
 
 				anilist.overview.init();
+			}
 
+			if (
+				anilist.helpers.page(/^\/(anime|manga)\/\d+\/[\w\d-_]+(\/reviews)?$/) ||
+				anilist.helpers.page(/^\/(home)?$/) ||
+				anilist.helpers.page(/\/(reviews)?$/)
+			) {
+				anilist.reviewRatings.init();
 			}
 
 			if (anilist.helpers.page(/^\/(anime|manga)\/.+\/characters$/)) {
@@ -961,6 +1195,7 @@
 
 			}
 
+			anilist.seasonal.init();
 		}
 
 	});
