@@ -157,18 +157,20 @@
 			addMalLink(malID, isAnime) {
 				if ($('.MyAnimeList') || !$('.sidebar')) return;
 
-				let extLinksEl = $('.external-links');
-				const attrEl = $('.external-links > a');
+				let extLinksWrapEl = $('.external-links .external-links-wrap');
+				const attrEl = $('.external-links .external-links-wrap > a');
 				let attrName;
+
+				console.log(attrEl);
 
 				if (attrEl) {
 					attrName = attrEl.attributes[0].name;
 				} else {
 					// Setting the "data-v-" attribute manually is not ideal as
 					// this could change in the future but it'll do for now.
-					attrName = 'data-v-1a2276d0';
+					attrName = 'data-v-7a1f9df8';
 
-					extLinksEl = anilist.helpers.createElement('div', {
+					const extLinksEl = anilist.helpers.createElement('div', {
 						[attrName]: '',
 						class: 'external-links external-links-extras'
 					});
@@ -176,6 +178,9 @@
 					const extLinksTitle = anilist.helpers.createElement('h2');
 					extLinksTitle.innerText = "External & Streaming links";
 					extLinksEl.append(extLinksTitle);
+
+					extLinksWrapEl = anilist.helpers.createElement('div', { class: 'external-links-wrap' });
+					extLinksEl.append(extLinksWrapEl);
 
 					$('.sidebar').append(extLinksEl);
 				}
@@ -188,7 +193,7 @@
 				});
 				malLink.innerText = 'MyAnimeList';
 
-				extLinksEl.append(malLink);
+				extLinksWrapEl.append(malLink);
 			},
 
 			addMalScore() {
