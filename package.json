@@ -11,9 +11,9 @@
 	"engines": {
 		"node": ">=8.0.0"
 	},
-	"devDependencies": {
-		"eslint": "^6.5.1",
-		"eslint-config-aqua": "^7.0.1"
+	"dependencies": {
+		"eslint": "^8.4.1",
+		"eslint-config-aqua": "^9.0.2"
 	},
 	"eslintConfig": {
 		"extends": [
@@ -25,15 +25,10 @@
 			"webextensions": true
 		},
 		"rules": {
-			"func-names": 0,
-			"capitalized-comments": 0,
-			"max-len": 0,
-			"id-length": 0,
-			"no-warning-comments": 0,
-			"no-throw-literal": 0,
-			"no-invalid-this": 0,
-			"no-console": 0,
-			"padded-blocks": 0,
+			"comma-dangle": [
+				"error",
+				"always-multiline"
+			],
 			"quote-props": 0
 		}
 	}
