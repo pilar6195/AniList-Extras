@@ -161,8 +161,6 @@
 				const attrEl = $('.external-links .external-links-wrap > a');
 				let attrName;
 
-				console.log(attrEl);
-
 				if (attrEl) {
 					attrName = attrEl.attributes[0].name;
 				} else {
