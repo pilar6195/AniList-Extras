@@ -14,8 +14,7 @@
 // @run-at       document-start
 // ==/UserScript==
 
-(function() { // eslint-disable-line wrap-iife
-
+(() => { // eslint-disable-line wrap-iife
 	'use strict'; // eslint-disable-line strict
 
 	/* eslint-disable */
@@ -170,11 +169,11 @@
 
 					const extLinksEl = anilist.helpers.createElement('div', {
 						[attrName]: '',
-						class: 'external-links external-links-extras'
+						class: 'external-links external-links-extras',
 					});
 
 					const extLinksTitle = anilist.helpers.createElement('h2');
-					extLinksTitle.innerText = "External & Streaming links";
+					extLinksTitle.innerText = 'External & Streaming links';
 					extLinksEl.append(extLinksTitle);
 
 					extLinksWrapEl = anilist.helpers.createElement('div', { class: 'external-links-wrap' });
@@ -187,7 +186,7 @@
 					[attrName]: '',
 					class: 'external-link MyAnimeList',
 					target: '_blank',
-					href: `https://myanimelist.net/${isAnime ? 'anime' : 'manga'}/${malID}/`
+					href: `https://myanimelist.net/${isAnime ? 'anime' : 'manga'}/${malID}/`,
 				});
 				malLink.innerText = 'MyAnimeList';
 
@@ -205,19 +204,19 @@
 
 				const malScoreContainer = anilist.helpers.createElement('div', {
 					[attrName]: '',
-					class: 'data-set mal-score'
+					class: 'data-set mal-score',
 				});
 
 				const malScoreHeader = anilist.helpers.createElement('div', {
 					[attrName]: '',
-					class: 'type'
+					class: 'type',
 				});
 
 				malScoreHeader.innerText = 'MyAnimeList Score';
 
 				const malScoreValue = anilist.helpers.createElement('div', {
 					[attrName]: '',
-					class: 'value'
+					class: 'value',
 				});
 
 				malScoreValue.innerText = this.currentData.score === null
@@ -242,7 +241,7 @@
 				try {
 					const res = await anilist.helpers.request({
 						url: `https://api.jikan.moe/v3/${isAnime ? 'anime' : 'manga'}/${malID}/${isAnime ? 'characters_staff' : 'characters'}`,
-						method: 'GET'
+						method: 'GET',
 					});
 
 					const characterData = JSON.parse(res.response);
@@ -266,24 +265,24 @@
 
 						const charCard = anilist.helpers.createElement('div', {
 							[attrName]: '',
-							class: `role-card view-character-staff ${index > 11 ? 'showmore hide' : ''}`
+							class: `role-card view-character-staff ${index > 11 ? 'showmore hide' : ''}`,
 						});
 
 						const charContainer = anilist.helpers.createElement('div', {
 							[attrName]: '',
-							class: 'character'
+							class: 'character',
 						});
 
 						const charCover = anilist.helpers.createElement('a', {
 							[attrName]: '',
 							href: character.url,
-							class: 'cover'
+							class: 'cover',
 						}, { backgroundImage: `url(${character.image_url})` });
 
 						const charContent = anilist.helpers.createElement('a', {
 							[attrName]: '',
 							href: character.url,
-							class: 'content'
+							class: 'content',
 						});
 
 						const charName = anilist.helpers.createElement('div', { [attrName]: '', class: 'name' });
@@ -306,19 +305,19 @@
 
 								const vaContainer = anilist.helpers.createElement('div', {
 									[attrName]: '',
-									class: 'staff'
+									class: 'staff',
 								});
 
 								const vaCover = anilist.helpers.createElement('a', {
 									[attrName]: '',
 									href: voiceActor.url,
-									class: 'cover'
+									class: 'cover',
 								}, { backgroundImage: `url(${imageUrl})` });
 
 								const vaContent = anilist.helpers.createElement('a', {
 									[attrName]: '',
 									href: voiceActor.url,
-									class: 'content'
+									class: 'content',
 								});
 
 								const vaName = anilist.helpers.createElement('div', { [attrName]: '', class: 'name' });
@@ -350,7 +349,7 @@
 
 						button.innerText = 'Show more';
 
-						button.addEventListener('click', function() {
+						button.addEventListener('click', function click() {
 							$$('.characters .showmore').forEach(a => {
 								if (this.dataset.visible === '0') {
 									a.classList.remove('hide');
@@ -372,18 +371,18 @@
 					}
 
 
-					$('.characters .link').innerHTML = "AniList Characters";
+					$('.characters .link').innerHTML = 'AniList Characters';
 					$('.characters .link').insertAdjacentHTML('afterend', `
 						<span class="character-header">MAL Characters</span>
 						<span class="toggle"></span>
 					`);
 
-					if ($('.characters .toggle') && $('.characters .switcher-holder') == null){
+					if ($('.characters .toggle') && $('.characters .switcher-holder') === null) {
 						$('.characters .toggle').insertAdjacentHTML('afterend', `
-						<div class="switcher-holder"></div>
-					`);
+							<div class="switcher-holder"></div>
+						`);
 					}
-					
+
 					$('.characters .toggle').addEventListener('click', () => {
 						if ($('.characters').classList.contains('mal')) {
 							$('.characters').classList.remove('mal');
@@ -415,7 +414,7 @@
 				}
 			},
 
-			displayStaffViewSwitcher(){
+			displayStaffViewSwitcher() {
 				if ($('.staff .switcher-holder')) return;
 				if (!$('.staff .link')) return;
 
@@ -452,7 +451,7 @@
 						const song = animeData.opening_themes[index];
 						const opCard = anilist.helpers.createElement('div', {
 							[attrName]: '',
-							class: `tag ${index > 5 ? 'showmore hide' : ''}`
+							class: `tag ${index > 5 ? 'showmore hide' : ''}`,
 						}, { marginBottom: '10px' });
 
 						opCard.innerText = song.includes('No opening themes')
@@ -467,7 +466,7 @@
 
 						button.innerText = 'Show more';
 
-						button.addEventListener('click', function() {
+						button.addEventListener('click', function click() {
 							$$('.openings .showmore').forEach(a => {
 								if (this.dataset.visible === '0') {
 									a.classList.remove('hide');
@@ -510,7 +509,7 @@
 						const song = animeData.ending_themes[index];
 						const edCard = anilist.helpers.createElement('div', {
 							[attrName]: '',
-							class: `tag ${index > 5 ? 'showmore hide' : ''}`
+							class: `tag ${index > 5 ? 'showmore hide' : ''}`,
 						}, { marginBottom: '10px' });
 
 						edCard.innerText = song.includes('No ending themes')
@@ -525,7 +524,7 @@
 
 						button.innerText = 'Show more';
 
-						button.addEventListener('click', function() {
+						button.addEventListener('click', function click() {
 							$$('.endings .showmore').forEach(a => {
 								if (this.dataset.visible === '0') {
 									a.classList.remove('hide');
@@ -562,7 +561,7 @@
 				const elements = $$('.MyAnimeList, .external-links-extras, .mal-score, .toggle, .grid-wrap.mal, #toggleCharacters, .openings, .endings');
 				for (const el of elements) el.remove();
 				this.currentData = null;
-			}
+			},
 
 		},
 
@@ -591,7 +590,7 @@
 				const header = anilist.helpers.createElement('h2', { class: 'character-header' }, { height: '16px' });
 
 				$('.grid-wrap').parentNode.insertBefore(header, $('.grid-wrap'));
-			}
+			},
 
 		},
 
@@ -606,7 +605,6 @@
 			},
 
 			async init() {
-
 				if (this.running) return;
 
 				if (!$('.user-social .filter-group span')) return;
@@ -622,7 +620,6 @@
 				await this.addTotalComments(userId);
 
 				return this.stopRunning();
-
 			},
 
 			async addTotalFollowing(userId) {
@@ -715,13 +712,13 @@
 						method: 'POST',
 						headers: {
 							'content-type': 'application/json',
-							accept: 'application/json'
+							accept: 'application/json',
 						},
 						timeout: 5000,
 						data: JSON.stringify({
 							query,
-							variables: { userId }
-						})
+							variables: { userId },
+						}),
 					});
 
 					const { data } = JSON.parse(res.response);
@@ -730,7 +727,7 @@
 				} catch (err) {
 					// console.error(err);
 				}
-			}
+			},
 
 		},
 
@@ -754,7 +751,7 @@
 			addSeasonLink() {
 				if (!$('.browse-wrap .dropdown .primary-links .secondary-links')) return;
 				if ($('.seasonal-anime')) return;
- 
+
 				const linksEl = $('.secondary-links');
 				const attrName = $('.secondary-links > a').attributes[0].name;
 
@@ -764,10 +761,10 @@
 					[attrName]: '',
 					href: '/search/anime/this-season',
 				}, { marginTop: '5px' });
-				link.innerText = "Seasonal"
+				link.innerText = 'Seasonal';
 
 				linksEl.append(link);
-			}
+			},
 		},
 
 		reviewRatings: {
@@ -788,7 +785,7 @@
 			},
 
 			async addReviewRatings() {
-				if(!$('.review-wrap')) return;
+				if (!$('.review-wrap')) return;
 
 				const reviews = $$('.review-wrap .review-card');
 				const isHome = /^\/home/i.test(window.location.pathname);
@@ -797,18 +794,18 @@
 				for (const review of reviews) {
 					isHome && review.classList.add('is-home');
 					const content = review.querySelector('.content');
-					if (content.dataset['scoreFetched']) continue;
+					if (content.dataset.scoreFetched) continue;
 
 					let reviewId = review.getAttribute('href') || content.getAttribute('href');
-					reviewId = reviewId.replace(/\D+/, ''), 10;
+					reviewId = reviewId.replace(/\D+/, '');
 					reviewContainers[reviewId] = content;
 				}
 
 				const reviewIds = Object.keys(reviewContainers);
-				
+
 				// Don't continue if theres nothing
 				if (!reviewIds.length) return;
-				
+
 				const reviewsData = await this.getReviews(reviewIds);
 
 				for (const reviewData of reviewsData) {
@@ -817,7 +814,7 @@
 					const { id: reivewId, score: reviewScore } = reviewData;
 
 					// We are marking the reviews as fetched to avoid fetching them again.
-					reviewContainers[reivewId].dataset['scoreFetched'] = true;
+					reviewContainers[reivewId].dataset.scoreFetched = true;
 
 					// The public api cannot fetch adult content without auth so it will return nothing
 					if (reviewScore === null) continue;
@@ -830,11 +827,11 @@
 					score.innerText = reviewScore;
 
 					if (reviewScore < 35) {
-						score.style.background = "rgb(var(--color-red))";
+						score.style.background = 'rgb(var(--color-red))';
 					} else if (reviewScore <= 65) {
-						score.style.background = "rgb(var(--color-orange))";
+						score.style.background = 'rgb(var(--color-orange))';
 					} else {
-						score.style.background = "rgb(var(--color-green))";
+						score.style.background = 'rgb(var(--color-green))';
 					}
 
 					div.append(score);
@@ -856,12 +853,12 @@
 						method: 'POST',
 						headers: {
 							'content-type': 'application/json',
-							accept: 'application/json'
+							accept: 'application/json',
 						},
 						timeout: 5000,
 						data: JSON.stringify({
 							query,
-						})
+						}),
 					});
 
 					const { data } = JSON.parse(res.response);
@@ -908,7 +905,7 @@
 				const header = anilist.helpers.createElement('h2', { class: 'header' }, { height: '16px' });
 
 				$('.grid-wrap').parentNode.insertBefore(header, $('.grid-wrap'));
-			}
+			},
 
 		},
 
@@ -931,13 +928,13 @@
 				const aniListLink = anilist.helpers.createElement('a', {
 					class: 'mal-anilist-link',
 					target: '_blank',
-					href: `https://anilist.co/${isAnime ? 'anime' : 'manga'}/${aniListID}/`
+					href: `https://anilist.co/${isAnime ? 'anime' : 'manga'}/${aniListID}/`,
 				});
 
 				aniListLink.innerText = 'AniList';
 
 				headerEl.append(aniListLink);
-			}
+			},
 
 		},
 
@@ -949,7 +946,6 @@
 				if (!containers.length || !$$(target).length) return;
 
 				for (const container of containers) {
-
 					const viewSwitcher = anilist.helpers.createElement('div', { class: 'view-switcher' });
 
 					// https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt
@@ -1058,12 +1054,12 @@
 					method: 'POST',
 					headers: {
 						'content-type': 'application/json',
-						accept: 'application/json'
+						accept: 'application/json',
 					},
 					data: JSON.stringify({
 						query,
-						variables: { [fromIDName]: fromID, type }
-					})
+						variables: { [fromIDName]: fromID, type },
+					}),
 				});
 
 				const { data } = JSON.parse(res.response);
@@ -1074,7 +1070,7 @@
 				try {
 					const res = await anilist.helpers.request({
 						url: `https://api.jikan.moe/v3/${isAnime ? 'anime' : 'manga'}/${malID}`,
-						method: 'GET'
+						method: 'GET',
 					});
 					return JSON.parse(res.response);
 				} catch (err) {
@@ -1084,7 +1080,6 @@
 			},
 
 			async getUserID(username) {
-
 				if (typeof username !== 'string') throw new Error('Missing username.');
 
 				username = username.toLowerCase();
@@ -1100,12 +1095,12 @@
 					method: 'POST',
 					headers: {
 						'content-type': 'application/json',
-						accept: 'application/json'
+						accept: 'application/json',
 					},
 					data: JSON.stringify({
 						query,
-						variables: { username }
-					})
+						variables: { username },
+					}),
 				});
 
 				const { data } = JSON.parse(res.response);
@@ -1138,7 +1133,7 @@
 
 			page(regex, href = false) {
 				return regex.test(href ? window.location.href : window.location.pathname);
-			}
+			},
 
 		},
 
@@ -1153,19 +1148,16 @@
 			set(key, value) {
 				this.data[key] = value;
 				localStorage.setItem('anilist-extras', JSON.stringify(this.data));
-			}
-		}
+			},
+		},
 
 	};
 
 	anilist.storage.init();
 
 	const observer = new MutationObserver(() => {
-
 		if (window.location.hostname === 'anilist.co') {
-
 			if (anilist.helpers.page(/^\/(anime|manga)\/\d+\/[\w\d-_]+(\/)?$/)) {
-
 				anilist.overview.init();
 			}
 
@@ -1178,43 +1170,29 @@
 			}
 
 			if (anilist.helpers.page(/^\/(anime|manga)\/.+\/characters$/)) {
-
 				anilist.characters.init();
-
 			}
 
 			if (anilist.helpers.page(/^(\/staff)|(\/(anime|manga)\/\d+\/.+\/staff$)/)) {
-
 				anilist.staff.init();
-
 			}
 
 			if (anilist.helpers.page(/^\/user\/.+\/social$/)) {
-
 				anilist.social.init();
-
 			}
 
 			anilist.seasonal.init();
 		}
-
 	});
 
 	observer.observe(document, { childList: true, subtree: true });
 
 	/* Not adding the anilist stuff here since it will be taken care of by the observer */
 	document.addEventListener('DOMContentLoaded', () => {
-
 		if (window.location.hostname === 'myanimelist.net') {
-
 			if (anilist.helpers.page(/^\/(anime|manga)/)) {
-
 				anilist.mal.init();
-
 			}
-
 		}
-
 	});
-
 })();
