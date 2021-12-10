@@ -44,15 +44,10 @@
 			font-size: 1.4rem;
 			font-weight: 500;
 		}
-		.characters .switcher-holder, .staff .switcher-holder, .staff .link{
+		.characters .link,
+		.staff .switcher-holder,
+		.staff .link {
 			display: inline;
-		}
-		.characters .toggle {
-			cursor: pointer;
-		}
-		.characters .link *,
-		.staff .link * {
-			pointer-events: all;
 		}
 		.view-switcher {
 			float: right;
@@ -146,7 +141,7 @@
 				if ($('.overview')) {
 					await this.displayCharacters(this.currentData.mal_id, isAnime);
 					this.displayStaffViewSwitcher();
-					anilist.helpers.addViewToggle('.characters .switcher-holder, .staff .switcher-holder', '.characters .grid-wrap, .staff .grid-wrap');
+					anilist.helpers.addViewToggle('.characters .link, .staff .switcher-holder', '.characters .grid-wrap, .staff .grid-wrap');
 					if (isAnime) await this.displayOpEd(this.currentData.mal_id);
 				}
 
@@ -333,6 +328,7 @@
 						charGrid.append(charCard);
 					}
 
+					// If the characters container does not exist we will create it.
 					if (!$('.characters')) {
 						const charContainer = anilist.helpers.createElement('div', { class: 'characters' }, { marginBottom: '30px' });
 						const charHeader = anilist.helpers.createElement('h2', { class: 'link' });
@@ -370,44 +366,37 @@
 						$('.characters').append(toggleCharacters);
 					}
 
+					$('.characters .link').innerText = '';
+					const characterLabel = anilist.helpers.createElement('span', { class: 'character-header' });
+					characterLabel.innerText = 'AniList Characters';
 
-					$('.characters .link').innerHTML = 'AniList Characters';
-					$('.characters .link').insertAdjacentHTML('afterend', `
-						<span class="character-header">MAL Characters</span>
-						<span class="toggle"></span>
-					`);
+					const characterToggle = anilist.helpers.createElement('span', { class: 'toggle' });
 
-					if ($('.characters .toggle') && $('.characters .switcher-holder') === null) {
-						$('.characters .toggle').insertAdjacentHTML('afterend', `
-							<div class="switcher-holder"></div>
-						`);
-					}
+					$('.characters .link').append(characterLabel, characterToggle);
 
-					$('.characters .toggle').addEventListener('click', () => {
+					$('.characters .link .toggle').addEventListener('click', event => {
 						if ($('.characters').classList.contains('mal')) {
 							$('.characters').classList.remove('mal');
 							$('.characters .toggle').innerText = 'Switch to MyAnimeList';
-							$('.characters .character-header').style.display = 'none';
-							$('.characters .link').style.display = 'inline';
+							$('.characters .character-header').innerText = 'AniList Characters';
 							anilist.storage.set('activeCharacters', 'anilist');
 						} else {
 							$('.characters').classList.add('mal');
 							$('.characters .toggle').innerText = 'Switch to AniList';
-							$('.characters .character-header').style.display = 'inline';
-							$('.characters .link').style.display = 'none';
+							$('.characters .character-header').innerText = 'MAL Characters';
 							anilist.storage.set('activeCharacters', 'mal');
 						}
+
+						event.stopPropagation();
 					});
 
 					if (anilist.storage.get('activeCharacters') === 'anilist') {
 						$('.characters .toggle').innerText = 'Switch to MyAnimeList';
-						$('.characters .character-header').style.display = 'none';
-						$('.characters .link').style.display = 'inline';
+						$('.characters .character-header').innerText = 'AniList Characters';
 					} else {
 						$('.characters').classList.add('mal');
 						$('.characters .toggle').innerText = 'Switch to AniList';
-						$('.characters .character-header').style.display = 'inline';
-						$('.characters .link').style.display = 'none';
+						$('.characters .character-header').innerText = 'MAL Characters';
 					}
 				} catch (err) {
 					console.error(err);
