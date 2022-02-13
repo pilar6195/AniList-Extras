@@ -100,9 +100,7 @@
 	const isUserscript = typeof GM_info !== 'undefined'; // eslint-disable-line
 
 	const anilist = {
-
 		overview: {
-
 			lastLocation: window.location.pathname,
 
 			running: false,
@@ -717,7 +715,6 @@
 					// console.error(err);
 				}
 			},
-
 		},
 
 		seasonal: {
@@ -862,11 +859,9 @@
 					// console.error(err);
 				}
 			},
-
 		},
 
 		staff: {
-
 			running: false,
 
 			stopRunning() {
@@ -895,11 +890,9 @@
 
 				$('.grid-wrap').parentNode.insertBefore(header, $('.grid-wrap'));
 			},
-
 		},
 
 		mal: {
-
 			async init() {
 				const isAnime = /^\/anime/.test(location.pathname);
 				const aniListID = await anilist.helpers.getAniListID(isAnime);
@@ -924,11 +917,9 @@
 
 				headerEl.append(aniListLink);
 			},
-
 		},
 
 		helpers: {
-
 			addViewToggle(containers, target) {
 				containers = $$(containers).filter(c => !c.querySelector('.view-switcher'));
 
@@ -1098,6 +1089,7 @@
 					return data.User.id;
 				}
 			},
+
 			request(options) {
 				return new Promise((resolve, reject) => {
 					options.onload = res => resolve(res);
@@ -1209,23 +1201,24 @@
 			page(regex, href = false) {
 				return regex.test(href ? window.location.href : window.location.pathname);
 			},
-
 		},
 
 		storage: {
 			data: {},
+
 			init() {
 				this.data = JSON.parse(localStorage.getItem('anilist-extras')) || {};
 			},
+
 			get(key) {
 				return this.data[key];
 			},
+
 			set(key, value) {
 				this.data[key] = value;
 				localStorage.setItem('anilist-extras', JSON.stringify(this.data));
 			},
 		},
-
 	};
 
 	anilist.storage.init();
