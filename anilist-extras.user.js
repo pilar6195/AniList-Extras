@@ -1107,6 +1107,92 @@
 				});
 			},
 
+			createCheckbox() {
+				const labelContainer = this.createElement('label', {
+					class: 'el-checkbox',
+				}, {
+					margin: '0 1.5rem 1.5rem 0',
+				});
+
+				const inputContainer = this.createElement('span', {
+					class: 'el-checkbox__input',
+				});
+
+				const inputInnerElement = this.createElement('span', {
+					class: 'el-checkbox__inner',
+				});
+
+				const inputElement = this.createElement('input', {
+					type: 'checkbox',
+					class: 'el-checkbox__original',
+				});
+
+				const labelElement = this.createElement('span', {
+					class: 'el-checkbox__label',
+				});
+
+				inputContainer.append(inputInnerElement, inputElement);
+				labelContainer.append(inputContainer, labelElement);
+
+				const checkbox = {
+					el: labelContainer,
+
+					elements: {
+						container: labelContainer,
+						input: inputElement,
+						label: labelContainer,
+					},
+
+					set label(label) {
+						labelElement.innerText = label;
+					},
+
+					get label() {
+						labelElement.innerText;
+					},
+
+					set checked(value) {
+						if (typeof value !== 'boolean') {
+							throw new Error('Expected boolean.');
+						}
+						labelContainer.classList[value ? 'add' : 'remove']('is-checked');
+						inputContainer.classList[value ? 'add' : 'remove']('is-checked');
+						inputElement.checked = value;
+					},
+
+					get checked() {
+						return inputElement.checked;
+					},
+
+					toggle() {
+						inputElement.checked = !inputElement.checked;
+						labelContainer.classList[inputElement.checked ? 'add' : 'remove']('is-checked');
+						inputContainer.classList[inputElement.checked ? 'add' : 'remove']('is-checked');
+					},
+
+					on(event, fn) {
+						inputElement.addEventListener(event, fn);
+					},
+
+					off(event, fn) {
+						inputElement.removeEventListener(event, fn);
+					},
+				};
+
+				labelContainer.addEventListener('click', event => {
+					checkbox.toggle();
+					const changeEvent = new CustomEvent('change', {
+						detail: {
+							checked: checkbox.checked,
+						},
+					});
+					inputElement.dispatchEvent(changeEvent);
+					event.preventDefault();
+				});
+
+				return checkbox;
+			},
+
 			createElement(tag, attrs, styles) {
 				const element = document.createElement(tag);
 				for (const aKey in attrs) {
