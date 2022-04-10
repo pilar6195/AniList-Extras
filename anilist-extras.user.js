@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         AniList Extras
 // @namespace    https://github.com/pilar6195
-// @version      1.2.0
+// @version      1.5.1
 // @description  Adds a few additional features to AniList.
 // @author       pilar6195
 // @match        https://anilist.co/*
@@ -158,7 +158,7 @@
 				} else {
 					// Setting the "data-v-" attribute manually is not ideal as
 					// this could change in the future but it'll do for now.
-					attrName = 'data-v-7a1f9df8';
+					attrName = 'data-v-c1b7ee7c';
 
 					const extLinksEl = anilist.helpers.createElement('div', {
 						[attrName]: '',
@@ -181,8 +181,28 @@
 					target: '_blank',
 					href: `https://myanimelist.net/${isAnime ? 'anime' : 'manga'}/${malID}/`,
 				});
-				malLink.innerText = 'MyAnimeList';
 
+				const malLinkImgContainer = anilist.helpers.createElement('div', {
+					[attrName]: '',
+					class: 'icon-wrap',
+				}, {
+					padding: 0,
+				});
+
+				const malLinkImg = anilist.helpers.createElement('img', {
+					[attrName]: '',
+					class: 'icon',
+					src: 'https://cdn.myanimelist.net/images/favicon.ico',
+				});
+				malLinkImgContainer.append(malLinkImg);
+
+				const malLinkText = anilist.helpers.createElement('div', {
+					[attrName]: '',
+					class: 'name',
+				});
+				malLinkText.innerText = 'MyAnimeList';
+
+				malLink.append(malLinkImgContainer, malLinkText);
 				extLinksWrapEl.append(malLink);
 			},
 
@@ -1147,6 +1167,15 @@
 						if (typeof value !== 'boolean') {
 							throw new Error('Expected boolean.');
 						}
+
+						// Only dispatch if the value was changed.
+						if (inputElement.checked !== value) {
+							const changeEvent = new CustomEvent('change', {
+								detail: { checked: inputElement.checked },
+							});
+							inputElement.dispatchEvent(changeEvent);
+						}
+
 						labelContainer.classList[value ? 'add' : 'remove']('is-checked');
 						inputContainer.classList[value ? 'add' : 'remove']('is-checked');
 						inputElement.checked = value;
@@ -1157,9 +1186,7 @@
 					},
 
 					toggle() {
-						inputElement.checked = !inputElement.checked;
-						labelContainer.classList[inputElement.checked ? 'add' : 'remove']('is-checked');
-						inputContainer.classList[inputElement.checked ? 'add' : 'remove']('is-checked');
+						this.checked = !this.checked;
 					},
 
 					on(event, fn) {
@@ -1173,12 +1200,6 @@
 
 				labelContainer.addEventListener('click', event => {
 					checkbox.toggle();
-					const changeEvent = new CustomEvent('change', {
-						detail: {
-							checked: checkbox.checked,
-						},
-					});
-					inputElement.dispatchEvent(changeEvent);
 					event.preventDefault();
 				});
 
