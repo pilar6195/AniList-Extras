@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         AniList Extras
 // @namespace    https://github.com/pilar6195
-// @version      1.5.1
+// @version      1.5.2
 // @description  Adds a few additional features to AniList.
 // @author       pilar6195
 // @match        https://anilist.co/*
@@ -255,13 +255,13 @@
 
 				try {
 					const res = await anilist.helpers.request({
-						url: `https://api.jikan.moe/v3/${isAnime ? 'anime' : 'manga'}/${malID}/${isAnime ? 'characters_staff' : 'characters'}`,
+						url: `https://api.jikan.moe/v4/${isAnime ? 'anime' : 'manga'}/${malID}/characters`,
 						method: 'GET',
 					});
 
-					const characterData = JSON.parse(res.response);
+					const characterData = (JSON.parse(res.response)).data;
 
-					if (!characterData.characters.length) return;
+					if (!characterData.length) return;
 
 					const attrEl = $('.overview > .characters .character')
 						? $('.overview > .characters .character')
@@ -273,10 +273,10 @@
 
 					const attrName = attrEl.attributes[0].name;
 
-					for (const index in characterData.characters) {
-						if (!Object.prototype.hasOwnProperty.call(characterData.characters, index)) continue;
+					for (const index in characterData) {
+						if (!Object.prototype.hasOwnProperty.call(characterData, index)) continue;
 
-						const character = characterData.characters[index];
+						const { character, voice_actors, role } = characterData[index];
 
 						const charCard = anilist.helpers.createElement('div', {
 							[attrName]: '',
@@ -292,7 +292,7 @@
 							[attrName]: '',
 							href: character.url,
 							class: 'cover',
-						}, { backgroundImage: `url(${character.image_url})` });
+						}, { backgroundImage: `url(${character.images.jpg.image_url})` });
 
 						const charContent = anilist.helpers.createElement('a', {
 							[attrName]: '',
@@ -304,20 +304,15 @@
 						const charRole = anilist.helpers.createElement('div', { [attrName]: '', class: 'role' });
 
 						charName.innerText = character.name;
-						charRole.innerText = character.role;
+						charRole.innerText = role;
 
 						charContent.append(charName, charRole);
 						charContainer.append(charCover, charContent);
 						charCard.append(charContainer);
 
 						if (isAnime) {
-							const voiceActor = character.voice_actors.find(va => va.language === 'Japanese');
+							const voiceActor = voice_actors.find(va => va.language === 'Japanese');
 							if (voiceActor) {
-								const something = voiceActor.image_url.match(/voiceactors\/(\d+\/\d+)/);
-								const imageUrl = something && something.length
-									? `https://cdn.myanimelist.net/images/voiceactors/${something[1]}.jpg`
-									: voiceActor.image_url;
-
 								const vaContainer = anilist.helpers.createElement('div', {
 									[attrName]: '',
 									class: 'staff',
@@ -325,19 +320,19 @@
 
 								const vaCover = anilist.helpers.createElement('a', {
 									[attrName]: '',
-									href: voiceActor.url,
+									href: voiceActor.person.url,
 									class: 'cover',
-								}, { backgroundImage: `url(${imageUrl})` });
+								}, { backgroundImage: `url(${voiceActor.person.images.jpg.image_url})` });
 
 								const vaContent = anilist.helpers.createElement('a', {
 									[attrName]: '',
-									href: voiceActor.url,
+									href: voiceActor.person.url,
 									class: 'content',
 								});
 
 								const vaName = anilist.helpers.createElement('div', { [attrName]: '', class: 'name' });
 
-								vaName.innerText = voiceActor.name;
+								vaName.innerText = voiceActor.person.name;
 
 								vaContent.append(vaName);
 								vaContainer.append(vaCover, vaContent);
@@ -359,7 +354,7 @@
 
 					$('.characters').append(charGrid);
 
-					if (characterData.characters.length > 12) {
+					if (characterData.length > 12) {
 						const toggleCharacters = anilist.helpers.createElement('div', { id: 'toggleCharacters' }, { marginTop: '10px', textAlign: 'center' });
 						const button = anilist.helpers.createElement('a', { href: 'javascript:void(0);', 'data-visible': '0' });
 
@@ -436,7 +431,7 @@
 				}
 			},
 
-			displayOpEd() {
+			async displayOpEd(malID) {
 				if ($('.openings')) return;
 
 				const attrEl = $('.sidebar > .tags .tag');
@@ -446,121 +441,130 @@
 
 				const attrName = attrEl.attributes[0].name;
 
-				const animeData = this.currentData;
+				try {
+					const res = await anilist.helpers.request({
+						url: `https://api.jikan.moe/v4/anime/${malID}/themes`,
+						method: 'GET',
+					});
 
-				if (!$('.openings') && animeData.opening_themes.length) {
-					const opContainer = anilist.helpers.createElement('div', { class: 'openings' }, { marginBottom: '30px' });
-					const opHeader = anilist.helpers.createElement('h2');
-					opHeader.innerText = 'Openings';
-					opContainer.append(opHeader);
+					const animeData = (JSON.parse(res.response)).data;
 
-					for (const index in animeData.opening_themes) {
-						if (!Object.prototype.hasOwnProperty.call(animeData.opening_themes, index)) continue;
+					if (!$('.openings') && animeData.openings.length) {
+						const opContainer = anilist.helpers.createElement('div', { class: 'openings' }, { marginBottom: '30px' });
+						const opHeader = anilist.helpers.createElement('h2');
+						opHeader.innerText = 'Openings';
+						opContainer.append(opHeader);
 
-						const song = animeData.opening_themes[index];
-						const opCard = anilist.helpers.createElement('div', {
-							[attrName]: '',
-							class: `tag ${index > 5 ? 'showmore hide' : ''}`,
-						}, { marginBottom: '10px' });
+						for (const index in animeData.openings) {
+							if (!Object.prototype.hasOwnProperty.call(animeData.openings, index)) continue;
 
-						opCard.innerText = song.includes('No opening themes')
-							? song.replace('Help improve our database by adding an opening theme here.', '') // This probably should not be displayed on anilist
-							: `#${parseInt(index, 10) + 1}: ${song.replace(/^(#)?\d+:/, '')}`;
-						opContainer.append(opCard);
-					}
+							const song = animeData.openings[index];
+							const opCard = anilist.helpers.createElement('div', {
+								[attrName]: '',
+								class: `tag ${index > 5 ? 'showmore hide' : ''}`,
+							}, { marginBottom: '10px' });
 
-					if (animeData.opening_themes.length > 5) {
-						const toggleOpenings = anilist.helpers.createElement('div', {}, { textAlign: 'center' });
-						const button = anilist.helpers.createElement('a', { id: 'toggleOpenings', href: 'javascript:void(0);', 'data-visible': '0' });
+							opCard.innerText = song.includes('No opening themes')
+								? song.replace('Help improve our database by adding an opening theme here.', '') // This probably should not be displayed on anilist
+								: `#${parseInt(index, 10) + 1}: ${song.replace(/^(#)?\d+:/, '')}`;
+							opContainer.append(opCard);
+						}
 
-						button.innerText = 'Show more';
+						if (animeData.openings.length > 5) {
+							const toggleOpenings = anilist.helpers.createElement('div', {}, { textAlign: 'center' });
+							const button = anilist.helpers.createElement('a', { id: 'toggleOpenings', href: 'javascript:void(0);', 'data-visible': '0' });
 
-						button.addEventListener('click', function click() {
-							$$('.openings .showmore').forEach(a => {
+							button.innerText = 'Show more';
+
+							button.addEventListener('click', function click() {
+								$$('.openings .showmore').forEach(a => {
+									if (this.dataset.visible === '0') {
+										a.classList.remove('hide');
+									} else {
+										a.classList.add('hide');
+									}
+								});
 								if (this.dataset.visible === '0') {
-									a.classList.remove('hide');
+									this.dataset.visible = '1';
+									this.innerText = 'Hide';
 								} else {
-									a.classList.add('hide');
+									this.dataset.visible = '0';
+									this.innerText = 'Show more';
 								}
 							});
-							if (this.dataset.visible === '0') {
-								this.dataset.visible = '1';
-								this.innerText = 'Hide';
-							} else {
-								this.dataset.visible = '0';
-								this.innerText = 'Show more';
-							}
-						});
 
-						toggleOpenings.append(button);
-						opContainer.append(toggleOpenings);
+							toggleOpenings.append(button);
+							opContainer.append(toggleOpenings);
+						}
+
+						if (target.classList.contains('staff')) {
+							target.parentNode.insertBefore(opContainer, target);
+						} else {
+							target.parentNode.insertBefore(opContainer, target.nextSibling);
+						}
 					}
 
-					if (target.classList.contains('staff')) {
-						target.parentNode.insertBefore(opContainer, target);
-					} else {
-						target.parentNode.insertBefore(opContainer, target.nextSibling);
-					}
-				}
+					/* == == */
 
-				/* == == */
+					if (!$('.endings') && animeData.endings.length) {
+						const edContainer = anilist.helpers.createElement('div', { class: 'endings' }, { marginBottom: '30px' });
+						const edHeader = anilist.helpers.createElement('h2');
 
-				if (!$('.endings') && animeData.ending_themes.length) {
-					const edContainer = anilist.helpers.createElement('div', { class: 'endings' }, { marginBottom: '30px' });
-					const edHeader = anilist.helpers.createElement('h2');
+						edHeader.innerText = 'Endings';
+						edContainer.append(edHeader);
 
-					edHeader.innerText = 'Endings';
-					edContainer.append(edHeader);
+						for (const index in animeData.endings) {
+							if (!Object.prototype.hasOwnProperty.call(animeData.endings, index)) continue;
 
-					for (const index in animeData.ending_themes) {
-						if (!Object.prototype.hasOwnProperty.call(animeData.ending_themes, index)) continue;
+							const song = animeData.endings[index];
+							const edCard = anilist.helpers.createElement('div', {
+								[attrName]: '',
+								class: `tag ${index > 5 ? 'showmore hide' : ''}`,
+							}, { marginBottom: '10px' });
 
-						const song = animeData.ending_themes[index];
-						const edCard = anilist.helpers.createElement('div', {
-							[attrName]: '',
-							class: `tag ${index > 5 ? 'showmore hide' : ''}`,
-						}, { marginBottom: '10px' });
+							edCard.innerText = song.includes('No ending themes')
+								? song.replace('Help improve our database by adding an ending theme here.', '') // This probably should not be displayed on anilist
+								: `#${parseInt(index, 10) + 1}: ${song.replace(/^(#)?\d+:/, '')}`;
+							edContainer.append(edCard);
+						}
 
-						edCard.innerText = song.includes('No ending themes')
-							? song.replace('Help improve our database by adding an ending theme here.', '') // This probably should not be displayed on anilist
-							: `#${parseInt(index, 10) + 1}: ${song.replace(/^(#)?\d+:/, '')}`;
-						edContainer.append(edCard);
-					}
+						if (animeData.endings.length > 5) {
+							const toggleEndings = anilist.helpers.createElement('div', {}, { textAlign: 'center' });
+							const button = anilist.helpers.createElement('a', { id: 'toggleEndings', href: 'javascript:void(0);', 'data-visible': '0' });
 
-					if (animeData.ending_themes.length > 5) {
-						const toggleEndings = anilist.helpers.createElement('div', {}, { textAlign: 'center' });
-						const button = anilist.helpers.createElement('a', { id: 'toggleEndings', href: 'javascript:void(0);', 'data-visible': '0' });
+							button.innerText = 'Show more';
 
-						button.innerText = 'Show more';
-
-						button.addEventListener('click', function click() {
-							$$('.endings .showmore').forEach(a => {
+							button.addEventListener('click', function click() {
+								$$('.endings .showmore').forEach(a => {
+									if (this.dataset.visible === '0') {
+										a.classList.remove('hide');
+									} else {
+										a.classList.add('hide');
+									}
+								});
 								if (this.dataset.visible === '0') {
-									a.classList.remove('hide');
+									this.dataset.visible = '1';
+									this.innerText = 'Hide';
 								} else {
-									a.classList.add('hide');
+									this.dataset.visible = '0';
+									this.innerText = 'Show more';
 								}
 							});
-							if (this.dataset.visible === '0') {
-								this.dataset.visible = '1';
-								this.innerText = 'Hide';
-							} else {
-								this.dataset.visible = '0';
-								this.innerText = 'Show more';
-							}
-						});
 
-						toggleEndings.append(button);
-						edContainer.append(toggleEndings);
-					}
+							toggleEndings.append(button);
+							edContainer.append(toggleEndings);
+						}
 
-					if (target.classList.contains('staff')) {
-						target.parentNode.insertBefore(edContainer, target);
-					} else if ($('.openings')) {
-						$('.openings').parentNode.insertBefore(edContainer, $('.openings').nextSibling);
-					} else {
-						target.parentNode.insertBefore(edContainer, target.nextSibling);
+						if (target.classList.contains('staff')) {
+							target.parentNode.insertBefore(edContainer, target);
+						} else if ($('.openings')) {
+							$('.openings').parentNode.insertBefore(edContainer, $('.openings').nextSibling);
+						} else {
+							target.parentNode.insertBefore(edContainer, target.nextSibling);
+						}
 					}
+				} catch (err) {
+					console.error(err);
 				}
 			},
 
@@ -571,11 +575,9 @@
 				for (const el of elements) el.remove();
 				this.currentData = null;
 			},
-
 		},
 
 		characters: {
-
 			running: false,
 
 			stopRunning() {
@@ -1071,10 +1073,11 @@
 			async getMalData(malID, isAnime = true) {
 				try {
 					const res = await anilist.helpers.request({
-						url: `https://api.jikan.moe/v3/${isAnime ? 'anime' : 'manga'}/${malID}`,
+						url: `https://api.jikan.moe/v4/${isAnime ? 'anime' : 'manga'}/${malID}`,
 						method: 'GET',
 					});
-					return JSON.parse(res.response);
+					const { data } = JSON.parse(res.response);
+					return data;
 				} catch (err) {
 					console.error(err);
 					return null;
