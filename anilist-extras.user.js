@@ -180,6 +180,8 @@
 					class: 'external-link MyAnimeList',
 					target: '_blank',
 					href: `https://myanimelist.net/${isAnime ? 'anime' : 'manga'}/${malID}/`,
+				}, {
+					'--link-color': '#2d51a2',
 				});
 
 				const malLinkImgContainer = anilist.helpers.createElement('div', {
@@ -1214,6 +1216,7 @@
 				}
 				for (const sKey in styles) {
 					if (!Object.prototype.hasOwnProperty.call(styles, sKey)) continue;
+					element.style.setProperty(sKey, styles[sKey]);
 					element.style[sKey] = styles[sKey];
 				}
 				return element;
