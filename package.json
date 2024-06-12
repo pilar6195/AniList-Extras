@@ -1,35 +1,26 @@
 {
 	"name": "anilist-extras",
-	"version": "1.5.2",
+	"version": "2.0.0",
 	"description": "Adds a few additional features to AniList.",
 	"scripts": {
-		"test": "eslint ."
+		"build": "bun run build.ts",
+		"watch": "bun run build.ts --watch",
+		"watch:serve": "bun run build.ts --watch --serve"
 	},
 	"repository": "https://github.com/pilar6195/AniList-Extras.git",
 	"author": "pilar6195 (https://github.com/pilar6195)",
 	"license": "MIT",
-	"engines": {
-		"node": ">=8.0.0"
+	"dependencies": {
+		"archiver": "^7.0.1",
+		"chokidar": "^3.6.0",
+		"localforage": "^1.10.0"
 	},
 	"devDependencies": {
-		"eslint": "^8.4.1",
-		"eslint-config-aqua": "^9.0.2"
-	},
-	"eslintConfig": {
-		"extends": [
-			"aqua"
-		],
-		"env": {
-			"browser": true,
-			"es6": true,
-			"webextensions": true
-		},
-		"rules": {
-			"comma-dangle": [
-				"error",
-				"always-multiline"
-			],
-			"quote-props": 0
-		}
+		"@types/archiver": "^6.0.2",
+		"@types/bun": "latest",
+		"@types/tampermonkey": "^5.0.3",
+		"eslint": "^8.57.0",
+		"eslint-config-neon": "^0.1.62",
+		"typescript": "^5.4.5"
 	}
 }

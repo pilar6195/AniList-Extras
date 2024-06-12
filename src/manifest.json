@@ -1,0 +1,23 @@
+{
+	"manifest_version": 3,
+	"name": "AniList Extras (Unofficial)",
+	"description": "Adds a few additional features to AniList.",
+	"minimum_chrome_version": "80.0.3987",
+
+	"icons": {
+		"128": "icon128.png"
+	},
+
+	"host_permissions": [
+		"https://graphql.anilist.co/*",
+		"https://api.jikan.moe/*"
+	],
+
+	"content_scripts": [
+		{
+			"matches": ["https://anilist.co/*", "https://myanimelist.net/*"],
+			"js": ["anilist-extras.user.js"],
+			"run_at": "document_end"
+		}
+	]
+}
