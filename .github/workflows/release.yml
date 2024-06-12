@@ -23,14 +23,9 @@ jobs:
         name: Build
         run: bun run build
       -
-        name: Upload userscript artifact
-        uses: actions/upload-artifact@v4
+        name: Upload artifacts
+        uses: softprops/action-gh-release@v2
         with:
-          name: anilist-extras.user.js
-          path: dist/anilist-extras.user.js
-      -
-        name: Upload extension zip artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: anilist-extras.browser.zip
-          path: dist/anilist-extras.browser-*.zip
+          files: |
+            dist/anilist-extras.user.js
+            dist/anilist-extras.browser-*.zip
