@@ -4,7 +4,6 @@ import { observe, addStyles, getMalId } from './utils/Helpers';
 import { anilistModules, malModules } from './utils/ModuleLoader';
 
 /* Anilist Modules */
-import '@/modules/anilist/addABLink';
 import '@/modules/anilist/addMalLink';
 import '@/modules/anilist/addMalScore';
 import '@/modules/anilist/addAniListScore';
