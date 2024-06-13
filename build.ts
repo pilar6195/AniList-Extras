@@ -23,11 +23,10 @@ const header = `
 // ==/UserScript==
 `;
 
-async function build(minify = false) {
+async function build() {
 	const result = await Bun.build({
 		entrypoints: ['./src/anilist-extras.user.ts'],
 		target: 'browser',
-		minify,
 	});
 
 	if (!result.success) {
@@ -118,5 +117,5 @@ if (process.argv.includes('--watch')) {
 	}
 // Build once and exit
 } else {
-	void build(true);
+	void build();
 }
