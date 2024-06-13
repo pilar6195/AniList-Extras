@@ -69,6 +69,7 @@ const Cache = {
 
 	async dropDatabase() {
 		await localforage.dropInstance({ name: 'anilist-extras-cache' });
+		this.stores = {};
 	},
 };
 
