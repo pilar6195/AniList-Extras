@@ -28,14 +28,7 @@ registerModule.anilist({
 			if (!targetLoaded || !media?.malId) return;
 
 			// Fetch the character data from the Cache/API.
-			let characterData: MalCharacter[] = await Cache.get('mal-characters', media.malId.toString());
-
-			// We don't have the data in the cache, so we need to fetch it from the API.
-			if (!characterData) {
-				({ data: characterData } = await malApi(`${media.type}/${media.malId}/characters`) as MalCharactersResponse);
-
-				await Cache.set('mal-characters', media.malId.toString(), characterData, ONE_HOUR);
-			}
+			const { data: characterData } = await malApi(`${media.type}/${media.malId}/characters`, ONE_HOUR) as MalCharactersResponse;
 
 			// If we don't have any character data to work with we stop here.
 			if (!characterData.length) return;

@@ -1,4 +1,4 @@
-import { $, $$, waitFor, createElement, removeElements, getMalData } from '@/utils/Helpers';
+import { $, $$, waitFor, createElement, removeElements, malApi, ONE_HOUR } from '@/utils/Helpers';
 import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
@@ -15,7 +15,7 @@ registerModule.anilist({
 		if (!targetLoaded || !media?.malId) return;
 
 		// Fetch MAL data.
-		const malData = await getMalData(media.malId, media.type as 'anime' | 'manga');
+		const { data: malData } = await malApi(`${media.type}/${media.malId}`, ONE_HOUR) as MalAnimeResponse;
 
 		const attrName = $('.data-set')!.attributes[0].name;
 

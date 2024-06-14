@@ -220,9 +220,17 @@ export const anilistApi = async (query: string, variables?: Record<string, any>)
 };
 
 /**
- * Send a request to the Jikan API.
+ * Send a request to the Jikan API. Returns cached data if available.
  */
-export const malApi = async (path: string) => {
+export const malApi = async (path: string, cacheTime: number | false = ONE_HOUR) => {
+	if (cacheTime !== false) {
+		const cachedItem = await Cache.get('mal-api-response', path);
+
+		if (cachedItem) {
+			return cachedItem;
+		}
+	}
+
 	const response = await request(`https://api.jikan.moe/v4/${path}`);
 
 	if (response.status !== 200) {
@@ -232,6 +240,10 @@ export const malApi = async (path: string) => {
 	if (response.json.error) {
 		console.error(response.json);
 		throw new Error(response.json.error);
+	}
+
+	if (cacheTime !== false) {
+		await Cache.set('mal-api-response', path, response.json, cacheTime);
 	}
 
 	return response.json;
@@ -261,7 +273,7 @@ export const getUserId = async (username: string): Promise<number | undefined> =
 
 	if (!data.User) return;
 
-	// Cache id-username match for 10 minutes.
+	// Cache id-username match for 1 hour.
 	await Cache.set('userids-map', username, data.User.id, ONE_HOUR);
 
 	return data.User.id;
@@ -327,29 +339,6 @@ export const getAnilistId = async (malId: number | string, type: 'anime' | 'mang
  */
 export const getMalId = async (anilistId: number | string, type: 'anime' | 'manga') => {
 	return getId(anilistId, 'id', 'idMal', type);
-};
-
-/**
- * Get anime or manga data from MyAnimeList using the provided id.
- */
-export const getMalData = async (malId: number | string, type: 'anime' | 'manga') => {
-	try {
-		const cachedItem = await Cache.get('mal-data', malId.toString());
-
-		if (cachedItem) {
-			return cachedItem as MalAnimeResponse['data'];
-		}
-
-		const { data } = await malApi(`${type}/${malId}`) as MalAnimeResponse;
-
-		// Cache mal response for 1 hour.
-		await Cache.set('mal-data', malId.toString(), data, ONE_HOUR);
-
-		return data;
-	} catch (error) {
-		console.error(error);
-		throw new Error('Failed to fetch data.');
-	}
 };
 
 /**

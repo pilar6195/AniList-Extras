@@ -46,7 +46,7 @@ registerModule.anilist({
 
 			threadsCount = threadsData.Page.pageInfo.total;
 
-			await Cache.set('user-threads-count', userId.toString(), threadsCount, ONE_MINUTE);
+			await Cache.set('user-threads-count', userId.toString(), threadsCount, ONE_MINUTE * 5);
 		}
 
 		if (!threadCommentsCount) {
@@ -65,7 +65,7 @@ registerModule.anilist({
 
 			threadCommentsCount = threadCommentsData.Page.pageInfo.total;
 
-			await Cache.set('user-threadComments-count', userId.toString(), threadCommentsCount, ONE_MINUTE);
+			await Cache.set('user-threadComments-count', userId.toString(), threadCommentsCount, ONE_MINUTE * 5);
 		}
 
 		createElement('span', {

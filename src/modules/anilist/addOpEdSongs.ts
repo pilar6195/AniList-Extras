@@ -25,14 +25,7 @@ registerModule.anilist({
 		if (!targetLoaded || !media?.malId) return;
 
 		// Fetch the song data from the Cache/API.
-		let songData: MalAnimeThemes = await Cache.get('anime-songs', media.malId.toString());
-
-		// We don't have the data in the cache, so we need to fetch it from the API.
-		if (!songData) {
-			({ data: songData } = await malApi(`anime/${media.malId}/themes`) as MalAnimeThemesResponse);
-
-			await Cache.set('anime-songs', media.malId.toString(), songData, ONE_HOUR);
-		}
+		const { data: songData } = await malApi(`anime/${media.malId}/themes`, ONE_HOUR) as MalAnimeThemesResponse;
 
 		// Find an element we can snatch the required attributes for styling
 		const attrEl = $('.sidebar > .tags .tag');
