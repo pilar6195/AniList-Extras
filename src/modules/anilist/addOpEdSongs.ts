@@ -1,4 +1,3 @@
-import Cache from '@/utils/Cache';
 import {
 	$,
 	$$,
