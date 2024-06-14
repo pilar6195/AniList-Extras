@@ -36,7 +36,7 @@ async function build() {
 			console.error(log);
 		}
 
-		return;
+		process.exit(1);
 	}
 
 	/* Prepend userscript header to output */
