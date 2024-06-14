@@ -36,7 +36,11 @@ async function build() {
 			console.error(log);
 		}
 
-		process.exit(1);
+		if (process.argv.includes('--watch')) {
+			return;
+		} else {
+			process.exit(1);
+		}
 	}
 
 	/* Prepend userscript header to output */
