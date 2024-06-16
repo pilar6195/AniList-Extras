@@ -1,7 +1,7 @@
 import '@/utils/Polyfill';
 import '@/utils/Logs';
 import { observe, addStyles, getMalId } from './utils/Helpers';
-import { anilistModules, malModules } from './utils/ModuleLoader';
+import { anilistModules, malModules, ModuleEmitter, ModuleEvents } from './utils/ModuleLoader';
 
 /* Anilist Modules */
 import '@/modules/anilist/addMalLink';
@@ -46,6 +46,7 @@ addStyles(`
 /* eslint-disable promise/prefer-await-to-then */
 
 let currentPage: URL;
+const activeModules = new Set<string>();
 
 if (location.host === 'anilist.co') {
 	observe(document.body, async () => {
@@ -56,7 +57,7 @@ if (location.host === 'anilist.co') {
 			console.log('Navigated:', currentPage.href);
 
 			// Media data to send to the modules when available.
-			const media: ModuleLoadParams['media'] = {
+			const media: AnilistModuleLoadParams['media'] = {
 				type: (/^\/(anime|manga)\/\d+/.exec(location.pathname))?.[1],
 				id: (/^\/(?:anime|manga)\/(\d+)/.exec(location.pathname))?.[1],
 				malId: false,
@@ -72,20 +73,62 @@ if (location.host === 'anilist.co') {
 			for (const module of anilistModules) {
 				if (module.disabled) continue;
 
-				if (typeof module.unload === 'function' && previousPage && module.validate(previousPage)) {
-					module.unload({ currentPage, previousPage });
-					console.log('Unloaded:', module.id);
-				}
+				// This is inside a iife so modules don't delay each other.
+				// eslint-disable-next-line @typescript-eslint/no-loop-func
+				(async (media) => {
+					try {
+						if (typeof module.unload === 'function' && activeModules.has(module.id)) {
+							const unloadStartTime = performance.now();
+							let shouldUnload = true;
 
-				if (module.validate(currentPage)) {
-					const startTime = performance.now();
-					module.load({ currentPage, media })
-						.then(() => {
-							const endTime = performance.now();
-							console.log(`Loaded: "${module.id}" in ${(endTime - startTime).toFixed(2)}ms`);
-						})
-						.catch(error => console.error('Module load error:', module.id, error));
-				}
+							if (typeof module.validateUnload === 'function') {
+								shouldUnload = module.validateUnload({ currentPage, previousPage });
+							}
+
+							if (shouldUnload) {
+								await module.unload({ currentPage, previousPage });
+								const unloadEndTime = performance.now();
+								console.log(`Unloaded module: ${module.id} [${(unloadEndTime - unloadStartTime).toFixed(2)}ms]`);
+								ModuleEmitter.emit(ModuleEvents.Unload, module.id);
+								activeModules.delete(module.id);
+							}
+						} else if (activeModules.has(module.id)) {
+							// If there is no unload function, just remove it from
+							// the activeModules set so it can be reloaded.
+							activeModules.delete(module.id);
+						}
+					} catch (error: any) {
+						console.error('Module unload error:', module.id, error);
+						ModuleEmitter.emit(ModuleEvents.UnloadError, module.id, error);
+						activeModules.delete(module.id);
+					}
+
+					if (activeModules.has(module.id)) return;
+
+					const loadStartTime = performance.now();
+
+					try {
+						const shouldLoad = module.validate({ currentPage, previousPage, media });
+						if (!shouldLoad) return;
+						ModuleEmitter.emit(ModuleEvents.Validate, module.id);
+					} catch (error: any) {
+						console.error('Module validation error:', module.id, error);
+						ModuleEmitter.emit(ModuleEvents.ValidateError, module.id, error);
+						return;
+					}
+
+					try {
+						await module.load({ currentPage, previousPage, media });
+						const loadEndTime = performance.now();
+						console.log(`Loaded module: ${module.id} [${(loadEndTime - loadStartTime).toFixed(2)}ms]`);
+						ModuleEmitter.emit(ModuleEvents.Load, module.id);
+					} catch (error: any) {
+						console.error('Module error:', module.id, error);
+						ModuleEmitter.emit(ModuleEvents.LoadError, module.id, error);
+					} finally {
+						activeModules.add(module.id);
+					}
+				})(media);
 			}
 		}
 	});
@@ -99,14 +142,31 @@ if (location.host === 'myanimelist.net') {
 	for (const module of malModules) {
 		if (module.disabled) continue;
 
-		if (module.validate(currentPage)) {
+		// eslint-disable-next-line @typescript-eslint/no-loop-func
+		(async () => {
 			const startTime = performance.now();
-			module.load({})
-				.then(() => {
-					const endTime = performance.now();
-					console.log(`Loaded: "${module.id}" in ${(endTime - startTime).toFixed(2)}ms`);
-				})
-				.catch(error => console.error('Module load error:', module.id, error));
-		}
+
+			try {
+				const shouldLoad = module.validate(currentPage);
+				if (!shouldLoad) return;
+				ModuleEmitter.emit(ModuleEvents.Validate, module.id);
+			} catch (error: any) {
+				console.error('Module validation error:', module.id, error);
+				ModuleEmitter.emit(ModuleEvents.ValidateError, module.id, error);
+				return;
+			}
+
+			try {
+				await module.load();
+				const endTime = performance.now();
+				console.log(`Loaded module: ${module.id} in ${(endTime - startTime).toFixed(2)}ms`);
+				ModuleEmitter.emit(ModuleEvents.Load, module.id);
+			} catch (error: any) {
+				console.error('Module error:', module.id, error);
+				ModuleEmitter.emit(ModuleEvents.LoadError, module.id, error);
+			} finally {
+				activeModules.add(module.id);
+			}
+		})();
 	}
 }

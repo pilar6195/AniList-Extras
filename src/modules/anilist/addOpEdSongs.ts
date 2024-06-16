@@ -13,15 +13,15 @@ import { registerModule } from '@/utils/ModuleLoader';
 registerModule.anilist({
 	id: 'addOpEdSongs',
 
-	validate({ pathname }) {
-		return /^\/anime\/\d+\/.+\/$/.test(pathname);
+	validate({ currentPage }) {
+		return /^\/anime\/\d+\/.+\/$/.test(currentPage.pathname);
 	},
 
 	async load({ media }) {
 		const targetLoaded = await waitFor('.overview > .staff, .overview > .characters');
 
 		// If the target element or mal id is not found, return.
-		if (!targetLoaded || !media?.malId) return;
+		if (!targetLoaded || !media.malId) return;
 
 		// Fetch the song data from the Cache/API.
 		const { data: songData } = await malApi(`anime/${media.malId}/themes`, ONE_HOUR) as MalAnimeThemesResponse;

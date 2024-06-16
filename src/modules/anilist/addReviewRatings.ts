@@ -115,9 +115,9 @@ const processReviews = async () => {
 registerModule.anilist({
 	id: 'addReviewRatings',
 
-	validate({ pathname }) {
-		return pathname.startsWith('/home') || // Starts with /home. More than likely the user is on the homepage.
-				pathname.endsWith('/reviews'); // Ends with /reviews. Either on the overall reviews or anime reviews page.
+	validate({ currentPage }) {
+		return currentPage.pathname.startsWith('/home') || // Starts with /home. More than likely the user is on the homepage.
+				currentPage.pathname.endsWith('/reviews'); // Ends with /reviews. Either on the overall reviews or anime reviews page.
 	},
 
 	async load() {

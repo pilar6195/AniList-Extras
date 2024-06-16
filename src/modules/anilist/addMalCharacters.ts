@@ -15,8 +15,8 @@ import { registerModule } from '@/utils/ModuleLoader';
 registerModule.anilist({
 	id: 'addMalCharacters',
 
-	validate({ pathname }) {
-		return /^\/(anime|manga)\/\d+\/.+\/$/.test(pathname);
+	validate({ currentPage }) {
+		return /^\/(anime|manga)\/\d+\/.+\/$/.test(currentPage.pathname);
 	},
 
 	async load({ media }) {
@@ -24,7 +24,7 @@ registerModule.anilist({
 			const targetLoaded = await waitFor('.overview > .characters, .overview > .staff');
 
 			// If the target element or mal id is not found, return.
-			if (!targetLoaded || !media?.malId) return;
+			if (!targetLoaded || !media.malId) return;
 
 			// Fetch the character data from the Cache/API.
 			const { data: characterData } = await malApi(`${media.type}/${media.malId}/characters`, ONE_HOUR) as MalCharactersResponse;

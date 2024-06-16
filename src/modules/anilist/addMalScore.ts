@@ -4,15 +4,21 @@ import { registerModule } from '@/utils/ModuleLoader';
 registerModule.anilist({
 	id: 'addMalScore',
 
-	validate({ pathname }) {
-		return /^\/(anime|manga)\/\d+/.test(pathname);
+	validate({ currentPage }) {
+		return /^\/(anime|manga)\/\d+/.test(currentPage.pathname);
+	},
+
+	validateUnload({ currentPage, previousPage }) {
+		const match1 = (/\/((anime|manga)\/\d+)/i.exec(currentPage.pathname))?.[1];
+		const match2 = (/\/((anime|manga)\/\d+)/i.exec(previousPage.pathname))?.[1];
+		return match1 !== match2;
 	},
 
 	async load({ media }) {
 		const targetLoaded = await waitFor('.sidebar .data-set');
 
 		// If the target element or mal id is not found, return.
-		if (!targetLoaded || !media?.malId) return;
+		if (!targetLoaded || !media.malId) return;
 
 		// Fetch MAL data.
 		const { data: malData } = await malApi(`${media.type}/${media.malId}`, ONE_HOUR) as MalAnimeResponse;
@@ -52,6 +58,6 @@ registerModule.anilist({
 	},
 
 	unload() {
-		removeElements('.alextras--mal-score');
+		removeElements('.data-set.alextras--mal-score');
 	},
 });

@@ -4,8 +4,8 @@ import { registerModule } from '@/utils/ModuleLoader';
 registerModule.anilist({
 	id: 'addCharactersViewSwitch',
 
-	validate({ pathname }) {
-		return /^\/(anime|manga)\/\d+\/.+\/characters$/.test(pathname);
+	validate({ currentPage }) {
+		return /^\/(anime|manga)\/\d+\/.+\/characters$/.test(currentPage.pathname);
 	},
 
 	async load() {
@@ -33,8 +33,8 @@ registerModule.anilist({
 registerModule.anilist({
 	id: 'addStaffViewSwitch',
 
-	validate({ pathname }) {
-		return /^\/(anime|manga)\/\d+\/.+\/$/.test(pathname);
+	validate({ currentPage }) {
+		return /^\/(anime|manga)\/\d+\/.+\/$/.test(currentPage.pathname);
 	},
 
 	async load() {
@@ -50,8 +50,8 @@ registerModule.anilist({
 registerModule.anilist({
 	id: 'addStaffViewSwitch2',
 
-	validate({ pathname }) {
-		return /^\/(anime|manga)\/\d+\/.+\/staff$/.test(pathname);
+	validate({ currentPage }) {
+		return /^\/(anime|manga)\/\d+\/.+\/staff$/.test(currentPage.pathname);
 	},
 
 	async load() {

@@ -239,44 +239,67 @@ type MalCharacter = {
 	}[];
 };
 
-type ModuleLoadParams = {
-	currentPage?: URL;
-	media?: {
+type AnilistModuleLoadParams = {
+	currentPage: URL;
+	previousPage: URL | undefined;
+	media: {
 		type: string | undefined;
 		id: string | undefined;
 		malId: number | false;
 	};
 };
 
-type ModuleUnloadParams = {
+type AnilistModuleUnloadParams = {
 	currentPage: URL;
 	previousPage: URL;
 };
 
-type Module = {
+type BaseModule = {
 	/**
 	 * Unique identifier for the module.
 	 */
 	id: string;
-
 	/**
 	 * List of modules that this module depends on.
+	 * This will hold the execution of the module until all dependencies are loaded.
+	 * If all dependencies are not loaded within 10 seconds, the module will be skipped.
+	 *
+	 * This will probably never be implemented.
 	 */
 	dependsOn?: string[];
 	/**
 	 * Whether the module should be loaded or not.
 	 */
 	disabled?: boolean;
+};
+
+type AnilistModule = BaseModule & {
 	/**
-	 * Return truthy if the module should be loaded on the current page.
+	 * Return true if the module should be loaded on the current page.
+	 */
+	validate(params: AnilistModuleLoadParams): boolean;
+	/**
+	 * Return true if the module should be unloaded on the current page.
+	 */
+	validateUnload?(params: AnilistModuleUnloadParams): boolean;
+	/**
+	 * Code to run when the module is loaded.
+	 */
+	load(params: AnilistModuleLoadParams): Promise<void> | void;
+	/**
+	 * Code to run when the module is unloaded. Good for cleaning up.
+	 * Provide the validateUnload method if you want to conditionally unload the module.
+	 */
+	unload?(params: AnilistModuleUnloadParams): Promise<void> | void;
+};
+
+type MalModule = BaseModule & {
+	/**
+	 * Return true if the module should be loaded on the current page.
 	 */
 	validate(url: URL): boolean;
 	/**
 	 * Code to run when the module is loaded.
 	 */
-	load(params: ModuleLoadParams): Promise<void>;
-	/**
-	 * Code to run when the module is unloaded.
-	 */
-	unload?(params: ModuleUnloadParams): void;
+	load(): Promise<void> | void;
 };

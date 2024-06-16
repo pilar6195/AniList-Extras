@@ -5,8 +5,8 @@ import { registerModule } from '@/utils/ModuleLoader';
 registerModule.anilist({
 	id: 'addSocialsFollowsCount',
 
-	validate({ pathname }) {
-		return /^\/user\/.+\/social$/.test(pathname);
+	validate({ currentPage }) {
+		return /^\/user\/.+\/social$/.test(currentPage.pathname);
 	},
 
 	async load() {

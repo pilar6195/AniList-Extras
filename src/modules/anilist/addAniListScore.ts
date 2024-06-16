@@ -2,10 +2,16 @@ import { $, $$, waitFor, createElement, removeElements } from '@/utils/Helpers';
 import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
-	id: 'addAnilistScoreRanking',
+	id: 'addAnilistScore',
 
-	validate({ pathname }) {
-		return /^\/(anime|manga)\/\d+/.test(pathname);
+	validate({ currentPage }) {
+		return /^\/(anime|manga)\/\d+/.test(currentPage.pathname);
+	},
+
+	validateUnload({ currentPage, previousPage }) {
+		const match1 = (/\/((anime|manga)\/\d+)/i.exec(currentPage.pathname))?.[1];
+		const match2 = (/\/((anime|manga)\/\d+)/i.exec(previousPage.pathname))?.[1];
+		return match1 !== match2;
 	},
 
 	async load() {
@@ -24,8 +30,8 @@ registerModule.anilist({
 
 		// In some cases this element may exist. We will wait/check to see if it
 		// does and if not we will create it ourselves.
-		if (await waitFor('a.ranking', 500)) {
-			const attrEl = $('a.ranking');
+		if (await waitFor('.rankings .ranking', 100)) {
+			const attrEl = $('.rankings .ranking');
 			attrName = attrEl!.attributes[0].name;
 		} else {
 			// Setting the "data-v-" attribute manually is not ideal as
