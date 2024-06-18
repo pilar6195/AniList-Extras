@@ -138,10 +138,6 @@ registerModule.anilist({
 							continue;
 						}
 
-						case 'select': {
-							continue;
-						}
-
 						case 'number': {
 							const input = createInput({
 								type: 'number',
@@ -221,6 +217,10 @@ registerModule.anilist({
 								appendTo: moduleBody,
 							});
 
+							continue;
+						}
+
+						case 'select': {
 							continue;
 						}
 					}

@@ -5,7 +5,7 @@ import { registerModule } from '@/utils/ModuleLoader';
 registerModule.anilist({
 	id: 'addSocialsFollowsCount',
 	name: 'Followers/Following Count',
-	description: 'Add the number of followers/following to the user social page.',
+	description: 'Adds the number of followers/following to the user social page.',
 	togglable: true,
 
 	validate({ currentPage }) {

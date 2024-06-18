@@ -4,7 +4,7 @@ import { registerModule } from '@/utils/ModuleLoader';
 registerModule.anilist({
 	id: 'addMalScore',
 	name: 'MyAnimeList Score',
-	description: 'Add the MyAnimeList score to the sidebar on anime/manga pages.',
+	description: 'Adds the MyAnimeList score to the sidebar on anime/manga pages.',
 	togglable: true,
 
 	validate({ currentPage }) {
