@@ -114,6 +114,9 @@ const processReviews = async () => {
 
 registerModule.anilist({
 	id: 'addReviewRatings',
+	name: 'Review Ratings',
+	description: 'Adds the review ratings to the review cards on the homepage and review pages.',
+	togglable: true,
 
 	validate({ currentPage }) {
 		return currentPage.pathname.startsWith('/home') || // Starts with /home. More than likely the user is on the homepage.

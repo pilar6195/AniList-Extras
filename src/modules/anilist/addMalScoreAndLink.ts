@@ -3,6 +3,9 @@ import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addMalScoreAndLink',
+	name: 'MyAnimeList Score & Link',
+	description: 'Add the MyAnimeList score and link above the sidebar on anime/manga pages.',
+	togglable: true,
 
 	validate({ currentPage }) {
 		return /^\/(anime|manga)\/\d+/.test(currentPage.pathname);

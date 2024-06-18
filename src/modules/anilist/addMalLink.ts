@@ -3,6 +3,9 @@ import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addMalLink',
+	name: 'MyAnimeList Link',
+	description: 'Add a link to MyAnimeList on anime/manga pages.',
+	togglable: true,
 
 	validate({ currentPage }) {
 		return /\/(anime|manga)\/\d+/.test(currentPage.pathname);

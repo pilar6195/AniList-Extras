@@ -254,34 +254,78 @@ type AnilistModuleUnloadParams = {
 	previousPage: URL;
 };
 
+type ModuleSettingBase = {
+	label: string;
+	description?: string;
+};
+
+type ModuleSettingCheckbox = ModuleSettingBase & {
+	type: 'checkbox';
+	default: boolean;
+};
+
+type ModuleSettingNumber = ModuleSettingBase & {
+	type: 'number';
+	default: number;
+};
+
+type ModuleSettingSelect = ModuleSettingBase & {
+	type: 'select';
+	options: Record<string, string>;
+	default: string;
+};
+
+type ModuleSettingText = ModuleSettingBase & {
+	type: 'text' | 'textarea';
+	default: string;
+};
+
 type BaseModule = {
 	/**
 	 * Unique identifier for the module.
 	 */
 	id: string;
 	/**
+	 * Name of the module.
+	 */
+	name?: string,
+	/**
+	 * Description of the module.
+	 */
+	description?: string;
+	/**
+	 * Whether the module can be toggled on/off.
+	 */
+	togglable?: boolean;
+	/**
+	 * Options that will appear in the settings menu.
+	 */
+	settingsPage?: {
+		[key: string]: ModuleSettingCheckbox | ModuleSettingNumber | ModuleSettingSelect | ModuleSettingText;
+	}
+	/**
+	 * Whether the module is disabled by default.
+	 */
+	disabledDefault?: boolean;
+	/**
 	 * List of modules that this module depends on.
 	 * This will hold the execution of the module until all dependencies are loaded.
 	 * If all dependencies are not loaded within 10 seconds, the module will be skipped.
 	 *
-	 * This will probably never be implemented.
+	 * This is not currently implemented.
 	 */
 	dependsOn?: string[];
-	/**
-	 * Whether the module should be loaded or not.
-	 */
-	disabled?: boolean;
 };
 
 type AnilistModule = BaseModule & {
 	/**
 	 * Return true if the module should be loaded on the current page.
 	 */
-	validate(params: AnilistModuleLoadParams): boolean;
+	validate(params: AnilistModuleLoadParams): Promise<boolean> | boolean;
 	/**
 	 * Return true if the module should be unloaded on the current page.
 	 */
-	validateUnload?(params: AnilistModuleUnloadParams): boolean;
+	validateUnload?(params: AnilistModuleUnloadParams): Promise<boolean> | boolean;
 	/**
 	 * Code to run when the module is loaded.
 	 */
@@ -290,14 +334,14 @@ type AnilistModule = BaseModule & {
 	 * Code to run when the module is unloaded. Good for cleaning up.
 	 * Provide the validateUnload method if you want to conditionally unload the module.
 	 */
-	unload?(params: AnilistModuleUnloadParams): Promise<void> | void;
+	unload?(params?: AnilistModuleUnloadParams): Promise<void> | void;
 };
 
 type MalModule = BaseModule & {
 	/**
 	 * Return true if the module should be loaded on the current page.
 	 */
-	validate(url: URL): boolean;
+	validate(url: URL): Promise<boolean> | boolean;
 	/**
 	 * Code to run when the module is loaded.
 	 */

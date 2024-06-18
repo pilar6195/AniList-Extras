@@ -4,6 +4,9 @@ import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addSocialsFollowsCount',
+	name: 'Followers/Following Count',
+	description: 'Add the number of followers/following to the user social page.',
+	togglable: true,
 
 	validate({ currentPage }) {
 		return /^\/user\/.+\/social$/.test(currentPage.pathname);

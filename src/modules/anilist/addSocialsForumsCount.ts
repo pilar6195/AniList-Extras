@@ -4,6 +4,9 @@ import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addSocialsForumsCount',
+	name: 'Forums Threads/Comments Count',
+	description: 'Add the number of threads/comments to the user social page.',
+	togglable: true,
 
 	validate({ currentPage }) {
 		return /^\/user\/.+\/social$/.test(currentPage.pathname);

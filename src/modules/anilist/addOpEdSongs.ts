@@ -12,6 +12,9 @@ import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addOpEdSongs',
+	name: 'Opening/Ending Songs',
+	description: 'Adds opening/ending song data from MyAnimeList on anime/manga pages.',
+	togglable: true,
 
 	validate({ currentPage }) {
 		return /^\/anime\/\d+\/.+\/$/.test(currentPage.pathname);

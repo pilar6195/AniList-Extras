@@ -1,12 +1,20 @@
-import { $, waitFor, createElement } from '@/utils/Helpers';
+import { $, waitFor, createElement, removeElements } from '@/utils/Helpers';
 import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addSeasonLink',
+	name: 'Seasonal Link',
+	description: 'Add a link to the seasonal anime page in the browse dropdown in the navbar.',
+	togglable: true,
 
 	validate() {
 		// Load on any page assuming we haven't already created the element.
 		return !$('.alextras--seasonal-anime');
+	},
+
+	validateUnload() {
+		// We don't need to unload this module.
+		return false;
 	},
 
 	async load() {
@@ -29,5 +37,10 @@ registerModule.anilist({
 			textContent: 'Seasonal',
 			appendTo: $('.secondary-links')!,
 		});
+	},
+
+	// We only have this so we can remove the element when the module is disabled.
+	unload() {
+		removeElements('.alextras--seasonal-anime');
 	},
 });

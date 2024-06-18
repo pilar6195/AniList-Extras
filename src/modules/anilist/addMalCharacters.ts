@@ -14,6 +14,9 @@ import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addMalCharacters',
+	name: 'MAL Characters',
+	description: 'Adds character data from MyAnimeList on anime/manga pages.',
+	togglable: true,
 
 	validate({ currentPage }) {
 		return /^\/(anime|manga)\/\d+\/.+\/$/.test(currentPage.pathname);

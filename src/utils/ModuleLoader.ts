@@ -1,4 +1,6 @@
-import EventEmitter from '@/utils/EventEmitter';
+/* eslint-disable sonarjs/no-empty-collection */
+import Storage from './Storage';
+import EventEmitter from './EventEmitter';
 
 export const ModuleEvents = {
 	Register: 'module:register',
@@ -30,9 +32,28 @@ export const ModuleEmitter: {
 	once<T extends ModuleEvents>(event: T, listener: (...args: ModuleEventArguments[T]) => void): void;
 } = new EventEmitter();
 
-export const anilistModules: AnilistModule[] = [];
+type ModuleToggles = {
+	disabled: boolean;
+	enable(): void;
+	disable(): Promise<void>;
+};
 
-export const malModules: MalModule[] = [];
+export const anilistModules: (AnilistModule & ModuleToggles)[] = [];
+
+export const malModules: (MalModule & ModuleToggles)[] = [];
+
+export const activeModules = new Set<string>();
+
+export const getModule = {
+	anilist(id: string) {
+		return anilistModules.find(m => m.id === id);
+	},
+	mal(id: string) {
+		return malModules.find(m => m.id === id);
+	},
+};
+
+const moduleStates: Record<string, boolean> = Storage.get('moduleStates', {});
 
 export const registerModule = {
 	anilist(module: AnilistModule) {
@@ -41,7 +62,44 @@ export const registerModule = {
 			return;
 		}
 
-		anilistModules.push(module);
+		const disableModule = typeof moduleStates[module.id] === 'boolean'
+			? !moduleStates[module.id]
+			: module.disabledDefault ?? false;
+
+		anilistModules.push({
+			togglable: false,
+			...module,
+			disabled: disableModule,
+			enable() {
+				if (!this.disabled) return;
+				this.disabled = false;
+				moduleStates[this.id] = true;
+				Storage.set('moduleStates', moduleStates);
+			},
+			async disable() {
+				if (this.disabled) return;
+				this.disabled = true;
+				moduleStates[this.id] = false;
+				Storage.set('moduleStates', moduleStates);
+
+				// Unload the module if it is currently active.
+				if (typeof module.unload === 'function' && activeModules.has(module.id)) {
+					try {
+						const unloadStartTime = performance.now();
+						await module.unload();
+						const unloadEndTime = performance.now();
+						console.log(`Unloaded module: ${module.id} [${(unloadEndTime - unloadStartTime).toFixed(2)}ms]`);
+						activeModules.delete(module.id);
+						ModuleEmitter.emit(ModuleEvents.Unload, module.id);
+					} catch (error: any) {
+						console.error('Module unload error:', module.id, error);
+						activeModules.delete(module.id);
+						ModuleEmitter.emit(ModuleEvents.UnloadError, module.id, error);
+					}
+				}
+			},
+		});
+
 		ModuleEmitter.emit(ModuleEvents.Register, module.id);
 	},
 	mal(module: MalModule) {
@@ -50,7 +108,26 @@ export const registerModule = {
 			return;
 		}
 
-		malModules.push(module);
+		const disableModule = typeof moduleStates[module.id] === 'boolean'
+			? moduleStates[module.id]
+			: module.disabledDefault ?? false;
+
+		malModules.push({
+			togglable: false,
+			...module,
+			disabled: disableModule,
+			enable() {
+				this.disabled = false;
+				moduleStates[this.id] = false;
+				Storage.set('moduleStates', moduleStates);
+			},
+			async disable() {
+				this.disabled = true;
+				moduleStates[this.id] = true;
+				Storage.set('moduleStates', moduleStates);
+			},
+		});
+
 		ModuleEmitter.emit(ModuleEvents.Register, module.id);
 	},
 };

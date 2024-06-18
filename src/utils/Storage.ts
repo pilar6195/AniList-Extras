@@ -1,8 +1,12 @@
-const data = JSON.parse(localStorage.getItem('anilist-extras') ?? '{}');
+let data = JSON.parse(localStorage.getItem('anilist-extras') ?? '{}');
 
 export default {
-	get(key: string) {
-		return data[key];
+	get(key: string, defaultValue?: any) {
+		return data[key] ?? defaultValue;
+	},
+
+	getAll() {
+		return data;
 	},
 
 	set(key: string, value: any) {
@@ -14,5 +18,10 @@ export default {
 		// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
 		delete data[key];
 		localStorage.setItem('anilist-extras', JSON.stringify(data));
+	},
+
+	clear() {
+		data = {};
+		localStorage.removeItem('anilist-extras');
 	},
 };

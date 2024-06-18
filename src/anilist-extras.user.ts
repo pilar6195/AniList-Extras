@@ -1,9 +1,10 @@
 import '@/utils/Polyfill';
 import '@/utils/Logs';
 import { observe, addStyles, getMalId } from './utils/Helpers';
-import { anilistModules, malModules, ModuleEmitter, ModuleEvents } from './utils/ModuleLoader';
+import { anilistModules, malModules, activeModules, ModuleEmitter, ModuleEvents } from './utils/ModuleLoader';
 
 /* Anilist Modules */
+import '@/modules/anilist/settingsPage';
 import '@/modules/anilist/addMalLink';
 import '@/modules/anilist/addMalScore';
 import '@/modules/anilist/addAniListScore';
@@ -15,7 +16,6 @@ import '@/modules/anilist/addSocialsFollowsCount';
 import '@/modules/anilist/addSocialsForumsCount';
 import '@/modules/anilist/addReviewRatings';
 import '@/modules/anilist/addSeasonLink';
-import '@/modules/anilist/addClearCacheButton';
 
 /* Mal Modules */
 import '@/modules/mal/addAniListLink';
@@ -46,11 +46,13 @@ addStyles(`
 /* eslint-disable promise/prefer-await-to-then */
 
 let currentPage: URL;
-const activeModules = new Set<string>();
 
 if (location.host === 'anilist.co') {
+	let contextId: string;
+
 	observe(document.body, async () => {
 		if (location.href !== currentPage?.href) {
+			contextId = crypto.randomUUID();
 			const previousPage = currentPage;
 			currentPage = new URL(location.href); // Basically cloning the window.location object.
 
@@ -75,22 +77,22 @@ if (location.host === 'anilist.co') {
 
 				// This is inside a iife so modules don't delay each other.
 				// eslint-disable-next-line @typescript-eslint/no-loop-func
-				(async (media) => {
+				(async (media, currentContextId) => {
 					try {
 						if (typeof module.unload === 'function' && activeModules.has(module.id)) {
 							const unloadStartTime = performance.now();
 							let shouldUnload = true;
 
 							if (typeof module.validateUnload === 'function') {
-								shouldUnload = module.validateUnload({ currentPage, previousPage });
+								shouldUnload = await module.validateUnload({ currentPage, previousPage });
 							}
 
 							if (shouldUnload) {
 								await module.unload({ currentPage, previousPage });
 								const unloadEndTime = performance.now();
 								console.log(`Unloaded module: ${module.id} [${(unloadEndTime - unloadStartTime).toFixed(2)}ms]`);
-								ModuleEmitter.emit(ModuleEvents.Unload, module.id);
 								activeModules.delete(module.id);
+								ModuleEmitter.emit(ModuleEvents.Unload, module.id);
 							}
 						} else if (activeModules.has(module.id)) {
 							// If there is no unload function, just remove it from
@@ -99,8 +101,8 @@ if (location.host === 'anilist.co') {
 						}
 					} catch (error: any) {
 						console.error('Module unload error:', module.id, error);
-						ModuleEmitter.emit(ModuleEvents.UnloadError, module.id, error);
 						activeModules.delete(module.id);
+						ModuleEmitter.emit(ModuleEvents.UnloadError, module.id, error);
 					}
 
 					if (activeModules.has(module.id)) return;
@@ -108,7 +110,7 @@ if (location.host === 'anilist.co') {
 					const loadStartTime = performance.now();
 
 					try {
-						const shouldLoad = module.validate({ currentPage, previousPage, media });
+						const shouldLoad = await module.validate({ currentPage, previousPage, media });
 						if (!shouldLoad) return;
 						ModuleEmitter.emit(ModuleEvents.Validate, module.id);
 					} catch (error: any) {
@@ -117,18 +119,21 @@ if (location.host === 'anilist.co') {
 						return;
 					}
 
+					// If the contextId has changed, it means the user navigated.
+					if (currentContextId !== contextId) return;
+
 					try {
 						await module.load({ currentPage, previousPage, media });
 						const loadEndTime = performance.now();
 						console.log(`Loaded module: ${module.id} [${(loadEndTime - loadStartTime).toFixed(2)}ms]`);
+						activeModules.add(module.id);
 						ModuleEmitter.emit(ModuleEvents.Load, module.id);
 					} catch (error: any) {
 						console.error('Module error:', module.id, error);
+						activeModules.add(module.id); // Consider it loaded even if it errored.
 						ModuleEmitter.emit(ModuleEvents.LoadError, module.id, error);
-					} finally {
-						activeModules.add(module.id);
 					}
-				})(media);
+				})(media, contextId);
 			}
 		}
 	});
@@ -147,7 +152,7 @@ if (location.host === 'myanimelist.net') {
 			const startTime = performance.now();
 
 			try {
-				const shouldLoad = module.validate(currentPage);
+				const shouldLoad = await module.validate(currentPage);
 				if (!shouldLoad) return;
 				ModuleEmitter.emit(ModuleEvents.Validate, module.id);
 			} catch (error: any) {
@@ -160,12 +165,12 @@ if (location.host === 'myanimelist.net') {
 				await module.load();
 				const endTime = performance.now();
 				console.log(`Loaded module: ${module.id} in ${(endTime - startTime).toFixed(2)}ms`);
+				activeModules.add(module.id);
 				ModuleEmitter.emit(ModuleEvents.Load, module.id);
 			} catch (error: any) {
 				console.error('Module error:', module.id, error);
-				ModuleEmitter.emit(ModuleEvents.LoadError, module.id, error);
-			} finally {
 				activeModules.add(module.id);
+				ModuleEmitter.emit(ModuleEvents.LoadError, module.id, error);
 			}
 		})();
 	}

@@ -442,3 +442,215 @@ export const addViewToggle = (containers: string, targets: string) => {
 		}
 	}
 };
+
+export const createCheckbox = (options: {
+	checked?: boolean;
+	label?: string;
+	appendTo?: Element | HTMLElement;
+} = {}) => {
+	const {
+		checked = false,
+		label,
+		appendTo,
+	} = options;
+
+	const labelContainer = createElement('label', {
+		attributes: {
+			class: 'el-checkbox alextras--checkbox',
+		},
+		styles: {
+			margin: '0 1.5rem 1.5rem 0',
+		},
+	});
+
+	const inputContainer = createElement('span', {
+		attributes: {
+			class: 'el-checkbox__input',
+		},
+		appendTo: labelContainer,
+	});
+
+	createElement('span', {
+		attributes: {
+			class: 'el-checkbox__inner',
+		},
+		appendTo: inputContainer,
+	});
+
+	const inputElement = createElement('input', {
+		attributes: {
+			class: 'el-checkbox__original',
+		},
+		appendTo: inputContainer,
+	}) as HTMLInputElement;
+
+	const labelElement = createElement('span', {
+		attributes: {
+			class: 'el-checkbox__label',
+		},
+		appendTo: labelContainer,
+	});
+
+	const checkbox = {
+		element: labelContainer,
+
+		elements: {
+			container: labelContainer,
+			label: labelElement,
+			input: inputElement,
+		},
+
+		get label() {
+			return labelElement.textContent ?? '';
+		},
+
+		set label(label: string) {
+			labelElement.textContent = label;
+		},
+
+		get checked() {
+			return inputElement.checked;
+		},
+
+		set checked(value: boolean) {
+			if (typeof value !== 'boolean') {
+				throw new TypeError('Expected boolean.');
+			}
+
+			if (inputElement.checked === value) return;
+
+			labelContainer.classList[value ? 'add' : 'remove']('is-checked');
+			inputContainer.classList[value ? 'add' : 'remove']('is-checked');
+
+			inputElement.checked = value;
+			inputElement.dispatchEvent(new Event('change'));
+		},
+
+		toggle() {
+			this.checked = !this.checked;
+		},
+
+		on(event: string, cb: EventListenerOrEventListenerObject) {
+			inputElement.addEventListener(event, cb);
+		},
+
+		once(event: string, cb: EventListenerOrEventListenerObject) {
+			inputElement.addEventListener(event, cb, { once: true });
+		},
+
+		off(event: string, cb: EventListenerOrEventListenerObject) {
+			inputElement.removeEventListener(event, cb);
+		},
+	};
+
+	labelContainer.addEventListener('click', event => {
+		checkbox.toggle();
+		event.preventDefault();
+	});
+
+	checkbox.checked = checked;
+
+	if (label) {
+		checkbox.label = label;
+	}
+
+	if (appendTo instanceof HTMLElement) {
+		appendTo.append(labelContainer);
+	}
+
+	return checkbox;
+};
+
+export const createInput = (options: {
+	type?: 'number' | 'text';
+	label?: string;
+	placeholder?: string;
+	value?: number | string;
+	appendTo?: Element | HTMLElement;
+} = {}) => {
+	const {
+		label,
+		type = 'text',
+		placeholder = '',
+		value = '',
+		appendTo,
+	} = options;
+
+	const inputContainer = createElement('div', {
+		attributes: {
+			class: 'el-input alextras--input',
+		},
+		styles: {
+			margin: '0 1.5rem 1.5rem 0',
+			display: 'flex',
+			'flex-direction': 'column',
+		},
+	});
+
+	const labelContainer = createElement('h2', {
+		styles: {
+			'margin-bottom': '0.8rem',
+			'margin-left': '0.3em',
+		},
+		appendTo: inputContainer,
+	});
+
+	const inputElement = createElement('input', {
+		attributes: {
+			type,
+			placeholder,
+			class: 'el-input__inner',
+		},
+		appendTo: inputContainer,
+	}) as HTMLInputElement;
+
+	const input = {
+		element: inputContainer,
+
+		elements: {
+			container: inputContainer,
+			label: labelContainer,
+			input: inputElement,
+		},
+
+		get label() {
+			return labelContainer.textContent ?? '';
+		},
+
+		set label(label: string) {
+			labelContainer.textContent = label;
+		},
+
+		get value() {
+			return inputElement.value;
+		},
+
+		set value(value: string) {
+			inputElement.value = value;
+		},
+
+		on(event: string, cb: EventListenerOrEventListenerObject) {
+			inputElement.addEventListener(event, cb);
+		},
+
+		once(event: string, cb: EventListenerOrEventListenerObject) {
+			inputElement.addEventListener(event, cb, { once: true });
+		},
+
+		off(event: string, cb: EventListenerOrEventListenerObject) {
+			inputElement.removeEventListener(event, cb);
+		},
+	};
+
+	input.value = value.toString();
+
+	if (label) {
+		input.label = label;
+	}
+
+	if (appendTo instanceof HTMLElement) {
+		appendTo.append(inputContainer);
+	}
+
+	return input;
+};
