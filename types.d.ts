@@ -276,7 +276,7 @@ type ModuleSettingSelect = ModuleSettingBase & {
 };
 
 type ModuleSettingText = ModuleSettingBase & {
-	type: 'text' | 'textarea';
+	type: 'password' | 'text' | 'textarea';
 	default: string;
 };
 

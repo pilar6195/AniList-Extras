@@ -562,7 +562,7 @@ export const createCheckbox = (options: {
 };
 
 export const createInput = (options: {
-	type?: 'number' | 'text';
+	type?: 'number' | 'password' | 'text' | 'textarea';
 	label?: string;
 	placeholder?: string;
 	value?: number | string;
@@ -578,7 +578,9 @@ export const createInput = (options: {
 
 	const inputContainer = createElement('div', {
 		attributes: {
-			class: 'el-input alextras--input',
+			class: type === 'textarea'
+				? 'el-textarea alextras--textarea'
+				: 'el-input alextras--input',
 		},
 		styles: {
 			margin: '0 1.5rem 1.5rem 0',
@@ -590,16 +592,21 @@ export const createInput = (options: {
 	const labelContainer = createElement('h2', {
 		styles: {
 			'margin-bottom': '0.8rem',
-			'margin-left': '0.3em',
 		},
 		appendTo: inputContainer,
 	});
 
-	const inputElement = createElement('input', {
+	const inputElement = createElement(type === 'textarea' ? 'textarea' : 'input', {
 		attributes: {
 			type,
 			placeholder,
-			class: 'el-input__inner',
+			class: type === 'textarea'
+				? 'el-textarea__inner'
+				: 'el-input__inner',
+			autocomplete: 'off',
+		},
+		styles: {
+			background: 'rgba(var(--color-background), .6)',
 		},
 		appendTo: inputContainer,
 	}) as HTMLInputElement;

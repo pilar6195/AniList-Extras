@@ -169,9 +169,10 @@ registerModule.anilist({
 							continue;
 						}
 
+						case 'password':
 						case 'text': {
 							const input = createInput({
-								type: 'text',
+								type: setting.type,
 								label: setting.label,
 								value: savedSetting,
 							});
@@ -197,6 +198,29 @@ registerModule.anilist({
 						}
 
 						case 'textarea': {
+							const textarea = createInput({
+								type: 'textarea',
+								label: setting.label,
+								value: savedSetting,
+							});
+
+							textarea.on('change', (event) => {
+								const value = (event.target as HTMLInputElement).value;
+								ModuleSettings.set(key, value);
+							});
+
+							textarea.elements.input.style.height = '100px';
+
+							createElement('div', {
+								attributes: {
+									class: 'alextras--module-settings',
+								},
+								children: [
+									textarea.element,
+								],
+								appendTo: moduleBody,
+							});
+
 							continue;
 						}
 					}
@@ -257,7 +281,7 @@ addStyles(`
 		margin-top: 0.5em;
 	}
 	.alextras--module-body {
-		margin-top: 1em;
-		margin-bottom: 1em;
+		/* margin-top: 1em;
+		margin-bottom: 1em; */
 	}
 `);
