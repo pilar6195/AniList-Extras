@@ -21,6 +21,7 @@ const header = `
 // @grant        GM.xmlHttpRequest
 // @run-at       document-end
 // ==/UserScript==
+const ALEXTRAS_VERSION = '${packageJson.version}';
 `;
 
 async function build() {

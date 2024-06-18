@@ -1,3 +1,5 @@
+declare const ALEXTRAS_VERSION: string;
+
 type AnilistUserIdResponse = {
 	data: {
 		User: {
@@ -261,23 +263,23 @@ type ModuleSettingBase = {
 
 type ModuleSettingCheckbox = ModuleSettingBase & {
 	type: 'checkbox';
-	default: boolean;
+	default?: boolean;
 };
 
 type ModuleSettingNumber = ModuleSettingBase & {
 	type: 'number';
-	default: number;
+	default?: number;
 };
 
 type ModuleSettingSelect = ModuleSettingBase & {
 	type: 'select';
 	options: Record<string, string>;
-	default: string;
+	default?: string;
 };
 
 type ModuleSettingText = ModuleSettingBase & {
 	type: 'password' | 'text' | 'textarea';
-	default: string;
+	default?: string;
 };
 
 type BaseModule = {

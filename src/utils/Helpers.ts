@@ -443,23 +443,26 @@ export const addViewToggle = (containers: string, targets: string) => {
 	}
 };
 
+/**
+ * Create a checkbox input.
+ */
 export const createCheckbox = (options: {
-	checked?: boolean;
 	label?: string;
+	description?: string;
+	checked?: boolean;
 	appendTo?: Element | HTMLElement;
 } = {}) => {
 	const {
-		checked = false,
 		label,
+		description = '',
+		checked = false,
 		appendTo,
 	} = options;
 
 	const labelContainer = createElement('label', {
 		attributes: {
 			class: 'el-checkbox alextras--checkbox',
-		},
-		styles: {
-			margin: '0 1.5rem 1.5rem 0',
+			'data-tooltip': description,
 		},
 	});
 
@@ -484,10 +487,11 @@ export const createCheckbox = (options: {
 		appendTo: inputContainer,
 	}) as HTMLInputElement;
 
-	const labelElement = createElement('span', {
+	createElement('span', {
 		attributes: {
 			class: 'el-checkbox__label',
 		},
+		textContent: label,
 		appendTo: labelContainer,
 	});
 
@@ -496,16 +500,7 @@ export const createCheckbox = (options: {
 
 		elements: {
 			container: labelContainer,
-			label: labelElement,
 			input: inputElement,
-		},
-
-		get label() {
-			return labelElement.textContent ?? '';
-		},
-
-		set label(label: string) {
-			labelElement.textContent = label;
 		},
 
 		get checked() {
@@ -550,10 +545,6 @@ export const createCheckbox = (options: {
 
 	checkbox.checked = checked;
 
-	if (label) {
-		checkbox.label = label;
-	}
-
 	if (appendTo instanceof HTMLElement) {
 		appendTo.append(labelContainer);
 	}
@@ -561,71 +552,79 @@ export const createCheckbox = (options: {
 	return checkbox;
 };
 
+/**
+ * Create an input element.
+ */
 export const createInput = (options: {
-	type?: 'number' | 'password' | 'text' | 'textarea';
 	label?: string;
+	description?: string;
+	type?: 'number' | 'password' | 'text' | 'textarea';
 	placeholder?: string;
 	value?: number | string;
+	width?: string,
+	height?: string,
 	appendTo?: Element | HTMLElement;
 } = {}) => {
 	const {
 		label,
+		description,
 		type = 'text',
 		placeholder = '',
 		value = '',
+		width = '',
+		height = '',
 		appendTo,
 	} = options;
 
-	const inputContainer = createElement('div', {
+	const mainContainer = createElement('div', {
 		attributes: {
-			class: type === 'textarea'
-				? 'el-textarea alextras--textarea'
-				: 'el-input alextras--input',
+			class: type === 'textarea' ? 'alextras--textarea' : 'alextras--input',
 		},
 		styles: {
-			margin: '0 1.5rem 1.5rem 0',
 			display: 'flex',
 			'flex-direction': 'column',
 		},
 	});
 
-	const labelContainer = createElement('h2', {
-		styles: {
-			'margin-bottom': '0.8rem',
+	createElement('h2', {
+		textContent: label,
+		appendTo: mainContainer,
+	});
+
+	const inputContainer = createElement('div', {
+		attributes: {
+			class: type === 'textarea' ? 'el-textarea' : 'el-input',
 		},
-		appendTo: inputContainer,
+		appendTo: mainContainer,
 	});
 
 	const inputElement = createElement(type === 'textarea' ? 'textarea' : 'input', {
 		attributes: {
 			type,
 			placeholder,
-			class: type === 'textarea'
-				? 'el-textarea__inner'
-				: 'el-input__inner',
+			class: type === 'textarea' ? 'el-textarea__inner' : 'el-input__inner',
 			autocomplete: 'off',
 		},
 		styles: {
-			background: 'rgba(var(--color-background), .6)',
+			width,
+			height,
 		},
 		appendTo: inputContainer,
 	}) as HTMLInputElement;
 
+	if (description) {
+		createElement('h5', {
+			textContent: description,
+			appendTo: mainContainer,
+		});
+	}
+
 	const input = {
-		element: inputContainer,
+		element: mainContainer,
 
 		elements: {
-			container: inputContainer,
-			label: labelContainer,
+			container: mainContainer,
 			input: inputElement,
-		},
-
-		get label() {
-			return labelContainer.textContent ?? '';
-		},
-
-		set label(label: string) {
-			labelContainer.textContent = label;
 		},
 
 		get value() {
@@ -651,13 +650,177 @@ export const createInput = (options: {
 
 	input.value = value.toString();
 
-	if (label) {
-		input.label = label;
-	}
-
 	if (appendTo instanceof HTMLElement) {
-		appendTo.append(inputContainer);
+		appendTo.append(mainContainer);
 	}
 
 	return input;
 };
+
+/**
+ * Create a dropdown element.
+ */
+export const createDropdown = (options: {
+	label?: string;
+	description?: string;
+	options?: Record<string, string>;
+	selected?: string;
+	appendTo?: Element | HTMLElement;
+} = {}) => {
+	const {
+		label,
+		description,
+		options: optionsList = {},
+		selected = '',
+		appendTo,
+	} = options;
+
+	const mainContainer = createElement('div', {
+		attributes: {
+			class: 'alextras--dropdown',
+		},
+		styles: {
+			display: 'inline-flex',
+			'flex-direction': 'column',
+		},
+	});
+
+	createElement('h2', {
+		textContent: label,
+		appendTo: mainContainer,
+	});
+
+	const selectContainer = createElement('div', {
+		attributes: {
+			class: 'el-input',
+		},
+		appendTo: mainContainer,
+	});
+
+	const selectElement = createElement('select', {
+		attributes: {
+			class: 'el-input__inner',
+		},
+		children: [
+			createElement('option', {
+				attributes: {
+					value: '',
+				},
+				textContent: 'Select an option',
+			}),
+			...Object.entries(optionsList).map(([value, text]) => {
+				return createElement('option', {
+					attributes: {
+						value,
+					},
+					textContent: text,
+				});
+			}),
+		],
+		appendTo: selectContainer,
+	}) as HTMLInputElement;
+
+	if (description) {
+		createElement('h5', {
+			textContent: description,
+			appendTo: mainContainer,
+		});
+	}
+
+	const select = {
+		element: mainContainer,
+
+		elements: {
+			container: mainContainer,
+			input: selectElement,
+		},
+
+		get value() {
+			return selectElement.value;
+		},
+
+		set value(value: string) {
+			selectElement.value = value;
+		},
+
+		on(event: string, cb: EventListenerOrEventListenerObject) {
+			selectElement.addEventListener(event, cb);
+		},
+
+		once(event: string, cb: EventListenerOrEventListenerObject) {
+			selectElement.addEventListener(event, cb, { once: true });
+		},
+
+		off(event: string, cb: EventListenerOrEventListenerObject) {
+			selectElement.removeEventListener(event, cb);
+		},
+	};
+
+	select.value = selected.toString();
+
+	if (appendTo instanceof HTMLElement) {
+		appendTo.append(mainContainer);
+	}
+
+	return select;
+};
+
+// Add styles for the custom inputs.
+addStyles(`
+	/* Input Margins */
+
+	.alextras--checkbox,
+	.alextras--input,
+	.alextras--textarea,
+	.alextras--dropdown {
+		margin: 0 1.5rem 1.5rem 0;
+	}
+
+	/* Input Labels */
+	.alextras--textarea h2,
+	.alextras--input h2,
+	.alextras--dropdown h2 {
+		margin-bottom: 0.8rem;
+	}
+
+	/* Input Descriptions */
+	.alextras--textarea h5,
+	.alextras--input h5,
+	.alextras--dropdown h5 {
+		color: rgb(var(--color-text-light));
+		margin: 0.5em 0 0 0.2em;
+		font-size: 0.7em;
+	}
+
+	/* Input Backgrounds */
+
+	.alextras--dropdown .el-input__inner,
+	.alextras--textarea .el-textarea__inner,
+	.alextras--input .el-input__inner {
+		background: rgba(var(--color-background), .6);
+	}
+
+	/* Dropdown */
+
+	.alextras--dropdown .el-input {
+		width: max-content;
+	}
+
+	.alextras--dropdown .el-input__inner {
+		width: auto;
+		padding-right: 35px;
+	}
+
+	.alextras--dropdown .el-input:after {
+		content: "▾";
+		position: absolute;
+		right: 10px;
+		top: 9px;
+		font-size: 20px;
+		pointer-events: none;
+	}
+
+	.alextras--dropdown option {
+		background: rgba(var(--color-background));
+	}
+`);

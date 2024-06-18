@@ -1,7 +1,16 @@
 import Storage from '@/utils/Storage';
 import Cache from '@/utils/Cache';
 import SettingsManager from '@/utils/Settings';
-import { $, waitFor, createElement, removeElements, createCheckbox, createInput, addStyles } from '@/utils/Helpers';
+import {
+	$,
+	waitFor,
+	createElement,
+	removeElements,
+	createCheckbox,
+	createInput,
+	createDropdown,
+	addStyles,
+} from '@/utils/Helpers';
 import { registerModule, anilistModules } from '@/utils/ModuleLoader';
 
 // TODO: Fix styles for inputs. A lot of them aren't spaced properly.
@@ -27,11 +36,14 @@ registerModule.anilist({
 			children: [
 				createElement('hr'),
 				createElement('h3', {
+					attributes: {
+						class: 'alextras--settings-title',
+					},
 					textContent: 'AniList Extras Settings',
 				}),
 				createElement('p', {
-					styles: {
-						color: 'rgb(var(--color-text-light))',
+					attributes: {
+						class: 'alextras--settings-description',
 					},
 					textContent: 'Some settings may require a page refresh to take effect.',
 				}),
@@ -59,9 +71,6 @@ registerModule.anilist({
 					createElement('h5', {
 						attributes: {
 							class: 'alextras--module-description',
-						},
-						styles: {
-							color: 'rgb(var(--color-text-light))',
 						},
 						textContent: module.description,
 					}),
@@ -112,118 +121,98 @@ registerModule.anilist({
 					const ModuleSettings = new SettingsManager(module.id);
 					const savedSetting = ModuleSettings.get(key);
 
+					let optionElement: HTMLElement;
+
 					switch (setting.type) {
 						case 'checkbox': {
 							const checkbox = createCheckbox({
 								label: setting.label,
+								description: setting.description,
 								checked: savedSetting,
 								appendTo: moduleBody,
 							});
+
+							optionElement = checkbox.element;
 
 							checkbox.on('change', (event) => {
 								const checked = (event.target as HTMLInputElement).checked;
 								ModuleSettings.set(key, checked);
 							});
 
-							createElement('div', {
-								attributes: {
-									class: 'alextras--module-settings',
-								},
-								children: [
-									checkbox.element,
-								],
-								appendTo: moduleBody,
-							});
-
-							continue;
+							break;
 						}
 
-						case 'number': {
-							const input = createInput({
-								type: 'number',
-								label: setting.label,
-								value: savedSetting,
-							});
-
-							input.element.style.width = '20%';
-
-							input.on('change', (event) => {
-								const value = (event.target as HTMLInputElement).value;
-								ModuleSettings.set(key, Number.parseFloat(value));
-							});
-
-							createElement('div', {
-								attributes: {
-									class: 'alextras--module-settings',
-								},
-								children: [
-									input.element,
-								],
-								appendTo: moduleBody,
-							});
-
-							continue;
-						}
-
+						case 'number':
 						case 'password':
 						case 'text': {
 							const input = createInput({
 								type: setting.type,
 								label: setting.label,
+								description: setting.description,
 								value: savedSetting,
+								width: setting.type === 'number' ? '20%' : '40%',
 							});
+
+							optionElement = input.element;
 
 							input.on('change', (event) => {
 								const value = (event.target as HTMLInputElement).value;
-								ModuleSettings.set(key, value);
+								ModuleSettings.set(key, setting.type === 'number' ? Number.parseFloat(value) : value);
 							});
 
-							input.element.style.width = '40%';
-
-							createElement('div', {
-								attributes: {
-									class: 'alextras--module-settings',
-								},
-								children: [
-									input.element,
-								],
-								appendTo: moduleBody,
-							});
-
-							continue;
+							break;
 						}
 
 						case 'textarea': {
 							const textarea = createInput({
 								type: 'textarea',
 								label: setting.label,
+								description: setting.description,
 								value: savedSetting,
+								height: '100px',
 							});
 
+							optionElement = textarea.element;
+
 							textarea.on('change', (event) => {
-								const value = (event.target as HTMLInputElement).value;
+								const value = (event.target as HTMLTextAreaElement).value;
 								ModuleSettings.set(key, value);
 							});
 
-							textarea.elements.input.style.height = '100px';
-
-							createElement('div', {
-								attributes: {
-									class: 'alextras--module-settings',
-								},
-								children: [
-									textarea.element,
-								],
-								appendTo: moduleBody,
-							});
-
-							continue;
+							break;
 						}
 
 						case 'select': {
-							continue;
+							const select = createDropdown({
+								label: setting.label,
+								description: setting.description,
+								options: setting.options,
+								selected: savedSetting,
+							});
+
+							select.on('change', (event) => {
+								const value = (event.target as HTMLSelectElement).value;
+								ModuleSettings.set(key, value);
+							});
+
+							optionElement = select.element;
+
+							break;
+						}
+
+						default: {
+							// This should never happen. If it does, it's a developer error.
+							optionElement = createElement('div');
 						}
 					}
+
+					createElement('div', {
+						attributes: {
+							class: 'alextras--module-settings',
+						},
+						children: [optionElement],
+						appendTo: moduleBody,
+					});
 				}
 			}
 		}
@@ -261,6 +250,54 @@ registerModule.anilist({
 			],
 			appendTo: settingsContainer,
 		});
+
+		createElement('div', {
+			children: [
+				createElement('h4', {
+					textContent: 'AniList Extras Version: ',
+					children: [
+						createElement('a', {
+							attributes: {
+								href: `https://github.com/pilar6195/AniList-Extras/releases/tag/v${ALEXTRAS_VERSION}`,
+							},
+							styles: {
+								color: 'rgb(var(--color-blue))',
+							},
+							textContent: `v${ALEXTRAS_VERSION}`,
+						}),
+					],
+				}),
+				createElement('h4', {
+					textContent: 'Developed by: ',
+					children: [
+						createElement('a', {
+							attributes: {
+								href: 'https://github.com/pilar6195',
+							},
+							styles: {
+								color: 'rgb(var(--color-blue))',
+							},
+							textContent: 'pilar6195',
+						}),
+					],
+				}),
+				createElement('h4', {
+					textContent: 'Github: ',
+					children: [
+						createElement('a', {
+							attributes: {
+								href: 'https://github.com/pilar6195/AniList-Extras',
+							},
+							styles: {
+								color: 'rgb(var(--color-blue))',
+							},
+							textContent: 'https://github.com/pilar6195/AniList-Extras',
+						}),
+					],
+				}),
+			],
+			appendTo: settingsContainer,
+		});
 	},
 
 	unload() {
@@ -269,19 +306,22 @@ registerModule.anilist({
 });
 
 addStyles(`
+	.alextras--settings-description {
+		color: rgb(var(--color-text-light));
+	}
+
 	.alextras--module-title {
 		margin-top: 0.5em;
 		margin-bottom: 0.5em;
 	}
+
 	.alextras--module-missing-title:after {
 		content: '「 MISSING MODULE TITLE 」';
 		color: red;
 	}
+
 	.alextras--module-description {
+		color: rgb(var(--color-text-light));
 		margin-top: 0.5em;
-	}
-	.alextras--module-body {
-		/* margin-top: 1em;
-		margin-bottom: 1em; */
 	}
 `);
