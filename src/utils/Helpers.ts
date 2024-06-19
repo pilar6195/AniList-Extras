@@ -1003,11 +1003,12 @@ addStyles(`
 	/* Switch Label */
 
 	.alextras--switch .el-switch__label:not(.is-active) {
-		color: rgb(var(--color-text-light));
+		color: rgb(var(--color-text));
 	}
 
 	/* Input Descriptions */
 
+	.alextras--switch h5,
 	.alextras--checkbox h5,
 	.alextras--textarea h5,
 	.alextras--input h5,
@@ -1020,6 +1021,10 @@ addStyles(`
 
 	.alextras--checkbox h5 {
 		margin-left: 2.2em;
+	}
+
+	.alextras--switch h5 {
+		margin-left: 4.5em;
 	}
 
 	/* Input Backgrounds */

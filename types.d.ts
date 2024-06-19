@@ -266,6 +266,11 @@ type ModuleSettingCheckbox = ModuleSettingBase & {
 	default?: boolean;
 };
 
+type ModuleSettingSwitch = ModuleSettingBase & {
+	type: 'switch';
+	default?: boolean;
+};
+
 type ModuleSettingNumber = ModuleSettingBase & {
 	type: 'number';
 	min?: number;
@@ -305,7 +310,7 @@ type BaseModule = {
 	 * Options that will appear in the settings menu.
 	 */
 	settingsPage?: {
-		[key: string]: ModuleSettingCheckbox | ModuleSettingNumber | ModuleSettingSelect | ModuleSettingText;
+		[key: string]: ModuleSettingCheckbox | ModuleSettingNumber | ModuleSettingSelect | ModuleSettingSwitch | ModuleSettingText;
 	}
 	/**
 	 * Whether the module is disabled by default.

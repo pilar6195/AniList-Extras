@@ -243,6 +243,24 @@ registerModule.anilist({
 								break;
 							}
 
+							case 'switch': {
+								const switchToggle = createSwitch({
+									label: setting.label,
+									description: setting.description,
+									enabled: savedSetting,
+									appendTo: modelBody,
+								});
+
+								optionElement = switchToggle.element;
+
+								switchToggle.on('change', (event) => {
+									const checked = (event.target as HTMLInputElement).checked;
+									ModuleSettings.set(key, checked);
+								});
+
+								break;
+							}
+
 							case 'number': {
 								const input = createInput({
 									type: setting.type,
