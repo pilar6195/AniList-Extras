@@ -567,6 +567,123 @@ export const createCheckbox = (options: {
 	return checkbox;
 };
 
+/**
+ * Create a switch toggle.
+ */
+export const createSwitch = (options: {
+	label?: string;
+	description?: string;
+	enabled?: boolean;
+	appendTo?: Element | HTMLElement;
+} = {}) => {
+	const {
+		label,
+		description = '',
+		enabled = false,
+		appendTo,
+	} = options;
+
+	const mainContainer = createElement('div', {
+		attributes: {
+			class: 'alextras--switch',
+		},
+	});
+
+	const switchContainer = createElement('div', {
+		attributes: {
+			class: 'el-switch',
+		},
+		appendTo: mainContainer,
+	});
+
+	const inputElement = createElement('input', {
+		attributes: {
+			class: 'el-switch__input',
+		},
+		appendTo: switchContainer,
+	}) as HTMLInputElement;
+
+	createElement('span', {
+		attributes: {
+			class: 'el-switch__core',
+		},
+		appendTo: switchContainer,
+	});
+
+	const labelElement = createElement('span', {
+		attributes: {
+			class: 'el-switch__label el-switch__label--right',
+		},
+		textContent: label,
+		appendTo: switchContainer,
+	});
+
+	if (description) {
+		createElement('h5', {
+			textContent: description,
+			appendTo: mainContainer,
+		});
+	}
+
+	const switchToggle = {
+		element: mainContainer,
+
+		elements: {
+			container: mainContainer,
+			input: inputElement,
+		},
+
+		get enabled() {
+			return inputElement.checked;
+		},
+
+		set enabled(value: boolean) {
+			if (typeof value !== 'boolean') {
+				throw new TypeError('Expected boolean.');
+			}
+
+			if (inputElement.checked === value) return;
+
+			switchContainer.classList[value ? 'add' : 'remove']('is-checked');
+			switchContainer.classList[value ? 'add' : 'remove']('is-checked');
+			labelElement.classList[value ? 'add' : 'remove']('is-active');
+			labelElement.classList[value ? 'add' : 'remove']('is-active');
+
+			inputElement.checked = value;
+			inputElement.dispatchEvent(new Event('change'));
+		},
+
+		toggle() {
+			this.enabled = !this.enabled;
+		},
+
+		on(event: string, cb: EventListenerOrEventListenerObject) {
+			inputElement.addEventListener(event, cb);
+		},
+
+		once(event: string, cb: EventListenerOrEventListenerObject) {
+			inputElement.addEventListener(event, cb, { once: true });
+		},
+
+		off(event: string, cb: EventListenerOrEventListenerObject) {
+			inputElement.removeEventListener(event, cb);
+		},
+	};
+
+	switchContainer.addEventListener('click', event => {
+		switchToggle.toggle();
+		event.preventDefault();
+	});
+
+	switchToggle.enabled = enabled;
+
+	if (appendTo instanceof HTMLElement) {
+		appendTo.append(mainContainer);
+	}
+
+	return switchToggle;
+};
+
 type BaseInputOptions = {
 	label?: string;
 	description?: string;
@@ -706,7 +823,7 @@ export const createInput = (options: (InputOptions | NumberInputOptions) = {}) =
 
 	// We don't want the 1Password autofill to show up on these inputs.
 	// If there password managers that do the same thing we can add them here.
-	if (type ==='password') {
+	if (type === 'password') {
 		inputElement.dataset['1pIgnore'] = '';
 	}
 
@@ -867,6 +984,7 @@ export const createDropdown = (options: {
 addStyles(`
 	/* Input Margins */
 
+	.alextras--switch,
 	.alextras--checkbox,
 	.alextras--input,
 	.alextras--textarea,
@@ -880,6 +998,12 @@ addStyles(`
 	.alextras--input h2,
 	.alextras--dropdown h2 {
 		margin-bottom: 0.5em !important;
+	}
+
+	/* Switch Label */
+
+	.alextras--switch .el-switch__label:not(.is-active) {
+		color: rgb(var(--color-text-light));
 	}
 
 	/* Input Descriptions */

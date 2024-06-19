@@ -9,6 +9,7 @@ import {
 	createCheckbox,
 	createInput,
 	createDropdown,
+	createSwitch,
 	addStyles,
 } from '@/utils/Helpers';
 import { registerModule, anilistModules } from '@/utils/ModuleLoader';
@@ -93,12 +94,11 @@ registerModule.anilist({
 			/* Module Toggle */
 
 			if (module.togglable) {
-				const toggleModuleCheckbox = createCheckbox({
-					label: 'Enable',
-					checked: !module.disabled,
+				const toggleModuleSwitch = createSwitch({
+					enabled: !module.disabled,
 				});
 
-				toggleModuleCheckbox.on('change', async (event) => {
+				toggleModuleSwitch.on('change', async (event) => {
 					const checked = (event.target as HTMLInputElement).checked;
 
 					if (checked) {
@@ -113,7 +113,7 @@ registerModule.anilist({
 						class: 'alextras--module-setting',
 					},
 					children: [
-						toggleModuleCheckbox.element,
+						toggleModuleSwitch.element,
 					],
 					appendTo: moduleOptions,
 				});
@@ -471,7 +471,7 @@ addStyles(`
 		margin: 0 0 1em 0;
 	}
 
-	.alextras--module .alextras--checkbox {
+	.alextras--module .alextras--switch {
 		margin: 0;
 		float: left;
 	}
