@@ -1,11 +1,51 @@
 import { $, waitFor, createElement, addViewToggle } from '@/utils/Helpers';
-import { registerModule } from '@/utils/ModuleLoader';
+import { registerModule, getModule, activeModules } from '@/utils/ModuleLoader';
+
+// This is a dummy module that is used to add the setting for the view toggles.
+// We have to do this since this file consists of multiple modules and I don't
+// want each module have it's own section in the settings page.
+// This is a bit of a hack but it works.
+registerModule.anilist({
+	id: 'addViewToggles',
+	name: 'View Toggles',
+	description: 'Adds grid/list view toggles for characters and staff pages.',
+	togglable: true,
+	validate: () => false,
+	load() {},
+});
+
+const viewSwitchModule = getModule.anilist('addViewToggles')!;
 
 registerModule.anilist({
 	id: 'addCharactersViewSwitch',
 
 	validate({ currentPage }) {
-		return /^\/(anime|manga)\/\d+\/.+\/characters$/.test(currentPage.pathname);
+		return /^\/(anime|manga)\/\d+\/.+\/$/.test(currentPage.pathname)
+			&& !viewSwitchModule.disabled;
+	},
+
+	async load() {
+		const dependentModule = getModule.anilist('addMalCharacters');
+
+		if (dependentModule && !dependentModule.disabled) {
+			await waitFor(() => activeModules.has(dependentModule.id));
+		}
+
+		const targetLoaded = await waitFor('.characters .link');
+
+		// If the target element is not found, return.
+		if (!targetLoaded) return;
+
+		addViewToggle('.characters .link', '.characters .grid-wrap');
+	},
+});
+
+registerModule.anilist({
+	id: 'addCharactersViewSwitchCharPage',
+
+	validate({ currentPage }) {
+		return /^\/(anime|manga)\/\d+\/.+\/characters$/.test(currentPage.pathname)
+			&& !viewSwitchModule.disabled;
 	},
 
 	async load() {
@@ -34,7 +74,8 @@ registerModule.anilist({
 	id: 'addStaffViewSwitch',
 
 	validate({ currentPage }) {
-		return /^\/(anime|manga)\/\d+\/.+\/$/.test(currentPage.pathname);
+		return /^\/(anime|manga)\/\d+\/.+\/$/.test(currentPage.pathname)
+			&& !viewSwitchModule.disabled;
 	},
 
 	async load() {
@@ -48,10 +89,11 @@ registerModule.anilist({
 });
 
 registerModule.anilist({
-	id: 'addStaffViewSwitch2',
+	id: 'addStaffViewSwitchStaffPage',
 
 	validate({ currentPage }) {
-		return /^\/(anime|manga)\/\d+\/.+\/staff$/.test(currentPage.pathname);
+		return /^\/(anime|manga)\/\d+\/.+\/staff$/.test(currentPage.pathname)
+			&& !viewSwitchModule.disabled;
 	},
 
 	async load() {

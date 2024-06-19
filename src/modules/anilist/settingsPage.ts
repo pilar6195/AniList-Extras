@@ -311,8 +311,7 @@ addStyles(`
 	}
 
 	.alextras--module-title {
-		margin-top: 0.5em;
-		margin-bottom: 0.5em;
+		margin: 0 0 0.5em 0;
 	}
 
 	.alextras--module-missing-title:after {
@@ -322,6 +321,6 @@ addStyles(`
 
 	.alextras--module-description {
 		color: rgb(var(--color-text-light));
-		margin-top: 0.5em;
+		margin: 0 0 1em 0;
 	}
 `);

@@ -773,14 +773,14 @@ addStyles(`
 	.alextras--input,
 	.alextras--textarea,
 	.alextras--dropdown {
-		margin: 0 1.5rem 1.5rem 0;
+		margin: 0px 1em 1em 0;
 	}
 
 	/* Input Labels */
 	.alextras--textarea h2,
 	.alextras--input h2,
 	.alextras--dropdown h2 {
-		margin-bottom: 0.8rem;
+		margin-bottom: 0.5em !important;
 	}
 
 	/* Input Descriptions */
