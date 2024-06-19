@@ -55,6 +55,8 @@ export const createElement = (
 	if (typeof styles === 'object' && styles !== null) {
 		for (const [propertyName, value] of Object.entries(styles)) {
 			element.style.setProperty(propertyName, value);
+			// @ts-expect-error - Ignore the error for now.
+			element.style[propertyName] = value;
 		}
 	}
 
@@ -459,11 +461,17 @@ export const createCheckbox = (options: {
 		appendTo,
 	} = options;
 
+	const mainContainer = createElement('div', {
+		attributes: {
+			class: 'alextras--checkbox',
+		},
+	});
+
 	const labelContainer = createElement('label', {
 		attributes: {
-			class: 'el-checkbox alextras--checkbox',
-			'data-tooltip': description,
+			class: 'el-checkbox',
 		},
+		appendTo: mainContainer,
 	});
 
 	const inputContainer = createElement('span', {
@@ -495,11 +503,18 @@ export const createCheckbox = (options: {
 		appendTo: labelContainer,
 	});
 
+	if (description) {
+		createElement('h5', {
+			textContent: description,
+			appendTo: mainContainer,
+		});
+	}
+
 	const checkbox = {
-		element: labelContainer,
+		element: mainContainer,
 
 		elements: {
-			container: labelContainer,
+			container: mainContainer,
 			input: inputElement,
 		},
 
@@ -546,7 +561,7 @@ export const createCheckbox = (options: {
 	checkbox.checked = checked;
 
 	if (appendTo instanceof HTMLElement) {
-		appendTo.append(labelContainer);
+		appendTo.append(mainContainer);
 	}
 
 	return checkbox;
@@ -611,6 +626,12 @@ export const createInput = (options: {
 		},
 		appendTo: inputContainer,
 	}) as HTMLInputElement;
+
+	// We don't want the 1Password autofill to show up on these inputs.
+	// If there password managers that do the same thing we can add them here.
+	if (type ==='password') {
+		inputElement.dataset['1pIgnore'] = '';
+	}
 
 	if (description) {
 		createElement('h5', {
@@ -784,12 +805,18 @@ addStyles(`
 	}
 
 	/* Input Descriptions */
+	.alextras--checkbox h5,
 	.alextras--textarea h5,
 	.alextras--input h5,
 	.alextras--dropdown h5 {
 		color: rgb(var(--color-text-light));
 		margin: 0.5em 0 0 0.2em;
 		font-size: 0.7em;
+		user-select: none;
+	}
+
+	.alextras--checkbox h5 {
+		margin-left: 2.2em;
 	}
 
 	/* Input Backgrounds */

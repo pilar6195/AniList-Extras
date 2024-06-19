@@ -39,46 +39,6 @@ addStyles(`
 	.alextras--view-switch-toggle span.alextras--active {
 		color: rgb(var(--color-blue))
 	}
-
-	/* Tooltips */
-
-	[data-tooltip]:not([data-tooltip=""]):before {
-		content: "";
-		position: absolute;
-		top: -15px;
-		left: -2px;
-		border-width: 9px 9px 0 9px;
-		border-style: solid;
-		border-color: #303133 transparent transparent transparent;
-		z-index: 100;
-		opacity: 0;
-		pointer-events: none;
-	}
-
-	[data-tooltip]:not([data-tooltip=""]):after {
-		content: attr(data-tooltip);
-		position: absolute;
-		left: -15px;
-		top: -49px;
-		background: #303133;
-		text-align: center;
-		color: #fff;
-		z-index: 100;
-		opacity: 0;
-		pointer-events: none;
-		border-radius: 4px;
-		padding: 10px;
-		font-size: 12px;
-		line-height: 1.2;
-		min-width: 10px;
-		word-wrap: break-word;
-	}
-
-	[data-tooltip]:not([data-tooltip=""]):hover:after,
-	[data-tooltip]:not([data-tooltip=""]):hover:before {
-		opacity: 1;
-		transition-duration: 350ms;
-	}
 `);
 
 /* eslint-disable promise/prefer-await-to-then */
