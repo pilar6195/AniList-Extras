@@ -243,7 +243,27 @@ registerModule.anilist({
 								break;
 							}
 
-							case 'number':
+							case 'number': {
+								const input = createInput({
+									type: setting.type,
+									label: setting.label,
+									description: setting.description,
+									value: savedSetting,
+									min: setting.min,
+									max: setting.max,
+									width: '40%',
+								});
+
+								optionElement = input.element;
+
+								input.on('change', (event) => {
+									const value = (event.target as HTMLInputElement).value;
+									ModuleSettings.set(key, Number.parseFloat(value));
+								});
+
+								break;
+							}
+
 							case 'password':
 							case 'text': {
 								const input = createInput({
@@ -251,14 +271,14 @@ registerModule.anilist({
 									label: setting.label,
 									description: setting.description,
 									value: savedSetting,
-									width: setting.type === 'number' ? '20%' : '40%',
+									width: '40%',
 								});
 
 								optionElement = input.element;
 
 								input.on('change', (event) => {
 									const value = (event.target as HTMLInputElement).value;
-									ModuleSettings.set(key, setting.type === 'number' ? Number.parseFloat(value) : value);
+									ModuleSettings.set(key, value);
 								});
 
 								break;

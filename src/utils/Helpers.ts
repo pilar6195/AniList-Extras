@@ -567,19 +567,32 @@ export const createCheckbox = (options: {
 	return checkbox;
 };
 
+type BaseInputOptions = {
+	label?: string;
+	description?: string;
+	placeholder?: string;
+	value?: number | string;
+	width?: string;
+	height?: string;
+	appendTo?: Element | HTMLElement;
+};
+
+type InputOptions = BaseInputOptions & {
+	type?: 'password' | 'text' | 'textarea';
+};
+
+type NumberInputOptions = BaseInputOptions & {
+	type: 'number';
+	min?: number;
+	max?: number;
+};
+
 /**
  * Create an input element.
  */
-export const createInput = (options: {
-	label?: string;
-	description?: string;
-	type?: 'number' | 'password' | 'text' | 'textarea';
-	placeholder?: string;
-	value?: number | string;
-	width?: string,
-	height?: string,
-	appendTo?: Element | HTMLElement;
-} = {}) => {
+// This method might get refactored in the future.
+// I don't like the way it's structured right now.
+export const createInput = (options: (InputOptions | NumberInputOptions) = {}) => {
 	const {
 		label,
 		description,
@@ -610,7 +623,6 @@ export const createInput = (options: {
 		attributes: {
 			class: type === 'textarea' ? 'el-textarea' : 'el-input',
 		},
-		appendTo: mainContainer,
 	});
 
 	const inputElement = createElement(type === 'textarea' ? 'textarea' : 'input', {
@@ -621,11 +633,76 @@ export const createInput = (options: {
 			autocomplete: 'off',
 		},
 		styles: {
-			width,
+			// We can't set the width like this on number inputs.
+			width: type === 'number' ? '' : width,
 			height,
 		},
 		appendTo: inputContainer,
 	}) as HTMLInputElement;
+
+	if (type === 'number') {
+		const { min, max } = options as NumberInputOptions;
+
+		if (typeof min === 'number') {
+			inputElement.min = min.toString();
+		}
+
+		if (typeof max === 'number') {
+			inputElement.max = max.toString();
+		}
+
+		const numberInputContainer = createElement('div', {
+			attributes: {
+				class: 'el-input-number is-controls-right',
+			},
+			styles: {
+				width,
+			},
+			children: [
+				createElement('span', {
+					attributes: {
+						class: 'el-input-number__increase',
+					},
+					children: [
+						createElement('i', {
+							attributes: {
+								class: 'el-icon-arrow-up',
+							},
+						}),
+					],
+					events: {
+						click() {
+							inputElement.stepUp();
+							inputElement.dispatchEvent(new Event('change'));
+						},
+					},
+				}),
+				createElement('span', {
+					attributes: {
+						class: 'el-input-number__decrease',
+					},
+					children: [
+						createElement('i', {
+							attributes: {
+								class: 'el-icon-arrow-down',
+							},
+						}),
+					],
+					events: {
+						click() {
+							inputElement.stepDown();
+							inputElement.dispatchEvent(new Event('change'));
+						},
+					},
+				}),
+			],
+			appendTo: mainContainer,
+		});
+
+		numberInputContainer.append(inputContainer);
+	} else {
+		mainContainer.append(inputContainer);
+	}
 
 	// We don't want the 1Password autofill to show up on these inputs.
 	// If there password managers that do the same thing we can add them here.
@@ -798,6 +875,7 @@ addStyles(`
 	}
 
 	/* Input Labels */
+
 	.alextras--textarea h2,
 	.alextras--input h2,
 	.alextras--dropdown h2 {
@@ -805,6 +883,7 @@ addStyles(`
 	}
 
 	/* Input Descriptions */
+
 	.alextras--checkbox h5,
 	.alextras--textarea h5,
 	.alextras--input h5,
@@ -825,6 +904,24 @@ addStyles(`
 	.alextras--textarea .el-textarea__inner,
 	.alextras--input .el-input__inner {
 		background: rgba(var(--color-background), .6);
+	}
+
+	/* Input Placeholders */
+
+	.alextras--input input::placeholder,
+	.alextras--textarea textarea::placeholder {
+		color: rgb(var(--color-text-light));
+	}
+
+	/* Number Input */
+
+	.alextras--input input[type="number"]::-webkit-outer-spin-button,
+	.alextras--input input[type="number"]::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+	}
+
+	.alextras--input input[type="number"] {
+		-moz-appearance: textfield;
 	}
 
 	/* Dropdown */

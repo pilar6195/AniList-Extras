@@ -268,6 +268,8 @@ type ModuleSettingCheckbox = ModuleSettingBase & {
 
 type ModuleSettingNumber = ModuleSettingBase & {
 	type: 'number';
+	min?: number;
+	max?: number;
 	default?: number;
 };
 
