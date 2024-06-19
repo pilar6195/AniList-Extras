@@ -121,7 +121,7 @@ registerModule.anilist({
 
 			/* Other Settings */
 
-			if (module.settingsPage) {
+			if (module.settingsPage && Object.keys(module.settingsPage).length) {
 				const cogElement = createElement('div', {
 					attributes: {
 						class: 'alextras--module-cog',
