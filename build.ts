@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import fsAsync from 'node:fs/promises';
 import chokidar from 'chokidar';
 import archiver from 'archiver';
+// @ts-expect-error - No types available
+import offsetLines from 'offset-sourcemap-lines';
 import packageJson from './package.json';
 
 const header = `
@@ -24,10 +26,12 @@ const header = `
 const ALEXTRAS_VERSION = '${packageJson.version}';
 `;
 
-async function build() {
+async function build(minify = false) {
 	const result = await Bun.build({
 		entrypoints: ['./src/anilist-extras.user.ts'],
 		target: 'browser',
+		minify,
+		sourcemap: minify ? 'none' : 'external',
 	});
 
 	if (!result.success) {
@@ -47,7 +51,17 @@ async function build() {
 	/* Prepend userscript header to output */
 
 	const content = await result.outputs[0].text();
-	const output = header + content;
+	let output = header + content;
+
+	/* Fix sourcemap offset */
+	// We have to do this if we want the sourcemap to work correctly due to the header we added.
+	if (result.outputs[0].sourcemap) {
+		const sourceMap = await result.outputs[0].sourcemap?.json();
+		const offset = header.split('\n').length - 1;
+		const updatedSourceMap = offsetLines(sourceMap, offset);
+		const b64encoded = Buffer.from(JSON.stringify(updatedSourceMap)).toString('base64');
+		output += `//# sourceMappingURL=data:application/json;base64,${b64encoded}`;
+	}
 
 	/* Write userscript to dist directory */
 
@@ -122,5 +136,5 @@ if (process.argv.includes('--watch')) {
 	}
 // Build once and exit
 } else {
-	void build();
+	void build(true);
 }
