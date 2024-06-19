@@ -259,6 +259,8 @@ registerModule.anilist({
 						createElement('a', {
 							attributes: {
 								href: `https://github.com/pilar6195/AniList-Extras/releases/tag/v${ALEXTRAS_VERSION}`,
+								target: '_blank',
+								rel: 'noopener noreferrer',
 							},
 							styles: {
 								color: 'rgb(var(--color-blue))',
@@ -273,6 +275,8 @@ registerModule.anilist({
 						createElement('a', {
 							attributes: {
 								href: 'https://github.com/pilar6195',
+								target: '_blank',
+								rel: 'noopener noreferrer',
 							},
 							styles: {
 								color: 'rgb(var(--color-blue))',
@@ -287,6 +291,8 @@ registerModule.anilist({
 						createElement('a', {
 							attributes: {
 								href: 'https://github.com/pilar6195/AniList-Extras',
+								target: '_blank',
+								rel: 'noopener noreferrer',
 							},
 							styles: {
 								color: 'rgb(var(--color-blue))',
