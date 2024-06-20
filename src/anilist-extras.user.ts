@@ -4,22 +4,8 @@ import { purgeUnusedSettings } from './utils/Settings';
 import { observe, addStyles, getMalId } from './utils/Helpers';
 import { anilistModules, malModules, activeModules, ModuleEmitter, ModuleEvents } from './utils/ModuleLoader';
 
-/* Anilist Modules */
-import '@/modules/anilist/settingsPage';
-import '@/modules/anilist/addMalLink';
-import '@/modules/anilist/addMalScore';
-import '@/modules/anilist/addMalScoreAndLink';
-import '@/modules/anilist/addAniListScore';
-import '@/modules/anilist/addViewToggles';
-import '@/modules/anilist/addMalCharacters';
-import '@/modules/anilist/addOpEdSongs';
-import '@/modules/anilist/addSocialsFollowsCount';
-import '@/modules/anilist/addSocialsForumsCount';
-import '@/modules/anilist/addReviewRatings';
-import '@/modules/anilist/addSeasonLink';
-
-/* Mal Modules */
-import '@/modules/mal/addAniListLink';
+/* Import Modules */
+import '@/modules/modulesList';
 
 // Add global styles.
 addStyles(`

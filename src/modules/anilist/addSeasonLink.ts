@@ -13,8 +13,8 @@ registerModule.anilist({
 	},
 
 	validateUnload() {
-		// Only unload if the the desktop UI is not active.
-		return !isUI.desktop;
+		// Only unload if the element doesn't exist for some reason or the desktop UI is not active.
+		return !$('.alextras--seasonal-anime') || !isUI.desktop;
 	},
 
 	async load() {
