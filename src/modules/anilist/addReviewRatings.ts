@@ -1,5 +1,5 @@
 import Cache from '@/utils/Cache';
-import { $, $$, waitFor, observe, createElement, addStyles, anilistApi, ONE_DAY } from '@/utils/Helpers';
+import { $, $$, waitFor, observe, createElement, addStyles, anilistApi, isUI, ONE_DAY } from '@/utils/Helpers';
 import { registerModule } from '@/utils/ModuleLoader';
 
 let running = false;
@@ -119,7 +119,7 @@ registerModule.anilist({
 	togglable: true,
 
 	validate({ currentPage }) {
-		return currentPage.pathname.startsWith('/home') || // Starts with /home. More than likely the user is on the homepage.
+		return currentPage.pathname.startsWith('/home') && isUI.desktop || // Starts with /home. More than likely the user is on the homepage.
 				currentPage.pathname.endsWith('/reviews'); // Ends with /reviews. Either on the overall reviews or anime reviews page.
 	},
 

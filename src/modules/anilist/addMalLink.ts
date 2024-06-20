@@ -1,4 +1,4 @@
-import { $, waitFor, createElement, removeElements } from '@/utils/Helpers';
+import { $, waitFor, createElement, removeElements, isUI } from '@/utils/Helpers';
 import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
@@ -14,7 +14,7 @@ registerModule.anilist({
 	validateUnload({ currentPage, previousPage }) {
 		const match1 = (/\/((anime|manga)\/\d+)/i.exec(currentPage.pathname))?.[1];
 		const match2 = (/\/((anime|manga)\/\d+)/i.exec(previousPage.pathname))?.[1];
-		return match1 !== match2;
+		return match1 !== match2 || isUI.mobile;
 	},
 
 	async load({ media }) {
@@ -92,7 +92,9 @@ registerModule.anilist({
 					textContent: 'MyAnimeList',
 				}),
 			],
-			appendTo: $('.external-links .external-links-wrap')!,
+			appendTo: isUI.mobile
+				? $('.overview .external-links .external-links-wrap')!
+				: $('.external-links .external-links-wrap')!,
 		});
 	},
 

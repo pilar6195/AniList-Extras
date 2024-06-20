@@ -1,4 +1,4 @@
-import { $, waitFor, createElement, removeElements } from '@/utils/Helpers';
+import { $, waitFor, createElement, removeElements, isUI } from '@/utils/Helpers';
 import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
@@ -9,12 +9,12 @@ registerModule.anilist({
 
 	validate() {
 		// Load on any page assuming we haven't already created the element.
-		return !$('.alextras--seasonal-anime');
+		return !$('.alextras--seasonal-anime') && isUI.desktop;
 	},
 
 	validateUnload() {
-		// We don't need to unload this module.
-		return false;
+		// Only unload if the the desktop UI is not active.
+		return !isUI.desktop;
 	},
 
 	async load() {

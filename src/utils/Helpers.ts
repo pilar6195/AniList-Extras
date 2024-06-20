@@ -20,6 +20,21 @@ export const $ = (selector: string): HTMLElement | null => document.querySelecto
 export const $$ = (selector: string): HTMLElement[] => Array.from(document.querySelectorAll(selector));
 
 /**
+ * Check if the current UI is desktop, tablet, or mobile.
+ */
+export const isUI = {
+	get desktop() {
+		return window.innerWidth > 1040;
+	},
+	get tablet() {
+		return window.innerWidth <= 1040 && window.innerWidth > 760;
+	},
+	get mobile() {
+		return window.innerWidth <= 760;
+	},
+};
+
+/**
  * Creates a new element using the provided parameters.
  */
 export const createElement = (
