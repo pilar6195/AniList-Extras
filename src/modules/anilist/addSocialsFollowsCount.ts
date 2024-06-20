@@ -30,8 +30,7 @@ registerModule.anilist({
 		// If the user ID is not found, return.
 		if (!userId) return;
 
-		// let followingCount: number | undefined = await Cache.get('user-following-count', userId.toString());
-		let followingCount: number | undefined;
+		let followingCount: number | undefined = await Cache.get('user-following-count', userId.toString());
 		let followersCount: number | undefined = await Cache.get('user-followers-count', userId.toString());
 
 		if (!followingCount) {
