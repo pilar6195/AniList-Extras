@@ -1,6 +1,6 @@
 import Storage from '@/utils/Storage';
 import Cache from '@/utils/Cache';
-import SettingsManager from '@/utils/Settings';
+import SettingsManager, { purgeUnusedSettings } from '@/utils/Settings';
 import {
 	$,
 	waitFor,
@@ -357,8 +357,111 @@ registerModule.anilist({
 			}
 		}
 
-		createElement('div', {
+		const restoreSettingsInput = createElement('input', {
+			attributes: {
+				type: 'file',
+				accept: '.json',
+			},
+			events: {
+				change(event) {
+					const file = (event.target as HTMLInputElement).files?.[0];
+
+					if (!file) return;
+
+					if (file.type !== 'application/json') {
+						// eslint-disable-next-line no-alert
+						alert('Invalid file type. Please select a valid JSON file.');
+						return;
+					}
+
+					const fileReader = new FileReader();
+
+					fileReader.onload = event => {
+						const result = event.target?.result;
+						try {
+							const fileContents = JSON.parse(result as string);
+
+							if (!fileContents.alextrasMeta) {
+								// eslint-disable-next-line no-alert
+								alert('Invalid JSON file. Please select a valid JSON file.');
+								return;
+							}
+
+							// Make sure we keep the API token if it exists.
+							const apiToken = Storage.get('apiToken');
+							if (apiToken) {
+								fileContents.apiToken = apiToken;
+							}
+
+							localStorage.setItem('anilist-extras', JSON.stringify(fileContents));
+							// eslint-disable-next-line no-alert
+							alert('AniList Extras settings have been restored. Page will refresh.');
+							location.reload();
+						} catch {
+							// eslint-disable-next-line no-alert
+							alert('Invalid JSON file. Please select a valid JSON file.');
+						}
+					};
+
+					fileReader.readAsText(file);
+				},
+			},
+		});
+
+		createElement('section', {
 			children: [
+				createElement('div', {
+					attributes: {
+						class: 'button',
+					},
+					textContent: 'Backup Settings',
+					events: {
+						async click() {
+							purgeUnusedSettings();
+
+							const storage = Storage.getAll();
+
+							// Remove API token from backup.
+							if (storage.apiToken) {
+								delete storage.apiToken;
+							}
+
+							storage.alextrasMeta = {
+								version: ALEXTRAS_VERSION,
+								createdAt: new Date().toISOString(),
+							};
+
+							const settingsBackup = JSON.stringify(storage, null, '\t');
+
+							const settingsBlob = new Blob([settingsBackup], {
+								type: 'application/json',
+							});
+
+							const aElement = createElement('a', {
+								attributes: {
+									download: `anilist-extras-settings-${new Date().toISOString()}.json`,
+									href: URL.createObjectURL(settingsBlob),
+								},
+							});
+
+							aElement.click();
+						},
+					},
+				}),
+				createElement('div', {
+					attributes: {
+						class: 'button',
+					},
+					styles: {
+						position: 'relative',
+					},
+					textContent: 'Restore Settings',
+					events: {
+						click() {
+							restoreSettingsInput.click();
+						},
+					},
+				}),
 				createElement('div', {
 					attributes: {
 						class: 'button danger',
@@ -387,11 +490,18 @@ registerModule.anilist({
 						},
 					},
 				}),
+				createElement('div', {
+					styles: {
+						marginTop: '15px',
+						color: 'rgb(var(--color-red))',
+					},
+					textContent: 'Restoring settings will overwrite your current settings.',
+				}),
 			],
 			appendTo: settingsContainer,
 		});
 
-		createElement('div', {
+		createElement('section', {
 			children: [
 				createElement('h4', {
 					textContent: 'AniList Extras Version: ',
@@ -437,7 +547,7 @@ registerModule.anilist({
 							styles: {
 								color: 'rgb(var(--color-blue))',
 							},
-							textContent: 'https://github.com/pilar6195/AniList-Extras',
+							textContent: 'pilar6195/AniList-Extras',
 						}),
 					],
 				}),
@@ -460,6 +570,18 @@ addStyles(`
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 10px;
+	}
+
+	@media only screen and (min-width: 761px) and (max-width: 950px) {
+		.alextras--settings-body {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media only screen and (max-width: 650px) {
+		.alextras--settings-body {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.alextras--module {

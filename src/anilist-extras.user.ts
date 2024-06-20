@@ -1,5 +1,6 @@
 import '@/utils/Polyfill';
 import '@/utils/Logs';
+import { purgeUnusedSettings } from './utils/Settings';
 import { observe, addStyles, getMalId } from './utils/Helpers';
 import { anilistModules, malModules, activeModules, ModuleEmitter, ModuleEvents } from './utils/ModuleLoader';
 
@@ -7,8 +8,8 @@ import { anilistModules, malModules, activeModules, ModuleEmitter, ModuleEvents 
 import '@/modules/anilist/settingsPage';
 import '@/modules/anilist/addMalLink';
 import '@/modules/anilist/addMalScore';
-import '@/modules/anilist/addAniListScore';
 import '@/modules/anilist/addMalScoreAndLink';
+import '@/modules/anilist/addAniListScore';
 import '@/modules/anilist/addViewToggles';
 import '@/modules/anilist/addMalCharacters';
 import '@/modules/anilist/addOpEdSongs';
@@ -40,6 +41,9 @@ addStyles(`
 		color: rgb(var(--color-blue))
 	}
 `);
+
+// Clean up unused settings.
+purgeUnusedSettings();
 
 /* eslint-disable promise/prefer-await-to-then */
 

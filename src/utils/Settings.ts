@@ -1,5 +1,28 @@
+/* eslint-disable @typescript-eslint/no-dynamic-delete */
 import Storage from './Storage';
-import { getModule } from './ModuleLoader';
+import { anilistModules, malModules, getModule } from './ModuleLoader';
+
+export const purgeUnusedSettings = () => {
+	const moduleIds = [...anilistModules, ...malModules].map(m => m.id);
+	const settings = Storage.getAll();
+
+	for (const key of ['settings', 'moduleStates']) {
+		if (!settings[key]) continue;
+
+		let changed = false;
+
+		for (const moduleId in settings[key]) {
+			if (!moduleIds.includes(moduleId)) {
+				delete settings[key][moduleId];
+				changed = true;
+			}
+		}
+
+		if (changed) {
+			Storage.set(key, settings[key]);
+		}
+	}
+};
 
 /**
  * Settings manager for registered modules.
@@ -26,28 +49,38 @@ export default class SettingsManager {
 	 * Set a setting value.
 	 */
 	public set(key: string, value: any) {
-		const moduleSettings = Storage.get(this.moduleId, {});
+		const settings = Storage.get('settings', {});
+		const moduleSettings = settings[this.moduleId] ?? {};
 		moduleSettings[key] = value;
-		Storage.set(this.moduleId, moduleSettings);
+		settings[this.moduleId] = moduleSettings;
+		Storage.set('settings', settings);
 	}
 
 	/**
 	 * Get a setting value.
-	 * If the setting is not found, it will return the default value from the module settings.
-	 * If the setting is not specified in the module settings, it will return the default value passed as the second argument.
+	 * If the setting is not found, it will return the default value passed as the second argument.
+	 * If a default value is not provided, it will return the default value from the module settings, if any.
 	 */
 	public get(key: string, defaultValue?: any) {
-		const moduleSettings = Storage.get(this.moduleId, {});
-		return moduleSettings[key] ?? this.module.settingsPage?.[key].default ?? defaultValue;
+		const settings = Storage.get('settings', {});
+		const moduleSettings = settings[this.moduleId] ?? {};
+		return moduleSettings[key] ?? defaultValue ?? this.module.settingsPage?.[key].default;
 	}
 
 	/**
 	 * Delete a setting.
 	 */
 	public remove(key: string) {
-		const moduleSettings = Storage.get(this.moduleId, {});
-		// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+		const settings = Storage.get('settings', {});
+		const moduleSettings = settings[this.moduleId] ?? {};
 		delete moduleSettings[key];
-		Storage.set(this.moduleId, moduleSettings);
+		settings[this.moduleId] = moduleSettings;
+		Storage.set('settings', settings);
+	}
+
+	public clear() {
+		const settings = Storage.get('settings', {});
+		delete settings[this.moduleId];
+		Storage.set('settings', settings);
 	}
 }
