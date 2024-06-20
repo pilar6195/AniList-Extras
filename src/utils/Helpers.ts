@@ -198,6 +198,20 @@ export const sleep = async (ms: number): Promise<void> => {
 	});
 };
 
+const parseResponseHeaders = (headersString: string) => {
+	// const headers: Record<string, string> = {};
+	const headers = new Headers();
+	const headerLines = headersString.trim().trim().split(/[\n\r]+/);
+
+	for (const line of headerLines) {
+		const [name, value] = line.split(': ', 2);
+		// headers[name.trim()] = value ? value.trim() : '';
+		headers.set(name.trim(), value ? value.trim() : '');
+	}
+
+	return headers;
+};
+
 /**
  * Send an HTTP request using the userscript manager.
  */
@@ -223,17 +237,54 @@ export const request = async (
 /**
  * Send a request to the AniList API.
  */
-export const anilistApi = async (query: string, variables?: Record<string, any>) => {
-	const response = await request('https://graphql.anilist.co', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-		},
-		data: JSON.stringify({ query, variables }),
-	});
+export const anilistApi = async (
+	query: string,
+	variables?: Record<string, any>,
+	useApiToken = true,
+	retries = 3,
+): Promise<any> => {
+	const apiToken = Storage.get('apiToken');
 
-	return response.json;
+	const headers: any = {
+		'Content-Type': 'application/json',
+		Accept: 'application/json',
+	};
+
+	if (apiToken && useApiToken) {
+		headers.Authorization = `Bearer ${apiToken}`;
+	}
+
+	let retryCount = 0;
+
+	while (retryCount < retries) {
+		const response = await request('https://graphql.anilist.co', {
+			method: 'POST',
+			headers,
+			data: JSON.stringify({ query, variables }),
+		});
+
+		if (response.status >= 400 && response.status !== 429) {
+			console.error(`Request failed with status code ${response.status}. Retrying... (${retryCount + 1}/${retries})`, response);
+			retryCount++;
+			await sleep(2500);
+			continue;
+		}
+
+		const responseHeaders = parseResponseHeaders(response.responseHeaders);
+
+		if (responseHeaders.get('retry-after')) {
+			const retryAfter = Number.parseInt(responseHeaders.get('retry-after')!, 10);
+			await sleep(retryAfter * 1000);
+			return anilistApi(query, variables, useApiToken, retries);
+		} else {
+			console.debug(`DEBUG: AniList rate limit remaining: ${responseHeaders.get('x-ratelimit-remaining')}`);
+			// console.trace();
+		}
+
+		return response.json;
+	}
+
+	throw new Error('Failed to fetch data after multiple retries.');
 };
 
 /**

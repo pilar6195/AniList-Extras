@@ -1,6 +1,6 @@
 /* Make logs a bit more fancy */
 
-const methods = ['log', 'info', 'error', 'warn', 'group', 'groupCollapsed'] as const;
+const methods = ['log', 'info', 'error', 'warn', 'debug', 'group', 'groupCollapsed'] as const;
 
 type ConsoleMethod = typeof methods[number];
 
