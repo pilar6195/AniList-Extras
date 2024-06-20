@@ -515,7 +515,7 @@ registerModule.anilist({
 							styles: {
 								color: 'rgb(var(--color-blue))',
 							},
-							textContent: `v${ALEXTRAS_VERSION}`,
+							textContent: `v${ALEXTRAS_VERSION}` + (ALEXTRAS_DEV ? ' (Dev Mode)' : ''),
 						}),
 					],
 				}),

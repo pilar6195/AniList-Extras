@@ -6,6 +6,9 @@ import archiver from 'archiver';
 import offsetLines from 'offset-sourcemap-lines';
 import packageJson from './package.json';
 
+const watchFlag = process.argv.includes('--watch');
+const serveFlag = process.argv.includes('--serve');
+
 const header = `
 // ==UserScript==
 // @name         AniList Extras (Unofficial)
@@ -24,6 +27,7 @@ const header = `
 // @run-at       document-end
 // ==/UserScript==
 const ALEXTRAS_VERSION = '${packageJson.version}';
+const ALEXTRAS_DEV = ${watchFlag};
 `;
 
 async function build(minify = false) {
@@ -41,7 +45,7 @@ async function build(minify = false) {
 			console.error(log);
 		}
 
-		if (process.argv.includes('--watch')) {
+		if (watchFlag) {
 			return;
 		} else {
 			process.exit(1);
@@ -89,7 +93,7 @@ async function build(minify = false) {
 	console.log(`[${new Date().toISOString()}]`, 'Extension built. Output written to "./.build" directory. It can be loaded as an unpacked extension in your browser.');
 
 	// If we're watching for changes, we don't want to zip the extension every time we build.
-	if (!process.argv.includes('--watch')) {
+	if (!watchFlag) {
 		// Zip extension
 		const filePath = `./dist/anilist-extras.browser-${packageJson.version}.zip`;
 		const archive = archiver('zip', {
@@ -105,7 +109,7 @@ async function build(minify = false) {
 }
 
 // Watch for changes and rebuild
-if (process.argv.includes('--watch')) {
+if (watchFlag) {
 	chokidar.watch('src/**/*', {
 		ignoreInitial: true,
 	})
@@ -119,7 +123,7 @@ if (process.argv.includes('--watch')) {
 
 	// Serve userscript for easy development with Violentmonkey
 	// Also only serving if --watch is enabled. No point in serving if not watching.
-	if (process.argv.includes('--serve')) {
+	if (serveFlag) {
 		const server = Bun.serve({
 			fetch(request) {
 				const url = new URL(request.url);

@@ -1,4 +1,5 @@
 declare const ALEXTRAS_VERSION: string;
+declare const ALEXTRAS_DEV: boolean;
 
 type AnilistUserIdResponse = {
 	data: {
