@@ -283,12 +283,15 @@ type ModuleSettingNumber = ModuleSettingBase & {
 	type: 'number';
 	min?: number;
 	max?: number;
+	step?: number;
 	validate?(value: number): boolean | string;
 	default?: number;
 };
 
 type ModuleSettingText = ModuleSettingBase & {
 	type: 'password' | 'text' | 'textarea';
+	minLength?: number;
+	maxLength?: number;
 	validate?(value: string): boolean | string;
 	default?: string;
 };

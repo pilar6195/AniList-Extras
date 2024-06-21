@@ -268,6 +268,7 @@ registerModule.anilist({
 									value: savedSetting,
 									min: setting.min,
 									max: setting.max,
+									step: setting.step,
 									validate: setting.validate?.bind(module),
 									width: '10em',
 								});
@@ -276,13 +277,43 @@ registerModule.anilist({
 
 								input.on('change', (event) => {
 									const value = (event.target as HTMLInputElement).value;
-									ModuleSettings.set(key, Number.parseFloat(value));
+									if (input.isValidInput) {
+										if (value === '') {
+											ModuleSettings.remove(key);
+										} else {
+											ModuleSettings.set(key, Number.parseFloat(value));
+										}
+									}
 								});
 
 								break;
 							}
 
-							case 'color':
+							case 'color': {
+								const input = createInput({
+									type: setting.type,
+									label: setting.label,
+									description: setting.description,
+									value: savedSetting,
+									validate: setting.validate?.bind(module),
+								});
+
+								optionElement = input.element;
+
+								input.on('change', (event) => {
+									const value = (event.target as HTMLInputElement).value;
+									if (input.isValidInput) {
+										if (value === '') {
+											ModuleSettings.remove(key);
+										} else {
+											ModuleSettings.set(key, value);
+										}
+									}
+								});
+
+								break;
+							}
+
 							case 'password':
 							case 'text': {
 								const input = createInput({
@@ -290,15 +321,23 @@ registerModule.anilist({
 									label: setting.label,
 									description: setting.description,
 									value: savedSetting,
+									minLength: setting.minLength,
+									maxLength: setting.maxLength,
 									validate: setting.validate?.bind(module),
-									width: setting.type ==='color' ? '' : '15em',
+									width: '15em',
 								});
 
 								optionElement = input.element;
 
 								input.on('change', (event) => {
 									const value = (event.target as HTMLInputElement).value;
-									ModuleSettings.set(key, value);
+									if (input.isValidInput) {
+										if (value === '') {
+											ModuleSettings.remove(key);
+										} else {
+											ModuleSettings.set(key, value);
+										}
+									}
 								});
 
 								break;
@@ -310,6 +349,8 @@ registerModule.anilist({
 									label: setting.label,
 									description: setting.description,
 									value: savedSetting,
+									minLength: setting.minLength,
+									maxLength: setting.maxLength,
 									validate: setting.validate?.bind(module),
 									height: '100px',
 								});
@@ -318,7 +359,13 @@ registerModule.anilist({
 
 								textarea.on('change', (event) => {
 									const value = (event.target as HTMLTextAreaElement).value;
-									ModuleSettings.set(key, value);
+									if (textarea.isValidInput) {
+										if (value === '') {
+											ModuleSettings.remove(key);
+										} else {
+											ModuleSettings.set(key, value);
+										}
+									}
 								});
 
 								break;

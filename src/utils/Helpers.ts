@@ -761,14 +761,21 @@ type BaseInputOptions = {
 	validate?(value: number | string): boolean | string;
 };
 
-type InputOptions = BaseInputOptions & {
-	type?: 'color' | 'password' | 'text' | 'textarea';
+type ColorInputOptions = BaseInputOptions & {
+	type: 'color';
+};
+
+type TextInputOptions = BaseInputOptions & {
+	type?: 'password' | 'text' | 'textarea';
+	minLength?: number;
+	maxLength?: number;
 };
 
 type NumberInputOptions = BaseInputOptions & {
 	type: 'number';
 	min?: number;
 	max?: number;
+	step?: number;
 };
 
 /**
@@ -776,7 +783,7 @@ type NumberInputOptions = BaseInputOptions & {
  */
 // This method might get refactored in the future.
 // I don't like the way it's structured right now.
-export const createInput = (options: (InputOptions | NumberInputOptions) = {}) => {
+export const createInput = (options: (ColorInputOptions | NumberInputOptions | TextInputOptions) = {}) => {
 	const {
 		label,
 		description,
@@ -826,8 +833,20 @@ export const createInput = (options: (InputOptions | NumberInputOptions) = {}) =
 		appendTo: inputContainer,
 	}) as HTMLInputElement;
 
+	if (['text', 'password', 'textarea'].includes(type)) {
+		const { minLength, maxLength } = options as TextInputOptions;
+
+		if (typeof minLength === 'number') {
+			inputElement.minLength = minLength;
+		}
+
+		if (typeof maxLength === 'number') {
+			inputElement.maxLength = maxLength;
+		}
+	}
+
 	if (type === 'number') {
-		const { min, max } = options as NumberInputOptions;
+		const { min, max, step } = options as NumberInputOptions;
 
 		if (typeof min === 'number') {
 			inputElement.min = min.toString();
@@ -837,6 +856,10 @@ export const createInput = (options: (InputOptions | NumberInputOptions) = {}) =
 			inputElement.max = max.toString();
 		}
 
+		if (typeof step === 'number') {
+			inputElement.step = step.toString();
+		}
+
 		const numberInputContainer = createElement('div', {
 			attributes: {
 				class: 'el-input-number is-controls-right',
@@ -844,45 +867,81 @@ export const createInput = (options: (InputOptions | NumberInputOptions) = {}) =
 			styles: {
 				width,
 			},
+			appendTo: mainContainer,
+		});
+
+		const inputIncreaseElement = createElement('span', {
+			attributes: {
+				class: 'el-input-number__increase',
+			},
 			children: [
-				createElement('span', {
+				createElement('i', {
 					attributes: {
-						class: 'el-input-number__increase',
-					},
-					children: [
-						createElement('i', {
-							attributes: {
-								class: 'el-icon-arrow-up',
-							},
-						}),
-					],
-					events: {
-						click() {
-							inputElement.stepUp();
-							inputElement.dispatchEvent(new Event('change'));
-						},
-					},
-				}),
-				createElement('span', {
-					attributes: {
-						class: 'el-input-number__decrease',
-					},
-					children: [
-						createElement('i', {
-							attributes: {
-								class: 'el-icon-arrow-down',
-							},
-						}),
-					],
-					events: {
-						click() {
-							inputElement.stepDown();
-							inputElement.dispatchEvent(new Event('change'));
-						},
+						class: 'el-icon-arrow-up',
 					},
 				}),
 			],
-			appendTo: mainContainer,
+			events: {
+				click() {
+					const currentValue = inputElement.value;
+					inputElement.stepUp();
+					if (currentValue === inputElement.value) return;
+					inputElement.dispatchEvent(new Event('change'));
+				},
+			},
+			appendTo: numberInputContainer,
+		});
+
+		const inputDecreaseElement = createElement('span', {
+			attributes: {
+				class: 'el-input-number__decrease',
+			},
+			children: [
+				createElement('i', {
+					attributes: {
+						class: 'el-icon-arrow-down',
+					},
+				}),
+			],
+			events: {
+				click() {
+					const currentValue = inputElement.value;
+					inputElement.stepDown();
+					if (currentValue === inputElement.value) return;
+					inputElement.dispatchEvent(new Event('change'));
+				},
+			},
+			appendTo: numberInputContainer,
+		});
+
+		inputElement.addEventListener('change', () => {
+			let currentValue = Number.parseFloat(inputElement.value);
+
+			if (typeof min === 'number') {
+				if (currentValue < min) {
+					inputElement.value = min.toString();
+					currentValue = min;
+				}
+
+				if (currentValue === min) {
+					inputDecreaseElement.classList.add('is-disabled');
+				} else {
+					inputDecreaseElement.classList.remove('is-disabled');
+				}
+			}
+
+			if (typeof max === 'number') {
+				if (currentValue > max) {
+					inputElement.value = max.toString();
+					currentValue = max;
+				}
+
+				if (currentValue === max) {
+					inputIncreaseElement.classList.add('is-disabled');
+				} else {
+					inputIncreaseElement.classList.remove('is-disabled');
+				}
+			}
 		});
 
 		numberInputContainer.append(inputContainer);
@@ -918,12 +977,17 @@ export const createInput = (options: (InputOptions | NumberInputOptions) = {}) =
 			input: inputElement,
 		},
 
+		get isValidInput() {
+			return inputElement.validity.valid;
+		},
+
 		get value() {
 			return inputElement.value;
 		},
 
 		set value(value: string) {
-			inputElement.value = value;
+			if (inputElement.value === value.toString()) return;
+			inputElement.value = value.toString();
 			inputElement.dispatchEvent(new Event('change'));
 		},
 
@@ -940,17 +1004,24 @@ export const createInput = (options: (InputOptions | NumberInputOptions) = {}) =
 		},
 	};
 
-	if (typeof validate === 'function') {
-		input.on('change', () => {
+	input.on('change', () => {
+		if (typeof validate === 'function') {
 			const result = validate(type === 'number' ? Number.parseFloat(input.value) : input.value);
 
 			if (result === true) {
-				inputErrorElement.textContent = '';
+				inputElement.setCustomValidity('');
 			} else {
-				inputErrorElement.textContent = typeof result === 'string' ? result : 'Invalid input.';
+				const error = typeof result === 'string' ? result : 'Invalid input.';
+				inputElement.setCustomValidity(error);
 			}
-		});
-	}
+		}
+
+		if (inputElement.validity.valid) {
+			inputErrorElement.textContent = '';
+		} else {
+			inputErrorElement.textContent = inputElement.validationMessage;
+		}
+	});
 
 	input.value = value.toString();
 
