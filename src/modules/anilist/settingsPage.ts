@@ -14,8 +14,6 @@ import {
 } from '@/utils/Helpers';
 import { registerModule, anilistModules } from '@/utils/ModuleLoader';
 
-// TODO: Fix styles for inputs. A lot of them aren't spaced properly.
-
 registerModule.anilist({
 	id: 'settingsPage',
 
@@ -159,6 +157,7 @@ registerModule.anilist({
 					model = createElement('div', {
 						attributes: {
 							class: 'alextras--module-model',
+							role: 'dialog',
 						},
 						events: {
 							click() {
@@ -269,6 +268,7 @@ registerModule.anilist({
 									value: savedSetting,
 									min: setting.min,
 									max: setting.max,
+									validate: setting.validate?.bind(module),
 									width: '40%',
 								});
 
@@ -289,6 +289,7 @@ registerModule.anilist({
 									label: setting.label,
 									description: setting.description,
 									value: savedSetting,
+									validate: setting.validate?.bind(module),
 									width: '40%',
 								});
 

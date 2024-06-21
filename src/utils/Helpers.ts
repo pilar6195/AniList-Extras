@@ -758,9 +758,10 @@ type BaseInputOptions = {
 	width?: string;
 	height?: string;
 	appendTo?: Element | HTMLElement;
+	validate?(value: number | string): boolean | string;
 };
 
-type InputOptions = BaseInputOptions & {
+type TextInputOptions = BaseInputOptions & {
 	type?: 'password' | 'text' | 'textarea';
 };
 
@@ -775,7 +776,7 @@ type NumberInputOptions = BaseInputOptions & {
  */
 // This method might get refactored in the future.
 // I don't like the way it's structured right now.
-export const createInput = (options: (InputOptions | NumberInputOptions) = {}) => {
+export const createInput = (options: (NumberInputOptions | TextInputOptions) = {}) => {
 	const {
 		label,
 		description,
@@ -784,6 +785,8 @@ export const createInput = (options: (InputOptions | NumberInputOptions) = {}) =
 		value = '',
 		width = '',
 		height = '',
+		// eslint-disable-next-line @typescript-eslint/unbound-method
+		validate,
 		appendTo,
 	} = options;
 
@@ -893,6 +896,13 @@ export const createInput = (options: (InputOptions | NumberInputOptions) = {}) =
 		inputElement.dataset['1pIgnore'] = '';
 	}
 
+	const inputErrorElement = createElement('div', {
+		attributes: {
+			class: 'el-input__error',
+		},
+		appendTo: mainContainer,
+	});
+
 	if (description) {
 		createElement('h5', {
 			textContent: description,
@@ -914,6 +924,7 @@ export const createInput = (options: (InputOptions | NumberInputOptions) = {}) =
 
 		set value(value: string) {
 			inputElement.value = value;
+			inputElement.dispatchEvent(new Event('change'));
 		},
 
 		on(event: string, cb: EventListenerOrEventListenerObject) {
@@ -928,6 +939,18 @@ export const createInput = (options: (InputOptions | NumberInputOptions) = {}) =
 			inputElement.removeEventListener(event, cb);
 		},
 	};
+
+	if (typeof validate === 'function') {
+		input.on('change', () => {
+			const result = validate(input.value);
+
+			if (result === true) {
+				inputErrorElement.textContent = '';
+			} else {
+				inputErrorElement.textContent = typeof result === 'string' ? result : 'Invalid input.';
+			}
+		});
+	}
 
 	input.value = value.toString();
 
@@ -1083,6 +1106,18 @@ addStyles(`
 		margin: 0.5em 0 0 0.2em;
 		font-size: 0.7em;
 		user-select: none;
+	}
+
+	.alextras--input .el-input__error,
+	.alextras--textarea .el-input__error {
+		font-size: 11px;
+		color: rgb(var(--color-red));
+		margin: 0.4em 0 0 0.2em;
+	}
+		
+	.alextras--input .el-input__error:empty,
+	.alextras--textarea .el-input__error:empty {
+		display: none;
 	}
 
 	.alextras--checkbox h5 {

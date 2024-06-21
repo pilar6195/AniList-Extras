@@ -276,6 +276,11 @@ type ModuleSettingNumber = ModuleSettingBase & {
 	type: 'number';
 	min?: number;
 	max?: number;
+	/**
+	 * Return true if the value is valid.
+	 * Return a string if the value is invalid, the string will be displayed as an error message.
+	 */
+	validate?(value: number): boolean | string;
 	default?: number;
 };
 
@@ -287,6 +292,11 @@ type ModuleSettingSelect = ModuleSettingBase & {
 
 type ModuleSettingText = ModuleSettingBase & {
 	type: 'password' | 'text' | 'textarea';
+	/**
+	 * Return true if the value is valid.
+	 * Return a string if the value is invalid, the string will be displayed as an error message.
+	 */
+	validate?(value: string): boolean | string;
 	default?: string;
 };
 
