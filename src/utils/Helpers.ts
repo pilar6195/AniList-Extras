@@ -942,7 +942,7 @@ export const createInput = (options: (NumberInputOptions | TextInputOptions) = {
 
 	if (typeof validate === 'function') {
 		input.on('change', () => {
-			const result = validate(input.value);
+			const result = validate(type === 'number' ? Number.parseFloat(input.value) : input.value);
 
 			if (result === true) {
 				inputErrorElement.textContent = '';
