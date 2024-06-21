@@ -262,26 +262,9 @@ type ModuleSettingBase = {
 	description?: string;
 };
 
-type ModuleSettingCheckbox = ModuleSettingBase & {
-	type: 'checkbox';
+type ModuleSettingToggle = ModuleSettingBase & {
+	type: 'checkbox' | 'switch';
 	default?: boolean;
-};
-
-type ModuleSettingSwitch = ModuleSettingBase & {
-	type: 'switch';
-	default?: boolean;
-};
-
-type ModuleSettingNumber = ModuleSettingBase & {
-	type: 'number';
-	min?: number;
-	max?: number;
-	/**
-	 * Return true if the value is valid.
-	 * Return a string if the value is invalid, the string will be displayed as an error message.
-	 */
-	validate?(value: number): boolean | string;
-	default?: number;
 };
 
 type ModuleSettingSelect = ModuleSettingBase & {
@@ -290,12 +273,22 @@ type ModuleSettingSelect = ModuleSettingBase & {
 	default?: string;
 };
 
+type ModuleSettingColor = ModuleSettingBase & {
+	type: 'color';
+	validate?(value: string): boolean | string;
+	default?: string;
+};
+
+type ModuleSettingNumber = ModuleSettingBase & {
+	type: 'number';
+	min?: number;
+	max?: number;
+	validate?(value: number): boolean | string;
+	default?: number;
+};
+
 type ModuleSettingText = ModuleSettingBase & {
 	type: 'password' | 'text' | 'textarea';
-	/**
-	 * Return true if the value is valid.
-	 * Return a string if the value is invalid, the string will be displayed as an error message.
-	 */
 	validate?(value: string): boolean | string;
 	default?: string;
 };
@@ -321,7 +314,7 @@ type BaseModule = {
 	 * Options that will appear in the settings menu.
 	 */
 	settingsPage?: {
-		[key: string]: ModuleSettingCheckbox | ModuleSettingNumber | ModuleSettingSelect | ModuleSettingSwitch | ModuleSettingText;
+		[key: string]: ModuleSettingColor | ModuleSettingNumber | ModuleSettingSelect | ModuleSettingText | ModuleSettingToggle;
 	}
 	/**
 	 * Whether the module is disabled by default.

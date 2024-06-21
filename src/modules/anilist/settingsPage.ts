@@ -269,7 +269,7 @@ registerModule.anilist({
 									min: setting.min,
 									max: setting.max,
 									validate: setting.validate?.bind(module),
-									width: '40%',
+									width: '10em',
 								});
 
 								optionElement = input.element;
@@ -282,6 +282,7 @@ registerModule.anilist({
 								break;
 							}
 
+							case 'color':
 							case 'password':
 							case 'text': {
 								const input = createInput({
@@ -290,7 +291,7 @@ registerModule.anilist({
 									description: setting.description,
 									value: savedSetting,
 									validate: setting.validate?.bind(module),
-									width: '40%',
+									width: setting.type ==='color' ? '' : '15em',
 								});
 
 								optionElement = input.element;
@@ -309,6 +310,7 @@ registerModule.anilist({
 									label: setting.label,
 									description: setting.description,
 									value: savedSetting,
+									validate: setting.validate?.bind(module),
 									height: '100px',
 								});
 

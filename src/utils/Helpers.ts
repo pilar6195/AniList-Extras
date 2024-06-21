@@ -761,8 +761,8 @@ type BaseInputOptions = {
 	validate?(value: number | string): boolean | string;
 };
 
-type TextInputOptions = BaseInputOptions & {
-	type?: 'password' | 'text' | 'textarea';
+type InputOptions = BaseInputOptions & {
+	type?: 'color' | 'password' | 'text' | 'textarea';
 };
 
 type NumberInputOptions = BaseInputOptions & {
@@ -776,7 +776,7 @@ type NumberInputOptions = BaseInputOptions & {
  */
 // This method might get refactored in the future.
 // I don't like the way it's structured right now.
-export const createInput = (options: (NumberInputOptions | TextInputOptions) = {}) => {
+export const createInput = (options: (InputOptions | NumberInputOptions) = {}) => {
 	const {
 		label,
 		description,
@@ -796,7 +796,7 @@ export const createInput = (options: (NumberInputOptions | TextInputOptions) = {
 		},
 		styles: {
 			display: 'flex',
-			'flex-direction': 'column',
+			flexDirection: 'column',
 		},
 	});
 
@@ -985,7 +985,7 @@ export const createDropdown = (options: {
 		},
 		styles: {
 			display: 'inline-flex',
-			'flex-direction': 'column',
+			flexDirection: 'column',
 		},
 	});
 
@@ -1152,6 +1152,29 @@ addStyles(`
 
 	.alextras--input input[type="number"] {
 		-moz-appearance: textfield;
+	}
+
+	/* Color Input */
+
+	.alextras--input input.el-input__inner[type="color"] {
+		padding: 0.3em;
+		width: 3em;
+		height: 3em;
+		cursor: pointer;
+	}
+
+	.alextras--input input.el-input__inner[type="color"]::-webkit-color-swatch-wrapper {
+		padding: 0;
+	}
+
+	.alextras--input input.el-input__inner[type="color"]::-webkit-color-swatch {
+		border-color: rgb(var(--color-background-300));
+		border-radius: 4px;
+	}
+
+	.alextras--input input.el-input__inner[type="color"]::-moz-color-swatch {
+		border-color: rgb(var(--color-background-300));
+		border-radius: 4px;
 	}
 
 	/* Dropdown */
