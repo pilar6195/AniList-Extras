@@ -10,6 +10,7 @@ export const ModuleEvents = {
 	ValidateError: 'module:validate:error',
 	Load: 'module:load',
 	LoadError: 'module:load:error',
+	Navigate: 'module:navigate',
 } as const;
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -23,6 +24,7 @@ type ModuleEventArguments = {
 	[ModuleEvents.ValidateError]: [string, any];
 	[ModuleEvents.Load]: [string];
 	[ModuleEvents.LoadError]: [string, any];
+	[ModuleEvents.Navigate]: [URL, URL?];
 };
 
 export const ModuleEmitter: {

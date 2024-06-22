@@ -44,6 +44,8 @@ if (location.host === 'anilist.co') {
 			const previousPage = currentPage;
 			currentPage = new URL(location.href); // Basically cloning the window.location object.
 
+			ModuleEmitter.emit(ModuleEvents.Navigate, currentPage, previousPage);
+
 			console.log('Navigated:', currentPage.href);
 
 			// Media data to send to the modules when available.
