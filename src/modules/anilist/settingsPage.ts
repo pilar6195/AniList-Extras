@@ -117,12 +117,45 @@ registerModule.anilist({
 				});
 			}
 
+			/* Reset Settings */
+
+			createElement('div', {
+				attributes: {
+					class: 'alextras--module-action-icon',
+				},
+				styles: {
+					marginLeft: '0.25em',
+				},
+				// https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt
+				innerHTML: `
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon svg-inline--fa fa-minus fa-w-16 fa-fw">
+						<path fill="currentColor" d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33
+						32-32v-32c0-17.67-14.33-32-32-32z"></path>
+					</svg>
+				`,
+				tooltip: 'Reset Module Settings. Page will refresh.',
+				events: {
+					click() {
+						const ModuleSettings = new SettingsManager(module.id);
+						ModuleSettings.clear();
+						const moduleStates = Storage.get('moduleStates') ?? {};
+						// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+						delete moduleStates[module.id];
+						Storage.set('moduleStates', moduleStates);
+						location.reload();
+					},
+				},
+				appendTo: moduleOptions,
+			});
+
+			// createTooltip(resetSettingsElement, 'Reset Module Settings. Page will refresh.');
+
 			/* Other Settings */
 
 			if (module.settingsPage && Object.keys(module.settingsPage).length) {
 				const cogElement = createElement('div', {
 					attributes: {
-						class: 'alextras--module-cog',
+						class: 'alextras--module-action-icon',
 					},
 					// https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt
 					innerHTML: `
@@ -135,6 +168,7 @@ registerModule.anilist({
 							0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80z"></path>
 						</svg>
 					`,
+					tooltip: 'Module Settings',
 					appendTo: moduleOptions,
 				});
 
@@ -502,9 +536,6 @@ registerModule.anilist({
 					attributes: {
 						class: 'button',
 					},
-					styles: {
-						position: 'relative',
-					},
 					textContent: 'Restore Settings',
 					events: {
 						click() {
@@ -517,6 +548,7 @@ registerModule.anilist({
 						class: 'button danger',
 					},
 					textContent: 'Reset All Settings',
+					tooltip: 'Reset all AniList Extras settings. Page will refresh.',
 					events: {
 						async click() {
 							Storage.clear();
@@ -529,9 +561,9 @@ registerModule.anilist({
 				createElement('div', {
 					attributes: {
 						class: 'button danger',
-						title: 'Clear AniList Extras Cache. Use this if you encounter any caching issues.',
 					},
 					textContent: 'Clear Anilist Extras Cache',
+					tooltip: 'Clear AniList Extras Cache. Use this if you encounter any caching issues.',
 					events: {
 						async click() {
 							await Cache.dropDatabase();
@@ -666,7 +698,7 @@ addStyles(`
 		float: left;
 	}
 
-	.alextras--module-cog {
+	.alextras--module-action-icon {
 		cursor: pointer;
 		float: right;
 		color: rgb(var(--color-gray-600));
