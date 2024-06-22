@@ -44,6 +44,7 @@ export const createElement = (
 		styles?: Record<string, string>;
 		textContent?: string;
 		innerHTML?: string;
+		tooltip?: string;
 		events?: Record<string, EventListener>;
 		children?: Element[] | HTMLElement[];
 		appendTo?: Element | HTMLElement;
@@ -57,7 +58,7 @@ export const createElement = (
 		throw new TypeError('Options is not an object.');
 	}
 
-	const { attributes, styles, textContent, innerHTML, events, children, appendTo } = options;
+	const { attributes, styles, textContent, innerHTML, tooltip, events, children, appendTo } = options;
 
 	const element = document.createElement(tag);
 
@@ -87,6 +88,11 @@ export const createElement = (
 
 	if (innerHTML) {
 		element.innerHTML = innerHTML;
+	}
+
+	if (tooltip) {
+		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+		createTooltip(element, tooltip);
 	}
 
 	if (Array.isArray(children)) {
@@ -509,6 +515,87 @@ export const addViewToggle = (containers: string, targets: string) => {
 			}
 		}
 	}
+};
+
+export const createTooltip = (target: HTMLElement, contents: string) => {
+	if (!(target instanceof HTMLElement)) {
+		throw new TypeError('Target must be an HTMLElement');
+	}
+
+	if (typeof contents !== 'string') {
+		throw new TypeError('Contents must be a string');
+	}
+
+	let tooltipElement: HTMLElement;
+
+	target.addEventListener('mouseenter', () => {
+		const targetRect = target.getBoundingClientRect();
+
+		tooltipElement = createElement('div', {
+			attributes: {
+				class: 'alextras--tooltip',
+			},
+			styles: {
+				position: 'absolute',
+				top: `${target.offsetTop - 15}px`,
+				transform: 'translateX(-50%) translateY(-100%)',
+				color: '#fff',
+				width: 'max-content',
+				maxWidth: '60vw',
+				fontSize: '12px',
+				background: '#303133',
+				borderRadius: '4px',
+				padding: '10px',
+				textAlign: 'center',
+				opacity: '0',
+				zIndex: '100',
+				pointerEvents: 'none',
+				transitionDuration: '350ms',
+			},
+			textContent: contents,
+		});
+
+		const tooltipArrow = createElement('div', {
+			styles: {
+				position: 'absolute',
+				bottom: '-9px',
+				left: '50%',
+				transform: 'translateX(-50%)',
+				borderWidth: '10px 10px 0 10px',
+				borderStyle: 'solid',
+				borderColor: '#303133 transparent transparent transparent',
+				zIndex: '100',
+				pointerEvents: 'none',
+			},
+			appendTo: tooltipElement,
+		});
+
+		document.body.append(tooltipElement);
+
+		let tooltipRect = tooltipElement.getBoundingClientRect();
+
+		let tooltipLeft = target.offsetLeft + target.offsetWidth / 2;
+
+		if (tooltipLeft + tooltipRect.width / 2 > window.innerWidth - 50) {
+			tooltipLeft = window.innerWidth - 50 - tooltipRect.width / 2;
+		}
+
+		if (tooltipLeft - tooltipRect.width / 2 < 50) {
+			tooltipLeft = 50 + tooltipRect.width / 2;
+		}
+
+		tooltipElement.style.left = `${tooltipLeft}px`;
+
+		tooltipRect = tooltipElement.getBoundingClientRect();
+		tooltipArrow.style.left = `${(targetRect.left + (targetRect.width / 2)) - tooltipRect.left}px`;
+		tooltipElement.style.opacity = '1';
+	});
+
+	target.addEventListener('mouseleave', () => {
+		tooltipElement.style.opacity = '0';
+		const tooltip = tooltipElement;
+		setTimeout(() => tooltip.remove(), 350);
+	});
 };
 
 /**
