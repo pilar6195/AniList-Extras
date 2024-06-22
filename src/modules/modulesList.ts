@@ -19,6 +19,7 @@ import './anilist/addSocialsFollowsCount';
 import './anilist/addSocialsForumsCount';
 import './anilist/addReviewRatings';
 import './anilist/addSeasonLink';
+import './anilist/altScrollbars';
 
 /* =========== */
 /* Mal Modules */
