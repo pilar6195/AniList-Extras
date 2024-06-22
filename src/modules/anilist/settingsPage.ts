@@ -1,3 +1,4 @@
+/* eslint-disable no-alert, @typescript-eslint/no-dynamic-delete */
 import Storage from '@/utils/Storage';
 import Cache from '@/utils/Cache';
 import SettingsManager, { purgeUnusedSettings } from '@/utils/Settings';
@@ -136,10 +137,11 @@ registerModule.anilist({
 				tooltip: 'Reset Module Settings. Page will refresh.',
 				events: {
 					click() {
+						const confirmResponse = window.confirm('Are you sure you want to reset this module settings? Page will refresh. OK to confirm, Cancel to cancel.');
+						if (!confirmResponse) return;
 						const ModuleSettings = new SettingsManager(module.id);
 						ModuleSettings.clear();
 						const moduleStates = Storage.get('moduleStates') ?? {};
-						// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
 						delete moduleStates[module.id];
 						Storage.set('moduleStates', moduleStates);
 						location.reload();
@@ -453,8 +455,7 @@ registerModule.anilist({
 					if (!file) return;
 
 					if (file.type !== 'application/json') {
-						// eslint-disable-next-line no-alert
-						alert('Invalid file type. Please select a valid JSON file.');
+						window.alert('Invalid file type. Please select a valid JSON file.');
 						return;
 					}
 
@@ -466,8 +467,7 @@ registerModule.anilist({
 							const fileContents = JSON.parse(result as string);
 
 							if (!fileContents.alextrasMeta) {
-								// eslint-disable-next-line no-alert
-								alert('Invalid JSON file. Please select a valid JSON file.');
+								window.alert('Invalid JSON file. Please select a valid JSON file.');
 								return;
 							}
 
@@ -478,12 +478,10 @@ registerModule.anilist({
 							}
 
 							localStorage.setItem('anilist-extras', JSON.stringify(fileContents));
-							// eslint-disable-next-line no-alert
-							alert('AniList Extras settings have been restored. Page will refresh.');
+							window.alert('AniList Extras settings have been restored. Page will refresh.');
 							location.reload();
 						} catch {
-							// eslint-disable-next-line no-alert
-							alert('Invalid JSON file. Please select a valid JSON file.');
+							window.alert('Invalid JSON file. Please select a valid JSON file.');
 						}
 					};
 
@@ -551,9 +549,9 @@ registerModule.anilist({
 					tooltip: 'Reset all AniList Extras settings. Page will refresh.',
 					events: {
 						async click() {
+							const confirmResponse = window.confirm('Are you sure you want to reset all AniList Extras settings? Page will refresh. OK to confirm, Cancel to cancel.');
+							if (!confirmResponse) return;
 							Storage.clear();
-							// eslint-disable-next-line no-alert
-							alert('AniList Extras settings have been reset. Page will refresh.');
 							location.reload();
 						},
 					},
@@ -567,8 +565,7 @@ registerModule.anilist({
 					events: {
 						async click() {
 							await Cache.dropDatabase();
-							// eslint-disable-next-line no-alert
-							alert('AniList Extras cache has been cleared.');
+							window.alert('AniList Extras cache has been cleared.');
 						},
 					},
 				}),
@@ -702,6 +699,10 @@ addStyles(`
 		cursor: pointer;
 		float: right;
 		color: rgb(var(--color-gray-600));
+	}
+
+	.alextras--module-action-icon:hover {
+		color: rgb(var(--color-blue));
 	}
 
 	.alextras--module-model {
