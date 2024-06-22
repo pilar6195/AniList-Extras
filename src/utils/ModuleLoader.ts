@@ -57,6 +57,11 @@ const moduleStates: Record<string, boolean> = Storage.get('moduleStates', {});
 
 export const registerModule = {
 	anilist(module: AnilistModule) {
+		if (!module.id) {
+			console.error('Module id is required to register a module.');
+			return;
+		}
+
 		if (anilistModules.some(m => m.id === module.id)) {
 			console.error(`Anilist module with id "${module.id}" is already registered.`);
 			return;
@@ -103,6 +108,11 @@ export const registerModule = {
 		ModuleEmitter.emit(ModuleEvents.Register, module.id);
 	},
 	mal(module: MalModule) {
+		if (!module.id) {
+			console.error('Module id is required to register a module.');
+			return;
+		}
+
 		if (malModules.some(m => m.id === module.id)) {
 			console.error(`MAL module with id "${module.id}" is already registered.`);
 			return;
