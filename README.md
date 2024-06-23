@@ -56,8 +56,7 @@ To build the userscript/extension, you need [Bun](https://bun.sh/).
 	* Use `bun run watch` to watch for changes and rebuild automatically.
 	* Use `bun run watch:serve` to serve the userscript at `http://localhost:3000/anilist-extras.user.js` for easy development with ViolentMonkey.
 
-> Running `bun run watch` and `bun run watch:serve` will build with sourcemaps enabled for easier debugging.
-  Running `bun run build` will not include sourcemaps by default but can be enabled by setting the `--include-sourcemap` flag.
+> Running `bun run watch` and `bun run watch:serve` will build with sourcemaps enabled for easier debugging. `bun run build` will not include sourcemaps by default but can be enabled by setting the `--include-sourcemap` flag.
 
 > **Note: Since this project is primarily a userscript, the browser extension serves as a wrapper around it.
   Consequently, browser extension specific features/APIs cannot be used.**
