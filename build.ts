@@ -8,6 +8,7 @@ import packageJson from './package.json';
 
 const watchFlag = process.argv.includes('--watch');
 const serveFlag = process.argv.includes('--serve');
+const includeSourceMaps = process.argv.includes('--include-sourcemap');
 
 const header = `
 // ==UserScript==
@@ -30,12 +31,11 @@ const ALEXTRAS_VERSION = '${packageJson.version}';
 const ALEXTRAS_DEV = ${watchFlag};
 `;
 
-async function build(minify = false) {
+async function build() {
 	const result = await Bun.build({
 		entrypoints: ['./src/anilist-extras.user.ts'],
 		target: 'browser',
-		minify,
-		sourcemap: minify ? 'none' : 'external',
+		sourcemap: (includeSourceMaps || watchFlag) ? 'external' : 'none',
 	});
 
 	if (!result.success) {
@@ -140,5 +140,5 @@ if (watchFlag) {
 	}
 // Build once and exit
 } else {
-	void build(true);
+	void build();
 }
