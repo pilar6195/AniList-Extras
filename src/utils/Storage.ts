@@ -8,7 +8,7 @@ export default {
 	emitter: new EventEmitter(),
 
 	get(key: string, defaultValue?: any) {
-		return data[key] ?? defaultValue;
+		return structuredClone(data[key] ?? defaultValue);
 	},
 
 	getAll() {
