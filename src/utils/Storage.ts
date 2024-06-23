@@ -12,7 +12,7 @@ export default {
 	},
 
 	getAll() {
-		return data;
+		return structuredClone(data);
 	},
 
 	set(key: string, value: any) {
