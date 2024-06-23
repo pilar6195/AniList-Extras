@@ -12,14 +12,9 @@ const processReviews = async () => {
 
 	try {
 		const reviewElements = $$('.review-wrap .review-card');
-		const isHome = /^\/home/i.test(location.pathname);
 		const reviewContainers: Record<string, HTMLElement> = {};
 
 		for (const reviewElement of reviewElements) {
-			if (isHome) {
-				reviewElement.classList.add('is-home');
-			}
-
 			const content: HTMLElement = reviewElement.querySelector('.content')!;
 
 			if (content.dataset['scoreFetched']) continue;
@@ -119,7 +114,7 @@ registerModule.anilist({
 	togglable: true,
 
 	validate({ currentPage }) {
-		return currentPage.pathname.startsWith('/home') && isUI.desktop || // Starts with /home. More than likely the user is on the homepage.
+		return (currentPage.pathname.startsWith('/home') && isUI.desktop) || // Starts with /home. More than likely the user is on the homepage.
 				currentPage.pathname.endsWith('/reviews'); // Ends with /reviews. Either on the overall reviews or anime reviews page.
 	},
 
@@ -140,24 +135,15 @@ registerModule.anilist({
 });
 
 addStyles(`
-	.review-card:not(.is-home) .summary {
-		padding-right: 30px;
-	}
-
-	.review-card.is-home .summary {
+	.review-card .summary {
 		padding-bottom: 20px;
 	}
 
 	.review-card .alextras--review-score-container {
 		position: absolute;
 		line-height: 1.2;
-		bottom: 2.5em;
-		right: 10px;
-	}
-
-	.review-card.is-home .alextras--review-score-container {
 		bottom: 10px;
-		right: 45px;
+		left: 10px;
 	}
 
 	.review-card .alextras--review-score {
