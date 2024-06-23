@@ -204,6 +204,31 @@ export const sleep = async (ms: number): Promise<void> => {
 	});
 };
 
+/**
+ * Check if a value is JSON serializable.
+ */
+export const validateJSONSerializable = (value: any): boolean => {
+	if (value === null || typeof value === 'undefined') {
+		return true;
+	}
+
+	const valueType = typeof value;
+
+	if (['boolean', 'number', 'string'].includes(valueType)) {
+		return true;
+	}
+
+	if (Array.isArray(value)) {
+		return value.every(validateJSONSerializable);
+	}
+
+	if (valueType === 'object') {
+		return Object.keys(value).every(key => validateJSONSerializable(value[key]));
+	}
+
+	return false;
+};
+
 const parseResponseHeaders = (headersString: string) => {
 	// const headers: Record<string, string> = {};
 	const headers = new Headers();

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete */
 import Storage from './Storage';
 import { anilistModules, malModules, getModule } from './ModuleLoader';
+import { validateJSONSerializable } from './Helpers';
 
 /**
  * Purge unused settings from the storage.
@@ -65,6 +66,10 @@ export default class SettingsManager {
 	 * Set a setting value.
 	 */
 	public set(key: string, value: any) {
+		if (!validateJSONSerializable(value)) {
+			throw new Error('Value is not JSON-serializable.');
+		}
+
 		const settings = Storage.get('settings', {});
 		const moduleSettings = settings[this.moduleId] ?? {};
 		moduleSettings[key] = value;

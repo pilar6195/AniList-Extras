@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete */
 import EventEmitter from './EventEmitter';
+import { validateJSONSerializable } from './Helpers';
 
 const data = JSON.parse(localStorage.getItem('anilist-extras') ?? '{}');
-
 
 export default {
 	emitter: new EventEmitter(),
@@ -16,6 +16,10 @@ export default {
 	},
 
 	set(key: string, value: any) {
+		if (!validateJSONSerializable(value)) {
+			throw new Error('Value is not JSON-serializable.');
+		}
+
 		const previousValue = this.get(key);
 		data[key] = value;
 		localStorage.setItem('anilist-extras', JSON.stringify(data));
