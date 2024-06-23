@@ -1,4 +1,4 @@
-/* eslint-disable sonarjs/no-empty-collection */
+/* eslint-disable @typescript-eslint/no-dynamic-delete, sonarjs/no-empty-collection */
 import Storage from './Storage';
 import EventEmitter from './EventEmitter';
 
@@ -55,7 +55,28 @@ export const getModule = {
 	},
 };
 
-const moduleStates: Record<string, boolean> = Storage.get('moduleStates', {});
+export const ModuleStates = {
+	get(moduleId: string, defaultState?: boolean) {
+		const moduleStates: Record<string, boolean> = Storage.get('moduleStates', {});
+		return moduleStates[moduleId] ?? defaultState;
+	},
+
+	set(moduleId: string, state: boolean) {
+		const moduleStates = Storage.get('moduleStates', {});
+		moduleStates[moduleId] = state;
+		Storage.set('moduleStates', moduleStates);
+	},
+
+	remove(moduleId: string) {
+		const moduleStates = Storage.get('moduleStates', {});
+		delete moduleStates[moduleId];
+		Storage.set('moduleStates', moduleStates);
+	},
+
+	clear() {
+		Storage.set('moduleStates', {});
+	},
+};
 
 export const registerModule = {
 	anilist(module: AnilistModule) {
@@ -69,25 +90,21 @@ export const registerModule = {
 			return;
 		}
 
-		const disableModule = typeof moduleStates[module.id] === 'boolean'
-			? !moduleStates[module.id]
-			: module.disabledDefault ?? false;
+		const moduleState = ModuleStates.get(module.id, !(module.disabledDefault ?? false));
 
 		anilistModules.push({
 			togglable: false,
 			...module,
-			disabled: disableModule,
+			disabled: !moduleState,
 			enable() {
 				if (!this.disabled) return;
 				this.disabled = false;
-				moduleStates[this.id] = true;
-				Storage.set('moduleStates', moduleStates);
+				ModuleStates.set(this.id, true);
 			},
 			async disable() {
 				if (this.disabled) return;
 				this.disabled = true;
-				moduleStates[this.id] = false;
-				Storage.set('moduleStates', moduleStates);
+				ModuleStates.set(this.id, false);
 
 				// Unload the module if it is currently active.
 				if (typeof module.unload === 'function' && activeModules.has(module.id)) {
@@ -120,23 +137,20 @@ export const registerModule = {
 			return;
 		}
 
-		const disableModule = typeof moduleStates[module.id] === 'boolean'
-			? moduleStates[module.id]
-			: module.disabledDefault ?? false;
+
+		const moduleState = ModuleStates.get(module.id, !(module.disabledDefault ?? false));
 
 		malModules.push({
 			togglable: false,
 			...module,
-			disabled: disableModule,
+			disabled: !moduleState,
 			enable() {
 				this.disabled = false;
-				moduleStates[this.id] = false;
-				Storage.set('moduleStates', moduleStates);
+				ModuleStates.set(this.id, true);
 			},
 			async disable() {
 				this.disabled = true;
-				moduleStates[this.id] = true;
-				Storage.set('moduleStates', moduleStates);
+				ModuleStates.set(this.id, false);
 			},
 		});
 
