@@ -1,4 +1,5 @@
-import { $, waitFor, createElement, removeElements, malApi, ONE_HOUR } from '@/utils/Helpers';
+import { $, waitFor, createElement, removeElements, malApi } from '@/utils/Helpers';
+import { ONE_HOUR } from '@/utils/Constants';
 import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({

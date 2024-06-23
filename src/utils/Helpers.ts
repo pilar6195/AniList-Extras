@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import Cache from './Cache';
 import Storage from './Storage';
+import { ONE_HOUR, ONE_DAY, ONE_WEEK } from './Constants';
 
 declare global {
 	namespace Tampermonkey {
@@ -10,11 +11,6 @@ declare global {
 		}
 	}
 }
-
-export const ONE_MINUTE = 60 * 1000;
-export const ONE_HOUR = ONE_MINUTE * 60;
-export const ONE_DAY = ONE_HOUR * 24;
-export const ONE_WEEK = ONE_DAY * 7;
 
 export const $ = (selector: string): HTMLElement | null => document.querySelector(selector);
 export const $$ = (selector: string): HTMLElement[] => Array.from(document.querySelectorAll(selector));
@@ -229,6 +225,9 @@ export const validateJSONSerializable = (value: any): boolean => {
 	return false;
 };
 
+/**
+ * Parse the headers from a headers response string.
+ */
 const parseResponseHeaders = (headersString: string) => {
 	// const headers: Record<string, string> = {};
 	const headers = new Headers();
@@ -542,6 +541,9 @@ export const addViewToggle = (containers: string, targets: string) => {
 	}
 };
 
+/**
+ * Create a tooltip for the provided target element.
+ */
 export const createTooltip = (target: HTMLElement, contents: string) => {
 	if (!(target instanceof HTMLElement)) {
 		throw new TypeError('Target must be an HTMLElement');

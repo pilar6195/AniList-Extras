@@ -1,5 +1,6 @@
 import Cache from '@/utils/Cache';
-import { $, $$, waitFor, observe, createElement, addStyles, anilistApi, isUI, ONE_DAY } from '@/utils/Helpers';
+import { $, $$, waitFor, observe, createElement, addStyles, anilistApi, isUI } from '@/utils/Helpers';
+import { ONE_DAY } from '@/utils/Constants';
 import { registerModule } from '@/utils/ModuleLoader';
 
 let running = false;

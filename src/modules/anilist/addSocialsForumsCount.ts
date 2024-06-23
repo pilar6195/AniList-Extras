@@ -1,5 +1,6 @@
 import Cache from '@/utils/Cache';
-import { $, waitFor, createElement, anilistApi, getUserId, ONE_MINUTE } from '@/utils/Helpers';
+import { $, waitFor, createElement, anilistApi, getUserId } from '@/utils/Helpers';
+import { ONE_MINUTE } from '@/utils/Constants';
 import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({

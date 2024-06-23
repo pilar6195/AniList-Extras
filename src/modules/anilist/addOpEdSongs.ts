@@ -6,8 +6,8 @@ import {
 	removeElements,
 	addStyles,
 	malApi,
-	ONE_HOUR,
 } from '@/utils/Helpers';
+import { ONE_HOUR } from '@/utils/Constants';
 import { registerModule } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
