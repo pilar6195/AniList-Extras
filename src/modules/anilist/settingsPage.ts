@@ -13,7 +13,7 @@ import {
 	createSwitch,
 	addStyles,
 } from '@/utils/Helpers';
-import { registerModule, anilistModules } from '@/utils/ModuleLoader';
+import { registerModule, anilistModules, ModuleStates, ModuleEmitter, ModuleEvents } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'settingsPage',
@@ -60,7 +60,10 @@ registerModule.anilist({
 
 
 		for (const module of anilistModules) {
-			if (!module.togglable && !Object.keys(module.settingsPage ?? {}).length) continue;
+			const hasSettings = Object.keys(module.settingsPage ?? {}).length;
+			if (!module.togglable && !hasSettings) continue;
+
+			const ModuleSettings = new SettingsManager(module.id);
 
 			const moduleContainer = createElement('div', {
 				attributes: {
@@ -107,6 +110,15 @@ registerModule.anilist({
 					}
 				});
 
+				// We watch the moduleStates to update the switch if the module's state is updated/reset.
+				const unwatch = Storage.watch('moduleStates', (moduleStates) => {
+					const moduleState = moduleStates?.[module.id] ?? !(module.disabledDefault ?? false);
+					toggleModuleSwitch.enabled = moduleState;
+				});
+
+				// We remove the watch when the user navigates to a different page.
+				ModuleEmitter.once(ModuleEvents.Navigate, () => unwatch());
+
 				createElement('div', {
 					attributes: {
 						class: 'alextras--module-setting',
@@ -120,7 +132,7 @@ registerModule.anilist({
 
 			/* Reset Settings */
 
-			createElement('div', {
+			const resetSettingsElement = createElement('div', {
 				attributes: {
 					class: 'alextras--module-action-icon',
 				},
@@ -134,27 +146,69 @@ registerModule.anilist({
 						32-32v-32c0-17.67-14.33-32-32-32z"></path>
 					</svg>
 				`,
-				tooltip: 'Reset Module Settings. Page will refresh.',
+				tooltip: 'Reset Module Settings.',
 				events: {
 					click() {
-						const confirmResponse = window.confirm('Are you sure you want to reset this module settings? Page will refresh. OK to confirm, Cancel to cancel.');
+						const confirmResponse = window.confirm('Are you sure you want to reset this module settings? OK to confirm, Cancel to cancel.');
 						if (!confirmResponse) return;
-						const ModuleSettings = new SettingsManager(module.id);
 						ModuleSettings.clear();
-						const moduleStates = Storage.get('moduleStates') ?? {};
-						delete moduleStates[module.id];
-						Storage.set('moduleStates', moduleStates);
-						location.reload();
+						ModuleStates.remove(module.id);
 					},
 				},
 				appendTo: moduleOptions,
 			});
 
-			// createTooltip(resetSettingsElement, 'Reset Module Settings. Page will refresh.');
+			const hasDefaultSettings = () => {
+				let hasDefault = true;
+
+				const defaultModuleState = !(module.disabledDefault ?? false);
+
+				if (module.togglable && (module.disabled !== !defaultModuleState)) {
+					hasDefault = false;
+				}
+
+				for (const [key, setting] of Object.entries(module.settingsPage ?? {})) {
+					const savedSetting = ModuleSettings.get(key);
+
+					if (savedSetting !== setting.default) {
+						hasDefault = false;
+						break;
+					}
+				}
+
+				return hasDefault;
+			};
+
+			if (hasDefaultSettings()) {
+				resetSettingsElement.style.display = 'none';
+			}
+
+			const unwatchModuleStates = Storage.watch('moduleStates', () => {
+				if (hasDefaultSettings()) {
+					resetSettingsElement.style.display = 'none';
+				} else {
+					resetSettingsElement.style.display = '';
+				}
+			});
+
+			const unwatchModuleSettings = Storage.watch('settings', (settings) => {
+				if (!hasSettings || !settings?.[module.id]) return;
+				if (hasDefaultSettings()) {
+					resetSettingsElement.style.display = 'none';
+				} else {
+					resetSettingsElement.style.display = '';
+				}
+			});
+
+			// We remove the watch when the user navigates to a different page.
+			ModuleEmitter.once(ModuleEvents.Navigate, () => {
+				unwatchModuleStates();
+				unwatchModuleSettings();
+			});
 
 			/* Other Settings */
 
-			if (module.settingsPage && Object.keys(module.settingsPage).length) {
+			if (hasSettings) {
 				const cogElement = createElement('div', {
 					attributes: {
 						class: 'alextras--module-action-icon',
@@ -254,7 +308,6 @@ registerModule.anilist({
 					/* Other Settings */
 
 					for (const [key, setting] of Object.entries(module.settingsPage!)) {
-						const ModuleSettings = new SettingsManager(module.id);
 						const savedSetting = ModuleSettings.get(key);
 
 						let optionElement: HTMLElement;
@@ -477,6 +530,8 @@ registerModule.anilist({
 								fileContents.apiToken = apiToken;
 							}
 
+							delete fileContents.alextrasMeta;
+
 							localStorage.setItem('anilist-extras', JSON.stringify(fileContents));
 							window.alert('AniList Extras settings have been restored. Page will refresh.');
 							location.reload();
@@ -549,10 +604,9 @@ registerModule.anilist({
 					tooltip: 'Reset all AniList Extras settings. Page will refresh.',
 					events: {
 						async click() {
-							const confirmResponse = window.confirm('Are you sure you want to reset all AniList Extras settings? Page will refresh. OK to confirm, Cancel to cancel.');
+							const confirmResponse = window.confirm('Are you sure you want to reset all AniList Extras settings? OK to confirm, Cancel to cancel.');
 							if (!confirmResponse) return;
 							Storage.clear();
-							location.reload();
 						},
 					},
 				}),
