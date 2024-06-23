@@ -1,32 +1,14 @@
 import '@/utils/Polyfill';
 import '@/utils/Logs';
 import { purgeUnusedSettings } from './utils/Settings';
-import { observe, addStyles, getMalId } from './utils/Helpers';
+import { observe, getMalId } from './utils/Helpers';
 import { anilistModules, malModules, activeModules, ModuleEmitter, ModuleEvents } from './utils/ModuleLoader';
+
+/* Import Styles */
+import '@/styles/global';
 
 /* Import Modules */
 import '@/modules/modulesList';
-
-// Add global styles.
-addStyles(`
-	.alextras--hide {
-		display: none !important;
-	}
-
-	/* View Switchers */
-
-	.alextras--view-switch-toggle {
-		float: right;
-	}
-
-	.alextras--view-switch-toggle span:hover {
-		cursor: pointer;
-	}
-
-	.alextras--view-switch-toggle span.alextras--active {
-		color: rgb(var(--color-blue))
-	}
-`);
 
 // Clean up unused settings.
 purgeUnusedSettings();
