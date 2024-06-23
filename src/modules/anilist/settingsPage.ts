@@ -524,15 +524,8 @@ registerModule.anilist({
 								return;
 							}
 
-							// Make sure we keep the API token if it exists.
-							const apiToken = Storage.get('apiToken');
-							if (apiToken) {
-								fileContents.apiToken = apiToken;
-							}
-
-							delete fileContents.alextrasMeta;
-
-							localStorage.setItem('anilist-extras', JSON.stringify(fileContents));
+							Storage.set('settings', fileContents.settings ?? {});
+							Storage.set('moduleStates', fileContents.moduleStates ?? {});
 							window.alert('AniList Extras settings have been restored. Page will refresh.');
 							location.reload();
 						} catch {
