@@ -76,6 +76,19 @@ registerModule.anilist({
 						},
 						textContent: module.name ?? module.id,
 					}),
+					createElement('div', {
+						attributes: {
+							class: 'alextras--module-tag-group',
+						},
+						children: module.tags?.map(tag => {
+							return createElement('span', {
+								attributes: {
+									class: 'alextras--module-tag',
+								},
+								textContent: tag,
+							});
+						}),
+					}),
 					createElement('h5', {
 						attributes: {
 							class: 'alextras--module-description',
@@ -716,6 +729,7 @@ addStyles(`
 		background: rgb(var(--color-background));
 		border-radius: 5px;
 		padding: 0.75em;
+		/* min-height: 9.25em; */
 	}
 
 	.alextras--module-title {
@@ -727,9 +741,28 @@ addStyles(`
 		color: red;
 	}
 
+	.alextras--module-tag-group {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3em;
+		margin-bottom: 0.5em;
+	}
+
+	.alextras--module-tag-group:empty {
+		display: none;
+	}
+
+	.alextras--module-tag {
+		text-transform: capitalize;
+		font-size: 0.75em;
+		background-color: rgb(var(--color-foreground));
+		padding: 0.3em 0.5em;
+		border-radius: 3px;
+		user-select: none;
+	}
+
 	.alextras--module > .alextras--module-description {
 		flex-grow: 1;
-		min-height: 3em;
 	}
 
 	.alextras--module-description {

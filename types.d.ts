@@ -309,6 +309,11 @@ type BaseModule = {
 	 * Description of the module.
 	 */
 	description?: string;
+
+	/**
+	 * Tags
+	 */
+	tags?: string[];
 	/**
 	 * Whether the module can be toggled on/off.
 	 */
