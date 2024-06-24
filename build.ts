@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import fsAsync from 'node:fs/promises';
 import chokidar from 'chokidar';
 import archiver from 'archiver';
+import { compile as compileSass } from 'sass';
 // @ts-expect-error - No types available
 import offsetLines from 'offset-sourcemap-lines';
 import packageJson from './package.json';
@@ -36,6 +37,26 @@ async function build() {
 		entrypoints: ['./src/anilist-extras.user.ts'],
 		target: 'browser',
 		sourcemap: (includeSourceMaps || watchFlag) ? 'external' : 'none',
+		plugins: [
+			{
+				name: 'styles-loader',
+				setup(build) {
+					build.onLoad({ filter: /\.css$/ }, async (args) => {
+						const cssFile = Bun.file(args.path);
+						return {
+							contents: await cssFile.text(),
+							loader: 'text',
+						};
+					});
+					build.onLoad({ filter: /\.scss$/ }, (args) => {
+						return {
+							contents: compileSass(args.path).css,
+							loader: 'text',
+						};
+					});
+				},
+			},
+		],
 	});
 
 	if (!result.success) {

@@ -1,6 +1,16 @@
 declare const ALEXTRAS_VERSION: string;
 declare const ALEXTRAS_DEV: boolean;
 
+declare module '*.css' {
+	const content: string;
+	export default content;
+}
+
+declare module '*.scss' {
+	const content: string;
+	export default content;
+}
+
 type AnilistUserIdResponse = {
 	data: {
 		User: {

@@ -14,7 +14,8 @@
 		"archiver": "^7.0.1",
 		"chokidar": "^3.6.0",
 		"localforage": "^1.10.0",
-		"offset-sourcemap-lines": "^1.0.1"
+		"offset-sourcemap-lines": "^1.0.1",
+		"sass": "^1.77.6"
 	},
 	"devDependencies": {
 		"@types/archiver": "^6.0.2",
