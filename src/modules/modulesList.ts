@@ -9,6 +9,7 @@
 
 import './anilist/settingsPage';
 import './anilist/addMalLink';
+import './anilist/addRedditLink';
 import './anilist/addMalScore';
 import './anilist/addMalScoreAndLink';
 import './anilist/addAniListScore';
