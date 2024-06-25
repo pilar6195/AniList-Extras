@@ -1,11 +1,15 @@
 import { $, $$, waitFor, createElement, removeElements } from '@/utils/Helpers';
-import { registerModule } from '@/utils/ModuleLoader';
+import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addAnilistScore',
 	name: 'AniList Score',
 	description: 'Adds the average AniList score above the sidebar on anime/manga pages.',
 	togglable: true,
+	tags: [
+		ModuleTags.Media,
+		ModuleTags.Metadata,
+	],
 
 	validate({ currentPage }) {
 		return /^\/(anime|manga)\/\d+/.test(currentPage.pathname);

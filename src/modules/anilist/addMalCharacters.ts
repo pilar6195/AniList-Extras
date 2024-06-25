@@ -1,21 +1,17 @@
 import Storage from '@/utils/Storage';
-import {
-	$,
-	$$,
-	waitFor,
-	createElement,
-	removeElements,
-	addStyles,
-	malApi,
-} from '@/utils/Helpers';
+import { $, $$, waitFor, createElement, removeElements, addStyles, malApi } from '@/utils/Helpers';
 import { ONE_HOUR } from '@/utils/Constants';
-import { registerModule } from '@/utils/ModuleLoader';
+import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addMalCharacters',
 	name: 'MAL Characters',
 	description: 'Adds character data from MyAnimeList on anime/manga pages.',
 	togglable: true,
+	tags: [
+		ModuleTags.Media,
+		ModuleTags.Metadata,
+	],
 
 	validate({ currentPage }) {
 		return /^\/(anime|manga)\/\d+\/.+\/$/.test(currentPage.pathname);

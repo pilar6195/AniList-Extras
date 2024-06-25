@@ -1,11 +1,15 @@
 import { $, waitFor, createElement, removeElements, isUI } from '@/utils/Helpers';
-import { registerModule } from '@/utils/ModuleLoader';
+import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addSeasonLink',
 	name: 'Seasonal Link',
 	description: 'Add a link to the seasonal anime page in the browse dropdown in the navbar.',
 	togglable: true,
+	tags: [
+		ModuleTags.Global,
+		ModuleTags.Utiliy,
+	],
 
 	validate() {
 		// Load on any page assuming we haven't already created the element.

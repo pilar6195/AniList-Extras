@@ -1,5 +1,5 @@
 import { $, removeElements, addStyles } from '@/utils/Helpers';
-import { registerModule } from '@/utils/ModuleLoader';
+import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 import SettingsManager from '@/utils/Settings';
 
 registerModule.anilist({
@@ -7,6 +7,10 @@ registerModule.anilist({
 	name: 'Alternative Scrollbars',
 	description: 'Replaces the default scrollbars with a alternative design. Requires a page refresh.',
 	togglable: true,
+	tags: [
+		ModuleTags.Global,
+		ModuleTags.Styles,
+	],
 	disabledDefault: true,
 	settingsPage: {
 		thinScrollbar: {

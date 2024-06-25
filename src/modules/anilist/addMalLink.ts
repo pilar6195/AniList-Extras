@@ -1,11 +1,15 @@
 import { $, waitFor, createElement, removeElements, isUI } from '@/utils/Helpers';
-import { registerModule } from '@/utils/ModuleLoader';
+import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addMalLink',
 	name: 'MyAnimeList Link',
 	description: 'Adds a link to MyAnimeList on anime/manga pages.',
 	togglable: true,
+	tags: [
+		ModuleTags.Media,
+		ModuleTags.External,
+	],
 
 	validate({ currentPage }) {
 		return /\/(anime|manga)\/\d+/.test(currentPage.pathname);

@@ -1,20 +1,16 @@
-import {
-	$,
-	$$,
-	waitFor,
-	createElement,
-	removeElements,
-	addStyles,
-	malApi,
-} from '@/utils/Helpers';
+import { $, $$, waitFor, createElement, removeElements, addStyles, malApi } from '@/utils/Helpers';
 import { ONE_HOUR } from '@/utils/Constants';
-import { registerModule } from '@/utils/ModuleLoader';
+import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addOpEdSongs',
 	name: 'Opening/Ending Songs',
 	description: 'Adds opening/ending song data from MyAnimeList on anime/manga pages.',
 	togglable: true,
+	tags: [
+		ModuleTags.Media,
+		ModuleTags.Metadata,
+	],
 
 	validate({ currentPage }) {
 		return /^\/anime\/\d+\/.+\/$/.test(currentPage.pathname);

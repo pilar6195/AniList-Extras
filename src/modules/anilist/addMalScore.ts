@@ -1,12 +1,16 @@
 import { $, $$, waitFor, createElement, removeElements, malApi } from '@/utils/Helpers';
 import { ONE_HOUR } from '@/utils/Constants';
-import { registerModule } from '@/utils/ModuleLoader';
+import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addMalScore',
 	name: 'MyAnimeList Score',
 	description: 'Adds the MyAnimeList score to the sidebar on anime/manga pages.',
 	togglable: true,
+	tags: [
+		ModuleTags.Media,
+		ModuleTags.Metadata,
+	],
 
 	validate({ currentPage }) {
 		return /^\/(anime|manga)\/\d+/.test(currentPage.pathname);

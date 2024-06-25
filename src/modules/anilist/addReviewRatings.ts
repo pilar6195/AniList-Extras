@@ -1,7 +1,7 @@
 import Cache from '@/utils/Cache';
 import { $, $$, waitFor, observe, createElement, addStyles, anilistApi, isUI } from '@/utils/Helpers';
 import { ONE_DAY } from '@/utils/Constants';
-import { registerModule } from '@/utils/ModuleLoader';
+import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 
 let running = false;
 let observer: MutationObserver;
@@ -113,6 +113,10 @@ registerModule.anilist({
 	name: 'Review Ratings',
 	description: 'Adds the review ratings to the review cards on the homepage and review pages.',
 	togglable: true,
+	tags: [
+		ModuleTags.Media,
+		ModuleTags.Metadata,
+	],
 
 	validate({ currentPage }) {
 		return (currentPage.pathname.startsWith('/home') && isUI.desktop) || // Starts with /home. More than likely the user is on the homepage.

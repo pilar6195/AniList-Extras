@@ -1,13 +1,17 @@
 import Cache from '@/utils/Cache';
 import { $, waitFor, createElement, anilistApi, getUserId } from '@/utils/Helpers';
 import { ONE_MINUTE } from '@/utils/Constants';
-import { registerModule } from '@/utils/ModuleLoader';
+import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 
 registerModule.anilist({
 	id: 'addSocialsForumsCount',
 	name: 'Forums Threads/Comments Count',
 	description: 'Adds the number of threads/comments to the user social page.',
 	togglable: true,
+	tags: [
+		ModuleTags.Profile,
+		ModuleTags.Social,
+	],
 
 	validate({ currentPage }) {
 		return /^\/user\/.+\/social$/.test(currentPage.pathname);

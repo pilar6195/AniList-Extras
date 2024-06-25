@@ -8,6 +8,8 @@ export const ModuleTags = {
 	Media: 'Media',
 	Social: 'Social',
 	Styles: 'Styles',
+	Metadata: 'Metadata',
+	Utiliy: 'Utility',
 	External: 'External',
 } as const;
 

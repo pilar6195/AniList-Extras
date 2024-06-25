@@ -1,5 +1,5 @@
 import { $, waitFor, createElement, addViewToggle } from '@/utils/Helpers';
-import { registerModule, getModule, activeModules } from '@/utils/ModuleLoader';
+import { registerModule, getModule, activeModules, ModuleTags } from '@/utils/ModuleLoader';
 
 // This is a dummy module that is used to add the setting for the view toggles.
 // We have to do this since this file consists of multiple modules and I don't
@@ -10,6 +10,10 @@ registerModule.anilist({
 	name: 'View Toggles',
 	description: 'Adds grid/list view toggles for characters and staff pages.',
 	togglable: true,
+	tags: [
+		ModuleTags.Media,
+		ModuleTags.Utiliy,
+	],
 	validate: () => false,
 	load() {},
 });
