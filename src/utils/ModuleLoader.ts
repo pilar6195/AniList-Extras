@@ -2,6 +2,18 @@
 import Storage from './Storage';
 import EventEmitter from './EventEmitter';
 
+export const ModuleTags = {
+	Global: 'Global',
+	Profile: 'Profile',
+	Media: 'Media',
+	Social: 'Social',
+	Styles: 'Styles',
+	External: 'External',
+} as const;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type ModuleTags = typeof ModuleTags[keyof typeof ModuleTags];
+
 export const ModuleEvents = {
 	Register: 'module:register',
 	Unload: 'module:unload',
@@ -79,7 +91,7 @@ export const ModuleStates = {
 };
 
 export const registerModule = {
-	anilist(module: AnilistModule) {
+	anilist(module: (AnilistModule & { tags?: ModuleTags[] })) {
 		if (!module.id) {
 			console.error('Module id is required to register a module.');
 			return;
