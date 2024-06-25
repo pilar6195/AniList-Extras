@@ -59,7 +59,7 @@ registerModule.anilist({
 		if (statusNode?.querySelector('.value')?.textContent === 'Not Yet Released') return;
 
 		const query = new URLSearchParams({
-			q: `subreddit:anime self:yes flair:Episode (selftext:${media.type}/${media.id} OR selftext:${media.type}/${media.malId})`,
+			q: `subreddit:anime self:yes (flair:Episode OR Discussion) (selftext:${media.type}/${media.id} OR selftext:${media.type}/${media.malId})`,
 			restrict_sr: 'on',
 			sort: 'new',
 			t: 'all',
