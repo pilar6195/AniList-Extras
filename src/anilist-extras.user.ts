@@ -1,14 +1,17 @@
 import '@/utils/Polyfill';
 import '@/utils/Logs';
 import { purgeUnusedSettings } from './utils/Settings';
-import { observe, getMalId } from './utils/Helpers';
+import { observe, getMalId, addStyles } from './utils/Helpers';
 import { anilistModules, malModules, activeModules, ModuleEmitter, ModuleEvents } from './utils/ModuleLoader';
-
-/* Import Styles */
-import '@/styles/global';
 
 /* Import Modules */
 import '@/modules/modulesList';
+
+/* Import Global Styles */
+import globalStyles from '@/styles/global.scss';
+
+/* Add Global Styles to DOM */
+addStyles(globalStyles);
 
 // Clean up unused settings.
 purgeUnusedSettings();

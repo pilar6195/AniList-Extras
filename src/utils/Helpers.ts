@@ -563,36 +563,14 @@ export const createTooltip = (target: HTMLElement, contents: string) => {
 				class: 'alextras--tooltip',
 			},
 			styles: {
-				position: 'absolute',
 				top: `${target.offsetTop - 15}px`,
-				transform: 'translateX(-50%) translateY(-100%)',
-				color: '#fff',
-				width: 'max-content',
-				maxWidth: '60vw',
-				fontSize: '12px',
-				background: '#303133',
-				borderRadius: '4px',
-				padding: '10px',
-				textAlign: 'center',
-				opacity: '0',
-				zIndex: '100',
-				pointerEvents: 'none',
-				transitionDuration: '350ms',
 			},
 			textContent: contents,
 		});
 
 		const tooltipArrow = createElement('div', {
-			styles: {
-				position: 'absolute',
-				bottom: '-9px',
-				left: '50%',
-				transform: 'translateX(-50%)',
-				borderWidth: '10px 10px 0 10px',
-				borderStyle: 'solid',
-				borderColor: '#303133 transparent transparent transparent',
-				zIndex: '100',
-				pointerEvents: 'none',
+			attributes: {
+				class: 'alextras--tooltip-arrow',
 			},
 			appendTo: tooltipElement,
 		});
