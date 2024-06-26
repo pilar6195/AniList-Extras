@@ -50,7 +50,9 @@ async function build() {
 					});
 					build.onLoad({ filter: /\.scss$/ }, (args) => {
 						return {
-							contents: compileSass(args.path).css,
+							contents: compileSass(args.path, {
+								style: watchFlag ? 'expanded' : 'compressed',
+							}).css,
 							loader: 'text',
 						};
 					});
