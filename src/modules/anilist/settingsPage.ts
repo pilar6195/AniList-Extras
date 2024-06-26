@@ -14,6 +14,9 @@ import {
 	addStyles,
 } from '@/utils/Helpers';
 import { registerModule, anilistModules, ModuleStates, ModuleEmitter, ModuleEvents } from '@/utils/ModuleLoader';
+import settingsStyles from '@/styles/settingsPage.scss';
+
+addStyles(settingsStyles);
 
 registerModule.anilist({
 	id: 'settingsPage',
@@ -99,11 +102,25 @@ registerModule.anilist({
 				appendTo: settingsBody,
 			});
 
-			const moduleOptions = createElement('div', {
+			const optionsContainer = createElement('div', {
 				attributes: {
 					class: 'alextras--module-options',
 				},
 				appendTo: moduleContainer,
+			});
+
+			const optionsLeftContainer = createElement('div', {
+				attributes: {
+					class: 'alextras--module-options-left',
+				},
+				appendTo: optionsContainer,
+			});
+
+			const optionsRightContainer = createElement('div', {
+				attributes: {
+					class: 'alextras--module-options-right',
+				},
+				appendTo: optionsContainer,
 			});
 
 			/* Module Toggle */
@@ -139,7 +156,7 @@ registerModule.anilist({
 					children: [
 						toggleModuleSwitch.element,
 					],
-					appendTo: moduleOptions,
+					appendTo: optionsLeftContainer,
 				});
 			}
 
@@ -148,9 +165,6 @@ registerModule.anilist({
 			const resetSettingsElement = createElement('div', {
 				attributes: {
 					class: 'alextras--module-action-icon',
-				},
-				styles: {
-					marginLeft: '0.25em',
 				},
 				// https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt
 				innerHTML: `
@@ -168,7 +182,7 @@ registerModule.anilist({
 						ModuleStates.remove(module.id);
 					},
 				},
-				appendTo: moduleOptions,
+				appendTo: optionsRightContainer,
 			});
 
 			const hasDefaultSettings = () => {
@@ -238,7 +252,7 @@ registerModule.anilist({
 						</svg>
 					`,
 					tooltip: 'Module Settings',
-					appendTo: moduleOptions,
+					appendTo: optionsRightContainer,
 				});
 
 				let modelOpen = false;
@@ -699,133 +713,3 @@ registerModule.anilist({
 		removeElements('.alextras--settings, .alextras--module-model');
 	},
 });
-
-addStyles(`
-	.alextras--settings-description {
-		color: rgb(var(--color-text-light));
-	}
-
-	.alextras--settings-body {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 10px;
-	}
-
-	@media only screen and (min-width: 761px) and (max-width: 950px) {
-		.alextras--settings-body {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	@media only screen and (max-width: 650px) {
-		.alextras--settings-body {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	.alextras--module {
-		display: flex;
-		flex-direction: column;
-		background: rgb(var(--color-background));
-		border-radius: 5px;
-		padding: 0.75em;
-		/* min-height: 9.25em; */
-	}
-
-	.alextras--module-title {
-		margin: 0 0 0.5em 0;
-	}
-
-	.alextras--module-missing-title:after {
-		content: '「 MISSING MODULE TITLE 」';
-		color: red;
-	}
-
-	.alextras--module-tag-group {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.3em;
-		margin-bottom: 0.5em;
-	}
-
-	.alextras--module-tag-group:empty {
-		display: none;
-	}
-
-	.alextras--module-tag {
-		text-transform: capitalize;
-		font-size: 0.75em;
-		background-color: rgb(var(--color-foreground));
-		padding: 0.3em 0.5em;
-		border-radius: 3px;
-		user-select: none;
-	}
-
-	.alextras--module > .alextras--module-description {
-		flex-grow: 1;
-	}
-
-	.alextras--module-description {
-		color: rgb(var(--color-text-light));
-		margin: 0 0 1em 0;
-	}
-
-	.alextras--module .alextras--switch {
-		margin: 0;
-		float: left;
-	}
-
-	.alextras--module-action-icon {
-		cursor: pointer;
-		float: right;
-		color: rgb(var(--color-gray-600));
-	}
-
-	.alextras--module-action-icon:hover {
-		color: rgb(var(--color-blue));
-	}
-
-	.alextras--module-model {
-		position: fixed;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: rgba(0, 0, 0, 0.5);
-		z-index: 9000;
-	}
-
-	.alextras--module-model-container {
-		display: flex;
-		flex-direction: column;
-		background: rgb(var(--color-foreground));
-		padding: 1em;
-		width: 100%;
-		max-width: 600px;
-		max-height: 80%;
-		border-radius: 4px;
-		box-shadow: 0 2px 33px rgba(0,0,0,.48);
-		animation: in .25s ease-in-out;
-		z-index: 9001;
-	}
-
-	.alextras--module-model .alextras--module-title {
-		display: flex;
-	}
-
-	.alextras--module-model .alextras--module-title span {
-		flex: 1;
-	}
-
-	.alextras--module-model .alextras--module-title .el-icon-close {
-		cursor: pointer;
-	}
-
-	.alextras--module-model-body {
-		overflow: auto;
-		padding-right: 0.5em;
-	}
-`);

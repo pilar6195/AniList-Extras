@@ -83,6 +83,11 @@ $inputMargins: 0px 1em 1em 0;
 	@include input-description {
 		margin-left: 2.2em;
 	}
+
+	.el-checkbox__inner {
+		background: rgb(var(--color-background-300));
+		border-color: rgb(var(--color-background-300))
+	}
 }
 
 .alextras--switch {
@@ -90,6 +95,11 @@ $inputMargins: 0px 1em 1em 0;
 
 	@include input-description {
 		margin-left: 4.5em;
+	}
+
+	.el-switch__core {
+		background: rgb(var(--color-background-300));
+		border-color: rgb(var(--color-background-300))
 	}
 
 	.el-switch__label:not(.is-active) {

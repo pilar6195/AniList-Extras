@@ -1,0 +1,152 @@
+@mixin module-title {
+	.alextras--module-title {
+		margin: 0 0 0.5em 0;
+		@content;
+	}
+}
+
+@mixin module-description {
+	.alextras--module-description {
+		color: rgb(var(--color-text-light));
+		margin: 0 0 1em 0;
+		@content;
+	}
+}
+
+.alextras--settings {
+	.alextras--settings-description {
+		color: rgb(var(--color-text-light));
+	}
+
+	.alextras--settings-body {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+
+		@media only screen and (min-width: 761px) and (max-width: 950px) {
+			& {
+				grid-template-columns: 1fr;
+			}
+		}
+	
+		@media only screen and (max-width: 650px) {
+			& {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		.alextras--module {
+			display: flex;
+			flex-direction: column;
+			background: rgb(var(--color-background));
+			border-radius: 5px;
+			padding: 0.75em;
+
+			@include module-title;
+
+			.alextras--module-missing-title:after {
+				content: '「 MISSING MODULE TITLE 」';
+				color: red;
+			}
+
+			.alextras--module-tag-group {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.3em;
+				margin-bottom: 0.5em;
+
+				&:empty {
+					display: none;
+				}
+
+				.alextras--module-tag {
+					text-transform: capitalize;
+					font-size: 0.75em;
+					background-color: rgb(var(--color-foreground));
+					padding: 0.3em 0.5em;
+					border-radius: 3px;
+					user-select: none;
+				}
+			}
+
+			@include module-description {
+				flex-grow: 1;
+			}
+
+			.alextras--module-options {
+				.alextras--module-options-left {
+					float: left;
+					display: flex;
+				}
+
+				.alextras--module-options-right {
+					float: right;
+					display: flex;
+
+					& > * {
+						margin-left: 0.25em;
+					}
+				}
+
+				.alextras--switch {
+					margin: 0;
+				}
+
+				.alextras--module-action-icon {
+					cursor: pointer;
+					color: rgb(var(--color-gray-600));
+
+					&:hover {
+						color: rgb(var(--color-blue));
+					}
+				}
+			}
+		}
+	}
+}
+
+.alextras--module-model {
+	position: fixed;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 9000;
+
+	.alextras--module-model-container {
+		display: flex;
+		flex-direction: column;
+		background: rgb(var(--color-foreground));
+		padding: 1em;
+		width: 100%;
+		max-width: 600px;
+		max-height: 80%;
+		border-radius: 4px;
+		box-shadow: 0 2px 33px rgba(0, 0, 0, .48);
+		animation: in .25s ease-in-out;
+		z-index: 9001;
+
+		@include module-title {
+			display: flex;
+
+			span {
+				flex: 1;
+			}
+
+			.el-icon-close {
+				cursor: pointer;
+			}
+		}
+
+		@include module-description;
+
+		.alextras--module-model-body {
+			overflow: auto;
+			padding-right: 0.5em;
+		}
+	}
+}
