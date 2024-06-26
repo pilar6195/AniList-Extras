@@ -565,7 +565,11 @@ export const createTooltip = (target: HTMLElement, contents: string) => {
 			styles: {
 				top: `${target.offsetTop - 15}px`,
 			},
-			textContent: contents,
+			children: [
+				createElement('span', {
+					textContent: contents.trim(),
+				}),
+			],
 		});
 
 		const tooltipArrow = createElement('div', {
