@@ -319,7 +319,10 @@ type BaseModule = {
 	 * Description of the module.
 	 */
 	description?: string;
-
+	/**
+	 * Notice that will appear in the settings menu.
+	 */
+	notice?: string;
 	/**
 	 * Tags
 	 */

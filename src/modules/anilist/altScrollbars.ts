@@ -5,7 +5,8 @@ import SettingsManager from '@/utils/Settings';
 registerModule.anilist({
 	id: 'altScrollbars',
 	name: 'Alternative Scrollbars',
-	description: 'Replaces the default scrollbars with a alternative design. Requires a page refresh.',
+	description: 'Replaces the default scrollbars with a alternative design.',
+	notice: 'Requires a page refresh for all changes to take effect.',
 	togglable: true,
 	tags: [
 		ModuleTags.Global,
