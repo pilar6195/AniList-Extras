@@ -20,6 +20,7 @@ import './anilist/setYTDefaultVolume';
 import './anilist/addSocialsFollowsCount';
 import './anilist/addSocialsForumsCount';
 import './anilist/addReviewRatings';
+import './anilist/hideGlobalFeed';
 import './anilist/addSeasonLink';
 import './anilist/altScrollbars';
 

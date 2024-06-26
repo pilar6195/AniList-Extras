@@ -4,6 +4,7 @@ import EventEmitter from './EventEmitter';
 
 export const ModuleTags = {
 	Global: 'Global',
+	Home: 'Home',
 	Profile: 'Profile',
 	Media: 'Media',
 	Social: 'Social',
