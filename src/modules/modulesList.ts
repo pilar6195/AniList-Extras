@@ -16,6 +16,7 @@ import './anilist/addAniListScore';
 import './anilist/addViewToggles';
 import './anilist/addMalCharacters';
 import './anilist/addOpEdSongs';
+import './anilist/setYTDefaultVolume';
 import './anilist/addSocialsFollowsCount';
 import './anilist/addSocialsForumsCount';
 import './anilist/addReviewRatings';
