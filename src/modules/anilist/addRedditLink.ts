@@ -5,11 +5,11 @@ registerModule.anilist({
 	id: 'addRedditLink',
 	name: 'Reddit Discussions Link',
 	description: 'Adds a link to search for discussion threads on /r/anime on Reddit. This is probably not 100% accurate.',
-	togglable: true,
 	tags: [
 		ModuleTags.Media,
 		ModuleTags.External,
 	],
+	togglable: true,
 
 	validate({ currentPage }) {
 		return /\/anime\/\d+/.test(currentPage.pathname);

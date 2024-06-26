@@ -7,11 +7,11 @@ registerModule.anilist({
 	name: 'Alternative Scrollbars',
 	description: 'Replaces the default scrollbars with a alternative design.',
 	notice: 'Requires a page refresh for all changes to take effect.',
-	togglable: true,
 	tags: [
 		ModuleTags.Global,
 		ModuleTags.Styles,
 	],
+	togglable: true,
 	disabledDefault: true,
 	settingsPage: {
 		thinScrollbar: {

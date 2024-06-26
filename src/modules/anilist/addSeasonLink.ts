@@ -5,11 +5,11 @@ registerModule.anilist({
 	id: 'addSeasonLink',
 	name: 'Seasonal Link',
 	description: 'Add a link to the seasonal anime page in the browse dropdown in the navbar.',
-	togglable: true,
 	tags: [
 		ModuleTags.Global,
 		ModuleTags.Utiliy,
 	],
+	togglable: true,
 
 	validate() {
 		// Load on any page assuming we haven't already created the element.

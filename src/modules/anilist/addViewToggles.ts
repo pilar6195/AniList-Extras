@@ -9,11 +9,11 @@ registerModule.anilist({
 	id: 'addViewToggles',
 	name: 'View Toggles',
 	description: 'Adds grid/list view toggles for characters and staff pages.',
-	togglable: true,
 	tags: [
 		ModuleTags.Media,
 		ModuleTags.Utiliy,
 	],
+	togglable: true,
 	validate: () => false,
 	load() {},
 });

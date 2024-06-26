@@ -7,11 +7,11 @@ registerModule.anilist({
 	id: 'addSocialsFollowsCount',
 	name: 'Followers/Following Count',
 	description: 'Adds the number of followers/following to the user social page.',
-	togglable: true,
 	tags: [
 		ModuleTags.Profile,
 		ModuleTags.Social,
 	],
+	togglable: true,
 
 	validate({ currentPage }) {
 		return /^\/user\/.+\/social$/.test(currentPage.pathname);

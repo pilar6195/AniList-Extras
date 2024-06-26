@@ -6,11 +6,11 @@ registerModule.anilist({
 	id: 'addOpEdSongs',
 	name: 'Opening/Ending Songs',
 	description: 'Adds opening/ending song data from MyAnimeList on anime/manga pages.',
-	togglable: true,
 	tags: [
 		ModuleTags.Media,
 		ModuleTags.Metadata,
 	],
+	togglable: true,
 
 	validate({ currentPage }) {
 		return /^\/anime\/\d+\/.+\/$/.test(currentPage.pathname);

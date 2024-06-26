@@ -113,11 +113,11 @@ registerModule.anilist({
 	name: 'Review Ratings',
 	description: 'Adds the review ratings to the review cards on the homepage and review pages.',
 	notice: 'Reviews for media marked as "Adult" cannot be fetched due to API restrictions.',
-	togglable: true,
 	tags: [
 		ModuleTags.Media,
 		ModuleTags.Metadata,
 	],
+	togglable: true,
 
 	validate({ currentPage }) {
 		return (currentPage.pathname.startsWith('/home') && isUI.desktop) || // Starts with /home. More than likely the user is on the homepage.

@@ -5,11 +5,11 @@ registerModule.anilist({
 	id: 'addAnilistScore',
 	name: 'AniList Score',
 	description: 'Adds the average AniList score above the sidebar on anime/manga pages.',
-	togglable: true,
 	tags: [
 		ModuleTags.Media,
 		ModuleTags.Metadata,
 	],
+	togglable: true,
 
 	validate({ currentPage }) {
 		return /^\/(anime|manga)\/\d+/.test(currentPage.pathname);

@@ -7,11 +7,11 @@ registerModule.anilist({
 	id: 'addSocialsForumsCount',
 	name: 'Forums Threads/Comments Count',
 	description: 'Adds the number of threads/comments to the user social page.',
-	togglable: true,
 	tags: [
 		ModuleTags.Profile,
 		ModuleTags.Social,
 	],
+	togglable: true,
 
 	validate({ currentPage }) {
 		return /^\/user\/.+\/social$/.test(currentPage.pathname);

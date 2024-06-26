@@ -332,23 +332,15 @@ type BaseModule = {
 	 */
 	togglable?: boolean;
 	/**
+	 * Whether the module is disabled by default.
+	 */
+	disabledDefault?: boolean;
+	/**
 	 * Options that will appear in the settings menu.
 	 */
 	settingsPage?: {
 		[key: string]: ModuleSettingColor | ModuleSettingNumber | ModuleSettingSelect | ModuleSettingText | ModuleSettingToggle;
 	}
-	/**
-	 * Whether the module is disabled by default.
-	 */
-	disabledDefault?: boolean;
-	/**
-	 * List of modules that this module depends on.
-	 * This will hold the execution of the module until all dependencies are loaded.
-	 * If all dependencies are not loaded within 10 seconds, the module will be skipped.
-	 *
-	 * This is not currently implemented.
-	 */
-	dependsOn?: string[];
 };
 
 type AnilistModule = BaseModule & {

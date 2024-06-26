@@ -6,11 +6,11 @@ registerModule.anilist({
 	id: 'addMalScore',
 	name: 'MyAnimeList Score',
 	description: 'Adds the MyAnimeList score to the sidebar on anime/manga pages.',
-	togglable: true,
 	tags: [
 		ModuleTags.Media,
 		ModuleTags.Metadata,
 	],
+	togglable: true,
 
 	validate({ currentPage }) {
 		return /^\/(anime|manga)\/\d+/.test(currentPage.pathname);

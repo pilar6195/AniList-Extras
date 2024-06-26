@@ -12,11 +12,11 @@ registerModule.anilist({
 		This module requires an external YouTube API script to work.
 		It will only load when this module is enabled.
 	`,
-	togglable: true,
 	tags: [
 		ModuleTags.Media,
 		ModuleTags.Utiliy,
 	],
+	togglable: true,
 	disabledDefault: true,
 	settingsPage: {
 		defaultVolume: {
