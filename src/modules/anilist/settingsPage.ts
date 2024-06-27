@@ -546,6 +546,8 @@ registerModule.anilist({
 			}
 		}
 
+		/* Backup and Restore Settings */
+
 		const restoreSettingsInput = createElement('input', {
 			attributes: {
 				type: 'file',
@@ -589,6 +591,9 @@ registerModule.anilist({
 		});
 
 		createElement('section', {
+			styles: {
+				textAlign: 'center',
+			},
 			children: [
 				createElement('div', {
 					attributes: {
@@ -632,7 +637,11 @@ registerModule.anilist({
 					attributes: {
 						class: 'button',
 					},
+					styles: {
+						background: 'rgb(var(--color-background-600))',
+					},
 					textContent: 'Restore Settings',
+					tooltip: 'Restoring settings will overwrite your current settings.',
 					events: {
 						click() {
 							restoreSettingsInput.click();
@@ -666,16 +675,91 @@ registerModule.anilist({
 						},
 					},
 				}),
-				createElement('div', {
-					styles: {
-						marginTop: '15px',
-						color: 'rgb(var(--color-red))',
+			],
+			appendTo: settingsContainer,
+		});
+
+		/* Anilist Token */
+
+		const accessToken = location.hash.split('&')[0].replaceAll('#access_token=', '');
+
+		if (accessToken) {
+			Storage.set('apiToken', accessToken);
+			window.history.replaceState(null, '', location.pathname);
+		}
+
+		const tokenContainer = createElement('section', {
+			children: [
+				createElement('h3', {
+					textContent: 'Authenticate with AniList',
+				}),
+				createElement('p', {
+					attributes: {
+						class: 'alextras--settings-description',
 					},
-					textContent: 'Restoring settings will overwrite your current settings.',
+					textContent: `
+						Some modules use the AniList API to fetch various types of data.
+						In some cases, they may require you to authenticate with AniList to work properly.
+					`,
+				}),
+				createElement('p', {
+					attributes: {
+						class: 'alextras--settings-description',
+					},
+					textContent: `
+						Click the Login button below to authenticate with AniList.
+						You will be redirected to an authorization page where you will be asked to authorize AniList Extras.
+						After you authorize, you will be redirected back to this page.
+
+					`,
+				}),
+				createElement('p', {
+					attributes: {
+						class: 'alextras--settings-description',
+					},
+					styles: {
+						marginBottom: '0',
+					},
+					textContent: `
+						If you are already authenticated, you can log out by clicking the Logout button below.
+						You can also revoke access by clicking "Revoke App" at the top of this page.
+					`,
 				}),
 			],
 			appendTo: settingsContainer,
 		});
+
+		const loginElement = createElement('a', {
+			attributes: {
+				class: 'button',
+				href: 'https://anilist.co/api/v2/oauth/authorize?client_id=19391&response_type=token',
+			},
+			textContent: 'Login to AniList',
+			appendTo: tokenContainer,
+		});
+
+		const logoutElement = createElement('div', {
+			attributes: {
+				class: 'button danger',
+			},
+			textContent: 'Logout from AniList',
+			events: {
+				click() {
+					Storage.remove('apiToken');
+					loginElement.style.display = '';
+					logoutElement.style.display = 'none';
+				},
+			},
+			appendTo: tokenContainer,
+		});
+
+		if (Storage.get('apiToken')) {
+			loginElement.style.display = 'none';
+		} else {
+			logoutElement.style.display = 'none';
+		}
+
+		/* Footer Content */
 
 		createElement('section', {
 			children: [

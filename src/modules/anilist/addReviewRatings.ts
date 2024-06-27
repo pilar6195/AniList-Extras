@@ -112,7 +112,11 @@ registerModule.anilist({
 	id: 'addReviewRatings',
 	name: 'Review Ratings',
 	description: 'Adds the review ratings to the review cards on the homepage and review pages.',
-	notice: 'Reviews for media marked as "Adult" cannot be fetched due to API restrictions.',
+	notice: `
+		Reviews for media marked as "Adult" cannot be fetched without
+		authenticating with AniList due to API restrictions.
+		You can authenticate below.
+	`,
 	tags: [
 		ModuleTags.Media,
 		ModuleTags.Metadata,
