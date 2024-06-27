@@ -1,7 +1,7 @@
-import Storage from '@/utils/Storage';
 import { $, $$, waitFor, createElement, removeElements, addStyles, malApi } from '@/utils/Helpers';
 import { ONE_HOUR } from '@/utils/Constants';
 import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
+import SettingsManager from '@/utils/Settings';
 
 registerModule.anilist({
 	id: 'addMalCharacters',
@@ -18,6 +18,7 @@ registerModule.anilist({
 	},
 
 	async load({ media }) {
+		const ModuleSettings = new SettingsManager(this.id);
 		const targetLoaded = await waitFor('.overview > .characters, .overview > .staff');
 
 		// If the target element or mal id is not found, return.
@@ -265,12 +266,12 @@ registerModule.anilist({
 				characterToggle.textContent = 'Switch to MyAnimeList';
 				characterHeader.textContent = 'AniList Characters';
 				$('.characters')!.classList.remove('alextras--mal');
-				Storage.set('activeCharacters', 'anilist');
+				ModuleSettings.set('activeCharacters', 'anilist');
 			} else {
 				characterToggle.textContent = 'Switch to AniList';
 				characterHeader.textContent = 'MAL Characters';
 				$('.characters')!.classList.add('alextras--mal');
-				Storage.set('activeCharacters', 'mal');
+				ModuleSettings.set('activeCharacters', 'mal');
 			}
 
 			event.stopPropagation();
@@ -287,7 +288,7 @@ registerModule.anilist({
 			event.stopPropagation();
 		});
 
-		if (Storage.get('activeCharacters') === 'anilist' && hasAnilistCharacters) {
+		if (ModuleSettings.get('activeCharacters') === 'anilist' && hasAnilistCharacters) {
 			characterToggle.textContent = 'Switch to MyAnimeList';
 			characterHeader.textContent = 'AniList Characters';
 		} else {
