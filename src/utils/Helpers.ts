@@ -293,6 +293,16 @@ export const anilistApi = async (
 			data: JSON.stringify({ query, variables }),
 		});
 
+		// If the request failed and the user has an api token, check if the token is invalid.
+		if (apiToken && useApiToken && response.status === 400) {
+			const invalidToken = response.json.errors.some((error: any) => error.message === 'Invalid token');
+
+			if (invalidToken) {
+				Storage.remove('apiToken');
+				return anilistApi(query, variables, useApiToken, retries);
+			}
+		}
+
 		if (response.status >= 400 && response.status !== 429) {
 			console.error(`Request failed with status code ${response.status}. Retrying... (${retryCount + 1}/${retries})`, response);
 			retryCount++;
