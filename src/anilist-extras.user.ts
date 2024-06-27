@@ -24,10 +24,14 @@ if (location.host === 'anilist.co') {
 	let contextId: string;
 
 	observe(document.body, async () => {
-		if (location.href !== currentPage?.href) {
+		// Remove the hash from the URL. This is usually not needed to check for navigation.
+		const newPage = new URL(location.href);
+		newPage.hash = '';
+
+		if (newPage.href !== currentPage?.href) {
 			contextId = crypto.randomUUID();
 			const previousPage = currentPage;
-			currentPage = new URL(location.href); // Basically cloning the window.location object.
+			currentPage = new URL(newPage.href); // Basically cloning the window.location object.
 
 			ModuleEmitter.emit(ModuleEvents.Navigate, currentPage, previousPage);
 
