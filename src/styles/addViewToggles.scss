@@ -1,0 +1,11 @@
+.alextras--view-switch-toggle {
+	float: right;
+
+	span {
+		cursor: pointer;
+
+		&.alextras--active {
+			color: rgb(var(--color-blue))
+		}
+	}
+}
