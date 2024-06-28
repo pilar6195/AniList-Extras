@@ -1,10 +1,8 @@
-import { $, $$, waitFor, createElement, addStyles } from '@/utils/Helpers';
+import { $, $$, waitFor, createElement } from '@/utils/Helpers';
 import { registerModule, getModule, activeModules, ModuleTags } from '@/utils/ModuleLoader';
 import SettingsManager from '@/utils/Settings';
 
 import addViewTogglesStyles from '@/styles/addViewToggles.scss';
-
-addStyles(addViewTogglesStyles);
 
 // This is a dummy module that is used to add the setting for the view toggles.
 // We have to do this since this file consists of multiple modules and I don't
@@ -19,6 +17,7 @@ registerModule.anilist({
 		ModuleTags.Utiliy,
 	],
 	togglable: true,
+	styles: addViewTogglesStyles,
 	validate: () => false,
 	load() {},
 });
