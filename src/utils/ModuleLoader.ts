@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete, sonarjs/no-empty-collection */
 import Storage from './Storage';
 import EventEmitter from './EventEmitter';
+import { $, addStyles, removeElements } from './Helpers';
 
 export const ModuleTags = {
 	Global: 'Global',
@@ -53,6 +54,8 @@ type ModuleToggles = {
 	disabled: boolean;
 	enable(): void;
 	disable(): Promise<void>;
+	insertStyles(): void;
+	removeStyles(): void;
 };
 
 export const anilistModules: (AnilistModule & ModuleToggles)[] = [];
@@ -115,11 +118,13 @@ export const registerModule = {
 				if (!this.disabled) return;
 				this.disabled = false;
 				ModuleStates.set(this.id, true);
+				this.insertStyles();
 			},
 			async disable() {
 				if (this.disabled) return;
 				this.disabled = true;
 				ModuleStates.set(this.id, false);
+				this.removeStyles();
 
 				// Unload the module if it is currently active.
 				if (typeof module.unload === 'function' && activeModules.has(module.id)) {
@@ -136,6 +141,13 @@ export const registerModule = {
 						ModuleEmitter.emit(ModuleEvents.UnloadError, module.id, error);
 					}
 				}
+			},
+			insertStyles() {
+				if (!module.styles || $(`style.alextras-module-${module.id}-styles`)) return;
+				addStyles(module.styles, `alextras-module-${module.id}-styles`);
+			},
+			removeStyles() {
+				removeElements(`style.alextras-module-${module.id}-styles`);
 			},
 		});
 
@@ -162,10 +174,19 @@ export const registerModule = {
 			enable() {
 				this.disabled = false;
 				ModuleStates.set(this.id, true);
+				this.insertStyles();
 			},
 			async disable() {
 				this.disabled = true;
 				ModuleStates.set(this.id, false);
+				this.removeStyles();
+			},
+			insertStyles() {
+				if (!module.styles || $(`style.alextras-module-${module.id}-styles`)) return;
+				addStyles(module.styles, `alextras-module-${module.id}-styles`);
+			},
+			removeStyles() {
+				removeElements(`style.alextras-module-${module.id}-styles`);
 			},
 		});
 

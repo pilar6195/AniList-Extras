@@ -54,6 +54,9 @@ if (location.host === 'anilist.co') {
 			for (const module of anilistModules) {
 				if (module.disabled) continue;
 
+				// Insert Styles, if any.
+				module.insertStyles();
+
 				// This is inside a iife so modules don't delay each other.
 				// eslint-disable-next-line @typescript-eslint/no-loop-func
 				(async (media, currentContextId) => {
@@ -125,6 +128,8 @@ if (location.host === 'myanimelist.net') {
 
 	for (const module of malModules) {
 		if (module.disabled) continue;
+
+		module.insertStyles();
 
 		// eslint-disable-next-line @typescript-eslint/no-loop-func
 		(async () => {

@@ -341,6 +341,13 @@ type BaseModule = {
 	settingsPage?: {
 		[key: string]: ModuleSettingColor | ModuleSettingNumber | ModuleSettingSelect | ModuleSettingText | ModuleSettingToggle;
 	}
+	/**
+	 * Styles that will be injected into the page when the module is enabled.
+	 * Use this to style any elements created by the module.
+	 * It should not target any elements outside of the module if it doesn't need to.
+	 * Styles will be removed when the module is disabled.
+	 */
+	styles?: string;
 };
 
 type AnilistModule = BaseModule & {
