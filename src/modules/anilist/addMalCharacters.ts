@@ -1,7 +1,9 @@
-import { $, $$, waitFor, createElement, removeElements, addStyles, malApi } from '@/utils/Helpers';
+import { $, $$, waitFor, createElement, removeElements, malApi } from '@/utils/Helpers';
 import { ONE_HOUR } from '@/utils/Constants';
 import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 import SettingsManager from '@/utils/Settings';
+
+import moduleStyles from '@/styles/addMalCharacters.scss';
 
 registerModule.anilist({
 	id: 'addMalCharacters',
@@ -12,6 +14,7 @@ registerModule.anilist({
 		ModuleTags.Metadata,
 	],
 	togglable: true,
+	styles: moduleStyles,
 
 	validate({ currentPage }) {
 		return /^\/(anime|manga)\/\d+\/.+\/$/.test(currentPage.pathname);
@@ -312,30 +315,3 @@ registerModule.anilist({
 		removeElements('.alextras--characters-toggle, .alextras--characters');
 	},
 });
-
-addStyles(`
-	.characters:not(.alextras--mal) > .grid-wrap.alextras--mal,
-	.characters.alextras--mal > .grid-wrap:not(.alextras--mal),
-	#alextras--showMoreCharacters {
-		display: none;
-	}
-
-	.characters.alextras--mal #alextras--showMoreCharacters {
-		display: block;
-		margin-top: 0.75em;
-		text-align: center;
-	}
-
-	.alextras--characters-toggle {
-		border-radius: 3px;
-		background: rgb(var(--color-foreground));
-		font-size: 1.2rem;
-		padding: 3px 6px;
-		margin-left: 5px;
-	}
-
-	.alextras--characters-header {
-		font-size: 1.4rem;
-		font-weight: 500;
-	}
-`);

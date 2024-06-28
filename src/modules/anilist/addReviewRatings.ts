@@ -1,7 +1,9 @@
 import Cache from '@/utils/Cache';
-import { $, $$, waitFor, observe, createElement, addStyles, anilistApi, isUI } from '@/utils/Helpers';
+import { $, $$, waitFor, observe, createElement, anilistApi, isUI } from '@/utils/Helpers';
 import { ONE_DAY } from '@/utils/Constants';
 import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
+
+import moduleStyles from '@/styles/addReviewRatings.scss';
 
 let running = false;
 let observer: MutationObserver;
@@ -122,6 +124,7 @@ registerModule.anilist({
 		ModuleTags.Metadata,
 	],
 	togglable: true,
+	styles: moduleStyles,
 
 	validate({ currentPage }) {
 		return (currentPage.pathname.startsWith('/home') && isUI.desktop) || // Starts with /home. More than likely the user is on the homepage.
@@ -143,26 +146,3 @@ registerModule.anilist({
 		running = false;
 	},
 });
-
-addStyles(`
-	.review-card .summary {
-		padding-bottom: 20px;
-	}
-
-	.review-card .alextras--review-score-container {
-		position: absolute;
-		line-height: 1.2;
-		bottom: 10px;
-		left: 10px;
-	}
-
-	.review-card .alextras--review-score {
-		color: rgb(var(--color-white));
-		text-align: center;
-		padding: 0px 5px;
-		margin: 0px;
-		border-radius: 2px;
-		font-size: 1.3rem;
-		font-weight: bold;
-	}
-`);

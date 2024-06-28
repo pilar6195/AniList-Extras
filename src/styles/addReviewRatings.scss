@@ -1,0 +1,22 @@
+.review-card {
+	.summary {
+		padding-bottom: 20px;
+	}
+
+	.alextras--review-score-container {
+		position: absolute;
+		line-height: 1.2;
+		bottom: 10px;
+		left: 10px;
+	}
+
+	.alextras--review-score {
+		color: rgb(var(--color-white));
+		text-align: center;
+		padding: 0px 5px;
+		margin: 0px;
+		border-radius: 2px;
+		font-size: 1.3rem;
+		font-weight: bold;
+	}
+}

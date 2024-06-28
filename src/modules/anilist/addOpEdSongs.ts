@@ -1,6 +1,8 @@
-import { $, $$, waitFor, createElement, removeElements, addStyles, malApi } from '@/utils/Helpers';
+import { $, $$, waitFor, createElement, removeElements, malApi } from '@/utils/Helpers';
 import { ONE_HOUR } from '@/utils/Constants';
 import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
+
+import moduleStyles from '@/styles/addOpEdSongs.scss';
 
 registerModule.anilist({
 	id: 'addOpEdSongs',
@@ -11,6 +13,7 @@ registerModule.anilist({
 		ModuleTags.Metadata,
 	],
 	togglable: true,
+	styles: moduleStyles,
 
 	validate({ currentPage }) {
 		return /^\/anime\/\d+\/.+\/$/.test(currentPage.pathname);
@@ -191,12 +194,3 @@ registerModule.anilist({
 		removeElements('.alextras--openings, .alextras--endings');
 	},
 });
-
-addStyles(`
-	#alextras--toggleOpenings,
-	#alextras--toggleEndings {
-		display: block;
-		margin-top: 0.75em;
-		text-align: center;
-	}
-`);

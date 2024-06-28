@@ -11,15 +11,13 @@ import {
 	createInput,
 	createDropdown,
 	createSwitch,
-	addStyles,
 } from '@/utils/Helpers';
 import { registerModule, anilistModules, ModuleStates, ModuleEmitter, ModuleEvents } from '@/utils/ModuleLoader';
 import settingsStyles from '@/styles/settingsPage.scss';
 
-addStyles(settingsStyles);
-
 registerModule.anilist({
 	id: 'settingsPage',
+	styles: settingsStyles,
 
 	validate({ currentPage }) {
 		return /\/settings\/apps/i.test(currentPage.pathname);

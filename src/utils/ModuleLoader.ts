@@ -143,11 +143,11 @@ export const registerModule = {
 				}
 			},
 			insertStyles() {
-				if (!module.styles || $(`style.alextras-module-${module.id}-styles`)) return;
-				addStyles(module.styles, `alextras-module-${module.id}-styles`);
+				if (!module.styles || $(`style.alextras--module-${module.id}-styles`)) return;
+				addStyles(module.styles, `alextras--module-${module.id}-styles`);
 			},
 			removeStyles() {
-				removeElements(`style.alextras-module-${module.id}-styles`);
+				removeElements(`style.alextras--module-${module.id}-styles`);
 			},
 		});
 
@@ -182,11 +182,11 @@ export const registerModule = {
 				this.removeStyles();
 			},
 			insertStyles() {
-				if (!module.styles || $(`style.alextras-module-${module.id}-styles`)) return;
-				addStyles(module.styles, `alextras-module-${module.id}-styles`);
+				if (!module.styles || $(`style.alextras--module-${module.id}-styles`)) return;
+				addStyles(module.styles, `alextras--module-${module.id}-styles`);
 			},
 			removeStyles() {
-				removeElements(`style.alextras-module-${module.id}-styles`);
+				removeElements(`style.alextras--module-${module.id}-styles`);
 			},
 		});
 
