@@ -9,7 +9,7 @@ registerModule.anilist({
 		ModuleTags.Media,
 		ModuleTags.External,
 	],
-	togglable: true,
+	toggleable: true,
 
 	validate({ currentPage }) {
 		return /\/anime\/\d+/.test(currentPage.pathname);

@@ -111,7 +111,7 @@ export const registerModule = {
 		const moduleState = ModuleStates.get(module.id, !(module.disabledDefault ?? false));
 
 		anilistModules.push({
-			togglable: false,
+			toggleable: false,
 			...module,
 			disabled: !moduleState,
 			enable() {
@@ -168,7 +168,7 @@ export const registerModule = {
 		const moduleState = ModuleStates.get(module.id, !(module.disabledDefault ?? false));
 
 		malModules.push({
-			togglable: false,
+			toggleable: false,
 			...module,
 			disabled: !moduleState,
 			enable() {

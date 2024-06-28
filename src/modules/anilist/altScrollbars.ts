@@ -11,7 +11,7 @@ registerModule.anilist({
 		ModuleTags.Global,
 		ModuleTags.Styles,
 	],
-	togglable: true,
+	toggleable: true,
 	disabledDefault: true,
 	settingsPage: {
 		thinScrollbar: {

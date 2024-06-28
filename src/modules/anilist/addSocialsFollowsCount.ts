@@ -11,7 +11,7 @@ registerModule.anilist({
 		ModuleTags.Profile,
 		ModuleTags.Social,
 	],
-	togglable: true,
+	toggleable: true,
 
 	validate({ currentPage }) {
 		return /^\/user\/.+\/social$/.test(currentPage.pathname);

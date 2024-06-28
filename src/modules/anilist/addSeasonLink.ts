@@ -9,7 +9,7 @@ registerModule.anilist({
 		ModuleTags.Global,
 		ModuleTags.Utiliy,
 	],
-	togglable: true,
+	toggleable: true,
 
 	validate() {
 		// Load on any page assuming we haven't already created the element.

@@ -330,7 +330,7 @@ type BaseModule = {
 	/**
 	 * Whether the module can be toggled on/off.
 	 */
-	togglable?: boolean;
+	toggleable?: boolean;
 	/**
 	 * Whether the module is disabled by default.
 	 */

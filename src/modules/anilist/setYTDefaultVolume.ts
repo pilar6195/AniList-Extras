@@ -16,7 +16,7 @@ registerModule.anilist({
 		ModuleTags.Media,
 		ModuleTags.Utiliy,
 	],
-	togglable: true,
+	toggleable: true,
 	disabledDefault: true,
 	settingsPage: {
 		defaultVolume: {

@@ -9,7 +9,7 @@ registerModule.anilist({
 		ModuleTags.Home,
 		ModuleTags.Social,
 	],
-	togglable: true,
+	toggleable: true,
 	disabledDefault: true,
 
 	validate({ currentPage }) {

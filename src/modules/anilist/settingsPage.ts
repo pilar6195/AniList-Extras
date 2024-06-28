@@ -62,7 +62,7 @@ registerModule.anilist({
 
 		for (const module of anilistModules) {
 			const hasSettings = Object.keys(module.settingsPage ?? {}).length;
-			if (!module.togglable && !hasSettings) continue;
+			if (!module.toggleable && !hasSettings) continue;
 
 			const ModuleSettings = new SettingsManager(module.id);
 
@@ -123,7 +123,7 @@ registerModule.anilist({
 
 			/* Module Toggle */
 
-			if (module.togglable) {
+			if (module.toggleable) {
 				const toggleModuleSwitch = createSwitch({
 					enabled: !module.disabled,
 				});
@@ -188,7 +188,7 @@ registerModule.anilist({
 
 				const defaultModuleState = !(module.disabledDefault ?? false);
 
-				if (module.togglable && (module.disabled !== !defaultModuleState)) {
+				if (module.toggleable && (module.disabled !== !defaultModuleState)) {
 					hasDefault = false;
 				}
 

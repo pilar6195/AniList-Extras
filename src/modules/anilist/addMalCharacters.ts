@@ -13,7 +13,7 @@ registerModule.anilist({
 		ModuleTags.Media,
 		ModuleTags.Metadata,
 	],
-	togglable: true,
+	toggleable: true,
 	styles: moduleStyles,
 
 	validate({ currentPage }) {
