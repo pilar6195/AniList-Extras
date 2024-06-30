@@ -29,7 +29,7 @@ registerModule.anilist({
 	id: 'addCharactersViewSwitch',
 
 	validate({ currentPage }) {
-		return /^\/(anime|manga)\/\d+\/.+\/$/.test(currentPage.pathname)
+		return /^\/(anime|manga)\/\d+\/[^/]+\/?$/.test(currentPage.pathname)
 			&& !viewSwitchModule.disabled;
 	},
 
@@ -83,7 +83,7 @@ registerModule.anilist({
 	id: 'addStaffViewSwitch',
 
 	validate({ currentPage }) {
-		return /^\/(anime|manga)\/\d+\/.+\/$/.test(currentPage.pathname)
+		return /^\/(anime|manga)\/\d+\/[^/]+\/?$/.test(currentPage.pathname)
 			&& !viewSwitchModule.disabled;
 	},
 

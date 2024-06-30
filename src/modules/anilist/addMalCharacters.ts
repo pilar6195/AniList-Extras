@@ -17,7 +17,7 @@ registerModule.anilist({
 	styles: moduleStyles,
 
 	validate({ currentPage }) {
-		return /^\/(anime|manga)\/\d+\/.+\/$/.test(currentPage.pathname);
+		return /^\/(anime|manga)\/\d+\/[^/]+\/?$/.test(currentPage.pathname);
 	},
 
 	async load({ media }) {
