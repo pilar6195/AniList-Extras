@@ -2,6 +2,8 @@
 import Cache from './Cache';
 import Storage from './Storage';
 import { ONE_HOUR, ONE_DAY, ONE_WEEK } from './Constants';
+import type * as CSS from 'csstype';
+
 
 declare global {
 	namespace Tampermonkey {
@@ -37,7 +39,8 @@ export const createElement = (
 	tag: string,
 	options: {
 		attributes?: Record<string, string>;
-		styles?: Record<string, string>;
+		// styles?: Record<string, string>;
+		styles?: CSS.Properties | CSS.PropertiesHyphen;
 		textContent?: string;
 		innerHTML?: string;
 		tooltip?: string;
