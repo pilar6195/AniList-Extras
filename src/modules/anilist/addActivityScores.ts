@@ -121,7 +121,7 @@ const processActivity = async () => {
 
 			for (const activityScore of newActivityScores) {
 				// Cache the score for 6 hours. This may be to long, we can adjust it later.
-				await Cache.set('activity-score', `${activityScore.username}:${activityScore.mediaId}`, activityScore, ONE_HOUR * 6);
+				await Cache.set('activity-score', `${activityScore.username}:${activityScore.mediaId}`, activityScore, ONE_HOUR);
 			}
 		}
 
@@ -194,7 +194,7 @@ registerModule.anilist({
 	id: 'addActivityScores',
 	name: 'Media Activity Scores',
 	description: 'Displays the score a user gives to an anime or manga in activity feeds.',
-	notice: 'Scores are cached for 6 hours to avoid API rate limits.',
+	notice: 'Scores are cached for 1 hour to avoid API rate limits.',
 	tags: [
 		ModuleTags.Media,
 		ModuleTags.Social,
