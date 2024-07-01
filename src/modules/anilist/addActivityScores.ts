@@ -40,7 +40,7 @@ const processActivity = async () => {
 
 	try {
 		const activityElements = $$('.activity-feed .activity-anime_list, .activity-feed .activity-manga_list');
-		let activities: {
+		const activities: {
 			username: string;
 			mediaId: string;
 			container: HTMLElement;
@@ -63,15 +63,6 @@ const processActivity = async () => {
 
 		if (!activities.length) return;
 
-		// Remove duplicates
-		activities = activities.reduce((acc: typeof activities, val) => {
-			if (!acc.some(a => a.username === val.username && a.mediaId === val.mediaId)) {
-				acc.push(val);
-			}
-
-			return acc;
-		}, []);
-
 		const activityScores: ActivityScore[] = [];
 
 		const uncachedActivityScores: {
@@ -83,8 +74,16 @@ const processActivity = async () => {
 			const activityScore = await Cache.get('activity-score', `${activity.username}:${activity.mediaId}`) as ActivityScore;
 
 			if (activityScore) {
+				if (activityScores.some(a => {
+					return a.username === activity.username && a.mediaId === activity.mediaId;
+				})) continue;
+
 				activityScores.push(activityScore);
 			} else {
+				if (uncachedActivityScores.some(a => {
+					return a.username === activity.username && a.mediaId === activity.mediaId;
+				})) continue;
+
 				uncachedActivityScores.push({
 					username: activity.username,
 					mediaId: activity.mediaId,
@@ -201,7 +200,7 @@ const processActivity = async () => {
 registerModule.anilist({
 	id: 'addActivityScores',
 	name: 'Media Activity Scores',
-	description: 'Adds the score a user gave to a anime/manga in the activity feeds.',
+	description: 'Displays the score a user gives to an anime or manga in activity feeds.',
 	notice: 'Scores are cached for 6 hours to avoid API rate limits.',
 	tags: [
 		ModuleTags.Media,
