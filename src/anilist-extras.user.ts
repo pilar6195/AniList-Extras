@@ -10,6 +10,14 @@ import '@/modules/modulesList';
 /* Import Global Styles */
 import globalStyles from '@/styles/global.scss';
 
+// @ts-expect-error - This is fine.
+if (document.ALEXTRAS_LOADED) {
+	throw new Error('AniList Extras is already loaded. Ensure you are not running multiple instances of the script.');
+}
+
+// @ts-expect-error - This is fine.
+document.ALEXTRAS_LOADED = true;
+
 /* Add Global Styles to DOM */
 addStyles(globalStyles);
 
