@@ -120,7 +120,7 @@ const processActivity = async () => {
 			activityScores.push(...newActivityScores);
 
 			for (const activityScore of newActivityScores) {
-				// Cache the score for 6 hours. This may be to long, we can adjust it later.
+				// Cache the score for 1 hour. This may be to short, we can adjust it later.
 				await Cache.set('activity-score', `${activityScore.username}:${activityScore.mediaId}`, activityScore, ONE_HOUR);
 			}
 		}
@@ -173,7 +173,7 @@ const processActivity = async () => {
 
 				createElement('span', {
 					attributes: {
-						class: 'alextras--activity-score-container',
+						class: 'alextras--activity-score',
 					},
 					innerHTML: scoreLabel,
 					appendTo: activity.container.querySelector('.status')!,
