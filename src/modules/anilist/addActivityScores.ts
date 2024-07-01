@@ -175,13 +175,6 @@ const processActivity = async () => {
 					attributes: {
 						class: 'alextras--activity-score-container',
 					},
-					styles: {
-						backgroundColor: 'rgb(var(--color-background))',
-						color: 'rgb(var(--color-text))',
-						padding: '0.3em 0.5em',
-						borderRadius: '3px',
-						marginLeft: '0.25em',
-					},
 					innerHTML: scoreLabel,
 					appendTo: activity.container.querySelector('.status')!,
 				});
