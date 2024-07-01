@@ -60,9 +60,9 @@ const Cache = {
 	},
 
 	async _cleanStore(store: LocalForage) {
-		return store.iterate(async (value: any, key: string) => {
+		return store.iterate((value: any, key: string) => {
 			if (Date.now() > value.ttl) {
-				return store.removeItem(key);
+				void store.removeItem(key);
 			}
 		});
 	},
