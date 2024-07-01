@@ -627,7 +627,7 @@ registerModule.anilist({
 						class: 'button danger',
 					},
 					textContent: 'Reset All Settings',
-					tooltip: 'Reset all AniList Extras settings. Page will refresh.',
+					tooltip: 'Reset all AniList Extras settings.',
 					events: {
 						async click() {
 							const confirmResponse = window.confirm('Are you sure you want to reset all AniList Extras settings? OK to confirm, Cancel to cancel.');
@@ -646,6 +646,23 @@ registerModule.anilist({
 						async click() {
 							await Cache.dropDatabase();
 							window.alert('AniList Extras cache has been cleared.');
+						},
+					},
+				}),
+				createElement('div', {
+					attributes: {
+						class: 'button',
+					},
+					styles: {
+						background: 'rgb(var(--color-blue-900))',
+					},
+					textContent: Storage.get('enableLogs', ALEXTRAS_DEV) ? 'Disable Dev Logs' : 'Enable Dev Logs',
+					tooltip: 'Toggle the devtools console logs produced by AniList Extras. Useful for debugging.',
+					events: {
+						click(this: HTMLElement) {
+							const newState = !Storage.get('enableLogs', ALEXTRAS_DEV);
+							Storage.set('enableLogs', newState);
+							this.textContent = newState ? 'Disable Dev Logs' : 'Enable Dev Logs';
 						},
 					},
 				}),
