@@ -115,9 +115,9 @@ registerModule.anilist({
 	name: 'Review Ratings',
 	description: 'Adds the review ratings to the review cards on the homepage and review pages.',
 	notice: `
-		Reviews for media marked as "Adult" cannot be fetched without
-		authenticating with AniList due to API restrictions.
-		You can authenticate below.
+		Reviews are cached for 1 day to avoid API rate limits.
+		Reviews for media marked as "Adult" cannot be fetched without authenticating
+		with AniList due to API restrictions. You can authenticate below.
 	`,
 	tags: [
 		ModuleTags.Media,
