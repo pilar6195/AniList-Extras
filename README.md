@@ -12,12 +12,17 @@
 ## Current Features
 
 - Modular design allowing easy addition of features.
+- Settings page to enable/disable modules and configure their options (if any). Accessible at [https://anilist.co/settings/apps](https://anilist.co/settings/apps).
 - Adds character data from MyAnimeList since most of the time AniList does not have a complete character list.
-- Adds opening/ending theme (OP/ED) data from MAL.
-- Integrates MAL scores into AniList.
+- Adds opening/ending themes data from MyAnimeList.
+- Integrates MyAnimeList scores into AniList.
 - Displays the total number of followers, following, forum threads, and comments on a user's social tab.
 - Toggle option to display character lists as a grid (default) or as a list.
-- Adds AniList links to MAL pages.
+- Adds Reddit discussion links to anime or manga pages.
+- Set default YouTube player volume.
+- Hide global activity feed.
+- Adds AniList links to MyAnimeList pages.
+- And more!
 
 ## Installation
 
