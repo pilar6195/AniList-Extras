@@ -47,12 +47,23 @@ const processActivity = async () => {
 		}[] = [];
 
 		for (const activityElement of activityElements) {
-			if (activityElement.dataset['scoreFetched']) continue;
-
 			let username = activityElement.querySelector('.name')!.getAttribute('href')!;
 			username = (/^\/user\/(.+)\/$/.exec(username))![1];
 			let mediaId = activityElement.querySelector('.title')!.getAttribute('href')!;
 			mediaId = (/^\/(?:anime|manga)\/(\d+)\//.exec((mediaId!)))![1];
+
+			// Due to how vue works, the element may have been updated with new data so we need to check if the
+			// data in the container is still the same as before and if not we'd need to reset this element.
+			if (
+				activityElement.dataset['scoreId'] &&
+				activityElement.dataset['scoreId'] !== `${username}:${mediaId}`
+			) {
+				activityElement.dataset['scoreFetched'] = '';
+				activityElement.dataset['scoreId'] = '';
+				activityElement.querySelector('.alextras--activity-score')?.remove();
+			}
+
+			if (activityElement.dataset['scoreFetched']) continue;
 
 			activities.push({
 				username,
@@ -132,6 +143,7 @@ const processActivity = async () => {
 
 			for (const activity of matchedActivities) {
 				activity.container.dataset['scoreFetched'] = 'true';
+				activity.container.dataset['scoreId'] = `${activityScore.username}:${activityScore.mediaId}`;
 
 				if (activityScore.score === 0) continue;
 
