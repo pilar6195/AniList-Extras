@@ -112,8 +112,8 @@ const processActivity = async () => {
 				return {
 					username,
 					mediaId,
-					score: entry[1].mediaList[0].score,
-					scoreFormat: entry[1].mediaList[0].user.mediaListOptions.scoreFormat,
+					score: entry[1].mediaList[0]?.score || 0,
+					scoreFormat: entry[1].mediaList[0]?.user.mediaListOptions.scoreFormat,
 				};
 			});
 
