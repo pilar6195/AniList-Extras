@@ -1083,22 +1083,14 @@ export const createDropdown = (options: {
 		attributes: {
 			class: 'el-input__inner',
 		},
-		children: [
-			createElement('option', {
+		children: Object.entries(optionsList).map(([value, text]) => {
+			return createElement('option', {
 				attributes: {
-					value: '',
+					value,
 				},
-				textContent: 'Select an option',
-			}),
-			...Object.entries(optionsList).map(([value, text]) => {
-				return createElement('option', {
-					attributes: {
-						value,
-					},
-					textContent: text,
-				});
-			}),
-		],
+				textContent: text,
+			});
+		}),
 		appendTo: selectContainer,
 	}) as HTMLInputElement;
 
