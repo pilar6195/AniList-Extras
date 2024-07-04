@@ -23,6 +23,7 @@ import './anilist/addReviewRatings';
 import './anilist/addActivityScores';
 import './anilist/hideGlobalFeed';
 import './anilist/addSeasonLink';
+import './anilist/expandedSocialCards';
 import './anilist/altScrollbars';
 
 /* =========== */

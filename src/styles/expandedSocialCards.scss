@@ -1,0 +1,77 @@
+ .user-follow {
+ 	.wrap {
+ 		@media only screen and (min-width: 431px) and (max-width: 760px) {
+ 			grid-template-columns: repeat(4, 1fr);
+ 		}
+
+ 		@media only screen and (min-width: 761px) and (max-width: 1040px) {
+ 			grid-template-columns: repeat(3, 1fr);
+ 		}
+
+ 		@media only screen and (min-width: 1041px) and (max-width: 1540px) {
+ 			grid-template-columns: repeat(4, 1fr);
+ 		}
+
+		@media only screen and (min-width: 1541px) {
+			grid-template-columns: repeat(5, 1fr);
+		}
+ 	}
+
+	@at-root .user-social.alextras--style2 {
+		.wrap {
+			@media only screen and (min-width: 431px) and (max-width: 601px) {
+				grid-template-columns: repeat(2, 1fr);
+			}
+
+			@media only screen and (min-width: 601px) and (max-width: 760px) {
+				grid-template-columns: repeat(3, 1fr);
+			}
+
+			@media only screen and (min-width: 761px) and (max-width: 840px) {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+	}
+
+	@media only screen and (min-width: 431px) {
+		.follow-card {
+			width: 100% !important;
+			transition: transform 150ms ease-in-out;
+	
+			.avatar {
+				width: 100% !important;
+			}
+	
+			.name {
+				opacity: 1 !important;
+				align-items: center !important;
+			}
+
+			&:hover {
+				transform: scale(1.05);
+			}
+		}
+
+		@at-root .user-social.alextras--style2 {
+			.follow-card {
+				background: rgba(var(--color-shadow), 0.6);
+				border-radius: 4px;
+
+				.avatar {
+					background-size: 80px auto;
+					background-position-x: left;
+					overflow: visible;
+				}
+
+				.name {
+					background: none;
+					width: calc(100% - 80px);
+					margin-left: 80px;
+					justify-content: left;
+					padding-left: 10px;
+					padding-right: 10px;
+				}
+			}
+		}
+	}
+}
