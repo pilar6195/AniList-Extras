@@ -217,7 +217,7 @@ registerModule.anilist({
 
 	validate({ currentPage }) {
 		return currentPage.pathname.startsWith('/home') ||
-			currentPage.pathname.endsWith('/social') ||
+			/^\/(anime|manga)\/\d+\/.+\/social$/.test(currentPage.pathname) ||
 			/^\/user\/[^/]+\/?$/.test(currentPage.pathname);
 	},
 
