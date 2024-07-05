@@ -274,7 +274,7 @@ export const anilistApi = async (
 	query: string,
 	variables?: Record<string, any>,
 	useApiToken = true,
-	retries = 3,
+	retry: number | false = 3,
 ): Promise<any> => {
 	const apiToken = Storage.get('apiToken');
 
@@ -287,6 +287,7 @@ export const anilistApi = async (
 		headers.Authorization = `Bearer ${apiToken}`;
 	}
 
+	const retries = retry === false ? 1 : retry;
 	let retryCount = 0;
 
 	while (retryCount < retries) {
@@ -302,13 +303,21 @@ export const anilistApi = async (
 
 			if (invalidToken) {
 				Storage.remove('apiToken');
-				return anilistApi(query, variables, useApiToken, retries);
+				return anilistApi(query, variables, useApiToken, retry);
 			}
 		}
 
 		if (response.status >= 400 && response.status !== 429) {
-			console.error(`Request failed with status code ${response.status}. Retrying... (${retryCount + 1}/${retries})`, response);
 			retryCount++;
+
+			if (retryCount >=	retries) {
+				console.error(`Request failed with status code ${response.status}.`, response);
+				// eslint-disable-next-line @typescript-eslint/no-throw-literal
+				throw response;
+			}
+
+			console.error(`Request failed with status code ${response.status}. Retrying... (${retryCount}/${retries})`, response);
+
 			await sleep(2500);
 			continue;
 		}
@@ -318,7 +327,7 @@ export const anilistApi = async (
 		if (responseHeaders.get('retry-after')) {
 			const retryAfter = Number.parseInt(responseHeaders.get('retry-after')!, 10);
 			await sleep(retryAfter * 1000);
-			return anilistApi(query, variables, useApiToken, retries);
+			return anilistApi(query, variables, useApiToken, retry);
 		} else {
 			console.debug(`DEBUG: AniList rate limit remaining: ${responseHeaders.get('x-ratelimit-remaining')}`);
 			// console.trace();
@@ -326,8 +335,6 @@ export const anilistApi = async (
 
 		return response.json;
 	}
-
-	throw new Error('Failed to fetch data after multiple retries.');
 };
 
 /**
