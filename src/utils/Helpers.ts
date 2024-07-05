@@ -14,6 +14,13 @@ declare global {
 	}
 }
 
+declare module 'csstype' {
+	// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+	interface Properties {
+		[index: `--${string}`]: any;
+	}
+}
+
 export const $ = (selector: string): HTMLElement | null => document.querySelector(selector);
 export const $$ = (selector: string): HTMLElement[] => Array.from(document.querySelectorAll(selector));
 
