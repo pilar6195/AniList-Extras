@@ -31,13 +31,14 @@ let currentPage: URL;
 if (location.host === 'anilist.co') {
 	let contextId: string;
 
-	observe(document.body, async () => {
+	observe(document, async () => {
 		// Remove the hash from the URL. This is usually not needed to check for navigation.
 		const newPage = new URL(location.href);
 		newPage.hash = '';
 
 		if (newPage.href !== currentPage?.href) {
 			contextId = crypto.randomUUID();
+			const currentContextId = contextId;
 			const previousPage = currentPage;
 			currentPage = new URL(newPage.href); // Basically cloning the window.location object.
 
@@ -61,6 +62,8 @@ if (location.host === 'anilist.co') {
 
 			for (const module of anilistModules) {
 				if (module.disabled) continue;
+
+				if (currentContextId !== contextId) continue;
 
 				// Insert Styles, if any.
 				module.insertStyles();
@@ -123,7 +126,7 @@ if (location.host === 'anilist.co') {
 						activeModules.add(module.id); // Consider it loaded even if it errored.
 						ModuleEmitter.emit(ModuleEvents.LoadError, module.id, error);
 					}
-				})(media, contextId);
+				})(media, currentContextId);
 			}
 		}
 	});
