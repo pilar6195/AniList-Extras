@@ -14,7 +14,7 @@ registerModule.anilist({
 	toggleable: true,
 
 	validate({ currentPage }) {
-		return /^\/(anime|manga)\/\d+/.test(currentPage.pathname);
+		return /^\/(anime|manga)\/\d+\/.+\/?$/.test(currentPage.pathname);
 	},
 
 	validateUnload({ currentPage, previousPage }) {

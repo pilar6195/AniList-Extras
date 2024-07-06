@@ -12,7 +12,7 @@ registerModule.anilist({
 	toggleable: true,
 
 	validate({ currentPage }) {
-		return /\/anime\/\d+/.test(currentPage.pathname);
+		return /^\/anime\/\d+\/.+\/?$/.test(currentPage.pathname);
 	},
 
 	validateUnload({ currentPage, previousPage }) {
