@@ -63,14 +63,14 @@ if (location.host === 'anilist.co') {
 			for (const module of anilistModules) {
 				if (module.disabled) continue;
 
-				if (currentContextId !== contextId) continue;
-
 				// Insert Styles, if any.
 				module.insertStyles();
 
 				// This is inside a iife so modules don't delay each other.
 				// eslint-disable-next-line @typescript-eslint/no-loop-func
-				(async (media, currentContextId) => {
+				(async (currentPage, previousPage, media, currentContextId) => {
+					if (currentContextId !== contextId) return;
+
 					try {
 						if (typeof module.unload === 'function' && activeModules.has(module.id)) {
 							const unloadStartTime = performance.now();
@@ -126,7 +126,7 @@ if (location.host === 'anilist.co') {
 						activeModules.add(module.id); // Consider it loaded even if it errored.
 						ModuleEmitter.emit(ModuleEvents.LoadError, module.id, error);
 					}
-				})(media, currentContextId);
+				})(currentPage, previousPage, media, currentContextId);
 			}
 		}
 	});
