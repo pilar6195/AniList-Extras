@@ -1,6 +1,6 @@
 {
   "name": "anilist-extras",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "Adds a few additional features to AniList.",
   "scripts": {
     "build": "bun run build.ts",
