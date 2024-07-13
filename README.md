@@ -28,9 +28,11 @@
 
 ### Browser Extension
 
-[**Chrome Web Store**][chrome]
+~~[**Chrome Web Store**][chrome]~~
 
-[**Firefox Add-ons**][firefox]
+~~[**Firefox Add-ons**][firefox]~~
+
+> The browser extensions on the Chrome Web Store and Firefox Add-ons are currently outdated. Working out some issues getting them published. They will eventually be updated, but for now, please use the userscript instead.
 
 ### Userscript
 
