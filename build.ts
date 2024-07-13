@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import fsAsync from 'node:fs/promises';
+import path from 'node:path';
 import chokidar from 'chokidar';
 import archiver from 'archiver';
 import { compile as compileSass } from 'sass';
@@ -11,7 +12,7 @@ const watchFlag = process.argv.includes('--watch');
 const serveFlag = process.argv.includes('--serve');
 const includeSourceMaps = process.argv.includes('--include-sourcemap');
 
-const header = `
+const header = (env: 'extension' | 'userscript' = 'userscript') => `
 // ==UserScript==
 // @name         AniList Extras (Unofficial)
 // @namespace    https://github.com/pilar6195
@@ -30,9 +31,19 @@ const header = `
 // ==/UserScript==
 const ALEXTRAS_VERSION = '${packageJson.version}';
 const ALEXTRAS_DEV = ${watchFlag};
+const ALEXTRAS_ENV = '${env}';
 `;
 
-async function build() {
+async function bundle(env: 'extension' | 'userscript' = 'userscript') {
+	const modulesToExclude: string[] = [];
+
+	if (env === 'extension') {
+		// This module will not be included in the browser extension build.
+		// It requires an external YouTube API script to work which is not
+		// allowed in MV3 extensions. Will look into a workaround for this.
+		modulesToExclude.push('anilist/setYTDefaultVolume.ts');
+	}
+
 	const result = await Bun.build({
 		entrypoints: ['./src/anilist-extras.user.ts'],
 		target: 'browser',
@@ -58,12 +69,37 @@ async function build() {
 					});
 				},
 			},
+			{
+				name: 'remove-polyfill',
+				setup(build) {
+					// Don't include the polyfill in the userscript build.
+					if (env === 'extension') return;
+					build.onLoad({ filter: /Polyfill\.ts$/ }, () => ({
+						contents: '',
+						loader: 'ts',
+					}));
+				},
+			},
+			{
+				name: 'exclude-modules',
+				setup(build) {
+					if (!modulesToExclude.length) return;
+					build.onLoad({
+						filter: new RegExp(modulesToExclude.map(module => {
+							const modulePath = path.normalize(`modules/${module}`).replaceAll(/[.\\]/g, '\\$&');
+							return `(${modulePath}$)`;
+						}).join('|')),
+					}, () => ({
+						contents: '',
+						loader: 'ts',
+					}));
+				},
+			},
 		],
 	});
 
 	if (!result.success) {
-		console.error('Build failed with errors:');
-		console.log('');
+		console.error(`\n[${env}] Build failed with errors:\n`);
 		for (const log of result.logs) {
 			console.error(log);
 		}
@@ -78,22 +114,36 @@ async function build() {
 	/* Prepend userscript header to output */
 
 	const content = await result.outputs[0].text();
-	let output = header + content;
+	let output = header(env) + content;
 
 	/* Fix sourcemap offset */
 	// We have to do this if we want the sourcemap to work correctly due to the header we added.
 	if (result.outputs[0].sourcemap) {
 		const sourceMap = await result.outputs[0].sourcemap?.json();
-		const offset = header.split('\n').length - 1;
+		const offset = header(env).split('\n').length - 1;
 		const updatedSourceMap = offsetLines(sourceMap, offset);
 		const b64encoded = Buffer.from(JSON.stringify(updatedSourceMap)).toString('base64');
 		output += `//# sourceMappingURL=data:application/json;base64,${b64encoded}`;
 	}
 
+	return output;
+}
+
+async function buildUserscript() {
+	const output = await bundle('userscript');
+
+	if (!output) return;
+
 	/* Write userscript to dist directory */
 
 	await Bun.write('./dist/anilist-extras.user.js', output);
 	console.log(`[${new Date().toISOString()}]`, 'Userscript built. Output written to "./dist/anilist-extras.user.js"');
+}
+
+async function buildExtension() {
+	const output = await bundle('extension');
+
+	if (!output) return;
 
 	/* Write extension to dist directory */
 
@@ -131,16 +181,21 @@ async function build() {
 	}
 }
 
+async function buildAll() {
+	await buildUserscript();
+	await buildExtension();
+}
+
 // Watch for changes and rebuild
 if (watchFlag) {
 	chokidar.watch('src/**/*', {
 		ignoreInitial: true,
 	})
-		.on('add', () => void build())
-		.on('change', () => void build())
-		.on('unlink', () => void build());
+		.on('add', () => void buildAll())
+		.on('change', () => void buildAll())
+		.on('unlink', () => void buildAll());
 
-	await build();
+	await buildAll();
 
 	console.log('Watching for changes...');
 
@@ -163,5 +218,5 @@ if (watchFlag) {
 	}
 // Build once and exit
 } else {
-	void build();
+	void buildAll();
 }

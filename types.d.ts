@@ -1,5 +1,6 @@
 declare const ALEXTRAS_VERSION: string;
 declare const ALEXTRAS_DEV: boolean;
+declare const ALEXTRAS_ENV: 'extension' | 'userscript';
 
 declare module '*.css' {
 	const content: string;

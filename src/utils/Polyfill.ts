@@ -1,5 +1,5 @@
 /* eslint-disable prefer-promise-reject-errors */
-if (window.GM === undefined) {
+if (ALEXTRAS_ENV === 'extension') {
 	// @ts-expect-error - Basic GM API Polyfill
 	// No where near 1:1, but should be enough.
 	window.GM = {
