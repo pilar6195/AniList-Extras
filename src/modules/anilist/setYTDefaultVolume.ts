@@ -8,10 +8,6 @@ registerModule.anilist({
 	id: 'setYTDefaultVolume',
 	name: 'YouTube Default Volume',
 	description: 'Set the default volume for all embedded YouTube videos.',
-	notice: `
-		This module requires an external YouTube API script to work.
-		It will only load when this module is enabled.
-	`,
 	tags: [
 		ModuleTags.Media,
 		ModuleTags.Utiliy,
