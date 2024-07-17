@@ -1,5 +1,5 @@
 import SettingsManager from '@/utils/Settings';
-import { $, $$, createElement, observe } from '@/utils/Helpers';
+import { $, $$, observe } from '@/utils/Helpers';
 import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 
 let observer: MutationObserver;
@@ -43,26 +43,17 @@ registerModule.anilist({
 	async load() {
 		const ModuleSettings = new SettingsManager(this.id);
 
-		if (!$('.alextras--yt-iframe-api')) {
-			createElement('script', {
-				attributes: {
-					class: 'alextras--yt-iframe-api',
-					src: 'https://www.youtube.com/iframe_api',
-				},
-				appendTo: document.head,
-			});
-		}
-
 		const updateYoutubeIframes = () => {
 			const iframes = $$('iframe[src*="youtube.com"], iframe[src*="youtube-nocookie.com"]') as HTMLIFrameElement[];
+
 			for (const iframe of iframes) {
 				if (iframe.dataset['volumeSet']) continue;
 
-				iframe.setAttribute('onload', `new YT.Player(this, {
-					events: {
-						onReady: event => event.target.setVolume(${ModuleSettings.get('defaultVolume')})
-					}
-				})`);
+				iframe.setAttribute('onload', `this.contentWindow.postMessage(JSON.stringify({
+					event: 'command',
+					func: 'setVolume',
+					args: [${ModuleSettings.get('defaultVolume')}]
+				}), '*')`);
 
 				const iframeUrl = new URL(iframe.src);
 				iframeUrl.searchParams.set('enablejsapi', '1');

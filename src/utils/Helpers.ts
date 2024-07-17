@@ -317,7 +317,7 @@ export const anilistApi = async (
 		if (response.status >= 400 && response.status !== 429) {
 			retryCount++;
 
-			if (retryCount >=	retries) {
+			if (retryCount >= retries) {
 				console.error(`Request failed with status code ${response.status}.`, response);
 				// eslint-disable-next-line @typescript-eslint/no-throw-literal
 				throw response;

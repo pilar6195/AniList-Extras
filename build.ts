@@ -37,13 +37,6 @@ const ALEXTRAS_ENV = '${env}';
 async function bundle(env: 'extension' | 'userscript' = 'userscript') {
 	const modulesToExclude: string[] = [];
 
-	if (env === 'extension') {
-		// This module will not be included in the browser extension build.
-		// It requires an external YouTube API script to work which is not
-		// allowed in MV3 extensions. Will look into a workaround for this.
-		modulesToExclude.push('anilist/setYTDefaultVolume.ts');
-	}
-
 	const result = await Bun.build({
 		entrypoints: ['./src/anilist-extras.user.ts'],
 		target: 'browser',
