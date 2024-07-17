@@ -1,5 +1,5 @@
 import SettingsManager from '@/utils/Settings';
-import { $, $$, observe } from '@/utils/Helpers';
+import { $$, observe } from '@/utils/Helpers';
 import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 
 let observer: MutationObserver;
