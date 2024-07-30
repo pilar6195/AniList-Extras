@@ -334,7 +334,7 @@ export const anilistApi = async (
 
 			console.error(`Request failed with status code ${response.status}. Retrying... (${retryCount}/${retries})`, response);
 
-			await sleep(2500);
+			await sleep(1000 * retryCount);
 			continue;
 		}
 
