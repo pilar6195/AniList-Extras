@@ -304,6 +304,15 @@ export const anilistApi = async (
 			data: JSON.stringify({ query, variables }),
 		});
 
+		if (response.status === 403) {
+			const errorMessage = response.json?.errors?.[0]?.message;
+			if (errorMessage?.includes('disabled')) {
+				console.error(errorMessage);
+				// eslint-disable-next-line @typescript-eslint/no-throw-literal
+				throw response;
+			}
+		}
+
 		// If the request failed and the user has an api token, check if the token is invalid.
 		if (apiToken && useApiToken && response.status === 400) {
 			const invalidToken = response.json.errors.some((error: any) => error.message === 'Invalid token');
