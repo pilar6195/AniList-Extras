@@ -355,7 +355,7 @@ export const anilistApi = async (
 const malApiRateLimit = new RateLimit(3, 2000);
 
 /**
- * Send a request to the Jikan API. Returns cached data if available.
+ * Send a request to the Tenrai API. Returns cached data if available.
  */
 export const malApi = async (path: string, cacheTime: number | false = ONE_HOUR): Promise<any> => {
 	if (cacheTime !== false) {
@@ -369,7 +369,7 @@ export const malApi = async (path: string, cacheTime: number | false = ONE_HOUR)
 	const maxRetries = 3;
 
 	const performRequest = async (attempt: number = 0): Promise<any> => {
-		const response = await request(`https://api.jikan.moe/v4/${path}`);
+		const response = await request(`https://api.tenrai.org/v1/${path}`);
 
 		if (response.status === 429) {
 			if (attempt < maxRetries) {
