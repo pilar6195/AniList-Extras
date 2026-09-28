@@ -10,7 +10,7 @@
 
 	"host_permissions": [
 		"https://graphql.anilist.co/*",
-		"https://api.jikan.moe/*"
+		"https://api.tenrai.org/*"
 	],
 
 	"content_scripts": [
