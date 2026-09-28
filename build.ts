@@ -197,6 +197,7 @@ if (watchFlag) {
 	// Also only serving if --watch is enabled. No point in serving if not watching.
 	if (serveFlag) {
 		const server = Bun.serve({
+			port: 0,
 			fetch(request) {
 				const url = new URL(request.url);
 
