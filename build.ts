@@ -25,7 +25,8 @@ const header = (env: 'extension' | 'userscript' = 'userscript') => `
 // @match        https://anilist.co/*
 // @match        https://myanimelist.net/*
 // @connect      graphql.anilist.co
-// @connect      api.jikan.moe
+// @connect      api.tenrai.org
+// @connect      raw.githubusercontent.com
 // @grant        GM.xmlHttpRequest
 // @run-at       document-end
 // ==/UserScript==
