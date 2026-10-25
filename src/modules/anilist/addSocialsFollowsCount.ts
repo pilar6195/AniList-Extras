@@ -37,6 +37,7 @@ registerModule.anilist({
 
 		let followingCount: number | undefined = await Cache.get('user-following-count', userId.toString());
 		let followersCount: number | undefined = await Cache.get('user-followers-count', userId.toString());
+		let mutualsCount: number | undefined = await Cache.get('user-mutuals-count', userId.toString());
 
 		if (!followingCount) {
 			const { data: followingData } = await anilistApi(`
@@ -79,6 +80,25 @@ registerModule.anilist({
 			await Cache.set('user-followers-count', userId.toString(), followersCount, ONE_MINUTE * 5);
 		}
 
+		if (!mutualsCount) {
+			const { data: mutualsData } = await anilistApi(`
+				query ($userId: Int!) {
+					Page {
+						pageInfo {
+							total
+						}
+						mutualFollowers(userId: $userId) {
+							id
+						}
+					}
+				}
+			`, { userId }) as AnilistUserMutualResponse;
+
+			mutualsCount = mutualsData.Page.pageInfo.total;
+
+			await Cache.set('user-mutuals-count', userId.toString(), mutualsCount, ONE_MINUTE * 5);
+		}
+
 		createElement('span', {
 			textContent: ` (${followingCount})`,
 			appendTo: $('.user-social .filter-group span:nth-of-type(1)')!,
@@ -87,6 +107,11 @@ registerModule.anilist({
 		createElement('span', {
 			textContent: ` (${followersCount})`,
 			appendTo: $('.user-social .filter-group span:nth-of-type(2)')!,
+		});
+
+		createElement('span', {
+			textContent: ` (${mutualsCount})`,
+			appendTo: $('.user-social .filter-group span:nth-of-type(3)')!,
 		});
 	},
 });

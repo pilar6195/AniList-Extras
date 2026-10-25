@@ -55,6 +55,19 @@ type AnilistUserFollowersResponse = {
 	};
 };
 
+type AnilistUserMutualResponse = {
+	data: {
+		Page: {
+			pageInfo: {
+				total: number;
+			};
+			mutualFollowers: {
+				id: number;
+			}[];
+		};
+	};
+};
+
 type AnilistUserThreadsResponse = {
 	data: {
 		Page: {
