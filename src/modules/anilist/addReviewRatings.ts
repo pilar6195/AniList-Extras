@@ -128,7 +128,8 @@ registerModule.anilist({
 
 	validate({ currentPage }) {
 		return (currentPage.pathname.startsWith('/home') && isUI.desktop) || // Starts with /home. More than likely the user is on the homepage.
-				currentPage.pathname.endsWith('/reviews'); // Ends with /reviews. Either on the overall reviews or anime reviews page.
+				currentPage.pathname.endsWith('/reviews') || // Ends with /reviews. Either on the overall reviews or anime reviews page.
+				/^\/(anime|manga)\/\d+\/.+\/?$/.test(currentPage.pathname); // Reviews also appear on the base anime/manga pages
 	},
 
 	async load() {
