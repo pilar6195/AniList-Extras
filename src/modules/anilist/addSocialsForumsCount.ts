@@ -78,12 +78,12 @@ registerModule.anilist({
 
 		createElement('span', {
 			textContent: ` (${threadsCount})`,
-			appendTo: $('.user-social .filter-group span:nth-of-type(3)')!,
+			appendTo: $('.user-social .filter-group span:nth-of-type(4)')!,
 		});
 
 		createElement('span', {
 			textContent: ` (${threadCommentsCount})`,
-			appendTo: $('.user-social .filter-group span:nth-of-type(4)')!,
+			appendTo: $('.user-social .filter-group span:nth-of-type(5)')!,
 		});
 	},
 });
