@@ -30,7 +30,7 @@ registerModule.anilist({
 		if (!targetLoaded) return;
 
 		// Fetch Anilist score.
-		const scoreElement = $$('.sidebar .data-set').find(el => /average score/i.test(el.textContent!));
+		const scoreElement = $$('.sidebar .data-set').find(el => /weighted score/i.test(el.textContent!));
 		const anilistScore = scoreElement?.querySelector('.value')?.textContent;
 
 		let attrName: string;
@@ -65,7 +65,7 @@ registerModule.anilist({
 						'text-align': 'center',
 						width: '100%',
 					},
-					textContent: `Average Score: ${anilistScore ?? 'N/A'}`,
+					textContent: `Weighted Score: ${anilistScore ?? 'N/A'}`,
 				}),
 			],
 		});
