@@ -432,7 +432,7 @@ export const getUserId = async (username: string): Promise<number | undefined> =
 /**
  * Internal use.
  */
-const getMediaIdFromApi = async (
+const getId = async (
 	fromId: number | string,
 	fromIdName: 'id' | 'idMal',
 	toIdName: 'id' | 'idMal',
@@ -481,68 +481,14 @@ const getMediaIdFromApi = async (
  * Finds the AniList Id of a media entry using the provided type and MyAnimeList Id.
  */
 export const getAnilistId = async (malId: number | string, type: 'anime' | 'manga') => {
-	return getMediaIdFromApi(malId, 'idMal', 'id', type);
+	return getId(malId, 'idMal', 'id', type);
 };
 
 /**
  * Finds the MyAnimeList Id of a media entry using the provided type and AniList Id.
  */
 export const getMalId = async (anilistId: number | string, type: 'anime' | 'manga') => {
-	return getMediaIdFromApi(anilistId, 'id', 'idMal', type);
-};
-
-type MappingsData = {
-	idAL: number;
-	idMal: number | null;
-};
-
-export const getMediaId = async (
-	options: {
-		id: number;
-		from: 'anilist' | 'mal';
-		to: 'anilist' | 'mal';
-		type: 'anime' | 'manga';
-	},
-) => {
-	if (!options) {
-		throw new TypeError('Missing options.');
-	}
-
-	const { id, from, to, type } = options;
-
-	let mappings = await Cache.get('media-mappings', type) as MappingsData[];
-
-	if (!mappings) {
-		const response = await request(`https://raw.githubusercontent.com/anime-and-manga/lists/main/${type}.json`);
-		mappings = response.json as MappingsData[];
-		await Cache.set('media-mappings', type, mappings, ONE_HOUR);
-	}
-
-	const entry = mappings.find(entry => {
-		return entry[from === 'anilist' ? 'idAL' : 'idMal'] === id;
-	});
-
-	if (entry) {
-		switch (to) {
-			case 'anilist': {
-				return entry.idAL;
-			}
-
-			case 'mal': {
-				if (entry.idMal !== null) {
-					return entry.idMal;
-				}
-			}
-		}
-	}
-
-	// Fallback to the API if the mapping is not found.
-	return getMediaIdFromApi(
-		id,
-		from === 'anilist' ? 'id' : 'idMal',
-		to === 'anilist' ? 'id' : 'idMal',
-		type,
-	);
+	return getId(anilistId, 'id', 'idMal', type);
 };
 
 /**
