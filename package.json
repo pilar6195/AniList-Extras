@@ -25,7 +25,7 @@
     "@types/tampermonkey": "^5.0.5",
     "eslint": "^8.57.1",
     "eslint-config-neon": "^0.1.62",
-    "typescript": "^5.9.3"
+    "typescript": "^7.0.2"
   },
   "trustedDependencies": [
     "@parcel/watcher",
