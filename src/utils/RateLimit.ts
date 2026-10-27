@@ -9,6 +9,8 @@ export default class RateLimit {
 
 	private tokens: number;
 
+	private readonly label: string | undefined;
+
 	private lastRefill: number = Date.now();
 
 	private processing: boolean = false;
@@ -16,10 +18,15 @@ export default class RateLimit {
 	/**
 	 * Creates a new RateLimit instance with the given token count and refill interval in milliseconds.
 	 */
-	public constructor(rateLimit: number, interval: number) {
+	public constructor(rateLimit: number, interval: number, label?: string) {
 		this.rateLimit = rateLimit;
 		this.interval = interval;
 		this.tokens = rateLimit;
+		this.label = label;
+	}
+
+	private get logPrefix(): string {
+		return this.label ? `RateLimit (${this.label}):` : 'RateLimit:';
 	}
 
 	/**
@@ -35,7 +42,7 @@ export default class RateLimit {
 		Error.captureStackTrace?.(callSite, this.push);
 		const isV8Stack = /\n\s+at\s/.test(callSite.stack ?? '');
 
-		console.log('RateLimit: Pushing new callback to queue. Tokens available:', this.tokens);
+		console.log(this.logPrefix, 'Pushing new callback to queue. Tokens available:', this.tokens);
 
 		return new Promise<T>((resolve, reject) => {
 			this.queue.push(async () => {
@@ -68,10 +75,10 @@ export default class RateLimit {
 				const callback = this.queue.shift();
 				if (callback) {
 					try {
-						console.log('RateLimit: Executing callback from queue. Tokens left:', this.tokens);
+						console.log(this.logPrefix, 'Executing callback from queue. Tokens left:', this.tokens);
 						await callback();
 					} catch (error) {
-						console.error('Callback failed inside queue:', error);
+						console.error(this.logPrefix, 'Callback failed inside queue:', error);
 					}
 				}
 			} else {
@@ -80,7 +87,7 @@ export default class RateLimit {
 				const timeSinceRefill = now - this.lastRefill;
 				const waitTime = timePerToken - (timeSinceRefill % timePerToken);
 
-				console.log(`RateLimit: No tokens available. Waiting for ${waitTime}ms before retrying.`);
+				console.log(`${this.logPrefix} No tokens available. Waiting for ${waitTime}ms before retrying.`);
 
 				await sleep(waitTime);
 			}

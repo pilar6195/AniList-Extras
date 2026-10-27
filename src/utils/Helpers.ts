@@ -352,7 +352,7 @@ export const anilistApi = async (
 	}
 };
 
-const malApiRateLimit = new RateLimit(4, 2000);
+const malApiRateLimit = new RateLimit(4, 2000, 'malApi');
 
 /**
  * Send a request to the Tenrai API. Returns cached data if available.
