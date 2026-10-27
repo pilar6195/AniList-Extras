@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@types/archiver": "^7.0.0",
-    "@types/bun": "1.3.10",
+    "@types/bun": "1.4.4",
     "@types/tampermonkey": "^5.0.5",
     "eslint": "^8.57.1",
     "eslint-config-neon": "^0.1.62",
