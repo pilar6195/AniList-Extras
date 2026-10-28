@@ -141,7 +141,8 @@ async function buildExtension() {
 
 	/* Write extension to dist directory */
 
-	await fsAsync.rm('./.build', { recursive: true });
+	// Full path is needed here due to a bun 1.3.x -> 1.4.x regression where Windows paths are not being normalized.
+	await fsAsync.rm(path.join(import.meta.dir, '.build'), { recursive: true, force: true });
 
 	await Bun.write('./.build/anilist-extras.user.js', output);
 
@@ -182,7 +183,7 @@ async function buildAll() {
 
 // Watch for changes and rebuild
 if (watchFlag) {
-	chokidar.watch('src/', {
+	chokidar.watch('./src/', {
 		ignoreInitial: true,
 	})
 		.on('add', () => void buildAll())
@@ -202,7 +203,7 @@ if (watchFlag) {
 				const url = new URL(request.url);
 
 				if (request.method === 'GET' && url.pathname === '/anilist-extras.user.js') {
-					return new Response(Bun.file('dist/anilist-extras.user.js'));
+					return new Response(Bun.file('./dist/anilist-extras.user.js'));
 				}
 
 				return new Response('Not Found', { status: 404 });
