@@ -12,8 +12,12 @@ registerModule.mal({
 		if ($('.mal-anilist-link')) return;
 
 		const malId = (/(?:anime|manga)(?:\/|\.php\?id=)(\d+)/.exec(location.href))?.[1];
-		const type = (/^\/(anime|manga)\/\d+/.exec(location.pathname))?.[1];
-		const anilistId = await getAnilistId(malId!, type as 'anime' | 'manga');
+		const type = (/^\/(anime|manga)(?:\/|\.php)/.exec(location.pathname))?.[1];
+
+		if (!malId) return;
+
+		const anilistId = await getAnilistId(Number.parseInt(malId, 10), type as 'anime' | 'manga');
+		if (!anilistId) return;
 
 		const headerEl = $('.header-right');
 

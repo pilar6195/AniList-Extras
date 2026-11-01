@@ -270,9 +270,9 @@ type AnilistModuleLoadParams = {
 	currentPage: URL;
 	previousPage: URL | undefined;
 	media: {
-		type: string | undefined;
-		id: string | undefined;
-		malId: number | false;
+		type: 'anime' | 'manga' | undefined;
+		id: number | undefined;
+		malId: number | false
 	};
 };
 

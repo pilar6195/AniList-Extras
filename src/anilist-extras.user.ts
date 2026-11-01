@@ -46,10 +46,13 @@ if (location.host === 'anilist.co') {
 
 			console.log('Navigated:', currentPage.href);
 
+			const mediaType = (/^\/(anime|manga)\/\d+/.exec(location.pathname))?.[1];
+			const mediaId = (/^\/(?:anime|manga)\/(\d+)/.exec(location.pathname))?.[1];
+
 			// Media data to send to the modules when available.
 			const media: AnilistModuleLoadParams['media'] = {
-				type: (/^\/(anime|manga)\/\d+/.exec(location.pathname))?.[1],
-				id: (/^\/(?:anime|manga)\/(\d+)/.exec(location.pathname))?.[1],
+				type: mediaType as 'anime' | 'manga' | undefined,
+				id: mediaId ? Number.parseInt(mediaId, 10) : undefined,
 				malId: false,
 			};
 
@@ -57,7 +60,7 @@ if (location.host === 'anilist.co') {
 			// Doing this here to prevent duplicate requests
 			// in the case that more than 1 module needs it.
 			if (media.id && media.type) {
-				media.malId = await getMalId(media.id, media.type as 'anime' | 'manga'); // Mal Id
+				media.malId = await getMalId(media.id, media.type); // Mal Id
 			}
 
 			for (const module of anilistModules) {

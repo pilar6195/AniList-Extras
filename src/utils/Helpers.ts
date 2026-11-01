@@ -433,7 +433,7 @@ export const getUserId = async (username: string): Promise<number | undefined> =
  * Internal use.
  */
 const getId = async (
-	fromId: number | string,
+	fromId: number,
 	fromIdName: 'id' | 'idMal',
 	toIdName: 'id' | 'idMal',
 	type: 'anime' | 'manga',
@@ -444,10 +444,6 @@ const getId = async (
 
 	if (!fromId) {
 		return false;
-	}
-
-	if (!Number.isInteger(fromId)) {
-		fromId = Number.parseInt(fromId as string, 10);
 	}
 
 	const mediaType = type.toUpperCase() as 'ANIME' | 'MANGA';
@@ -480,14 +476,14 @@ const getId = async (
 /**
  * Finds the AniList Id of a media entry using the provided type and MyAnimeList Id.
  */
-export const getAnilistId = async (malId: number | string, type: 'anime' | 'manga') => {
+export const getAnilistId = async (malId: number, type: 'anime' | 'manga') => {
 	return getId(malId, 'idMal', 'id', type);
 };
 
 /**
  * Finds the MyAnimeList Id of a media entry using the provided type and AniList Id.
  */
-export const getMalId = async (anilistId: number | string, type: 'anime' | 'manga') => {
+export const getMalId = async (anilistId: number, type: 'anime' | 'manga') => {
 	return getId(anilistId, 'id', 'idMal', type);
 };
 
