@@ -48,9 +48,9 @@ const processActivity = async () => {
 
 		for (const activityElement of activityElements) {
 			let username = activityElement.querySelector('.name')!.getAttribute('href')!;
-			username = (/^\/user\/(.+)\/$/.exec(username))![1];
+			username = /^\/user\/(.+)\/$/.exec(username)![1];
 			let mediaId = activityElement.querySelector('.title')!.getAttribute('href')!;
-			mediaId = (/^\/(?:anime|manga)\/(\d+)\//.exec((mediaId!)))![1];
+			mediaId = /^\/(?:anime|manga)\/(\d+)\//.exec(mediaId!)![1];
 
 			// Due to how vue works, the element may have been updated with new data so we need to check if the
 			// data in the container is still the same as before and if not we'd need to reset this element.

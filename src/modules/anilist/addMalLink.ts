@@ -16,8 +16,8 @@ registerModule.anilist({
 	},
 
 	validateUnload({ currentPage, previousPage }) {
-		const match1 = (/\/((anime|manga)\/\d+)/i.exec(currentPage.pathname))?.[1];
-		const match2 = (/\/((anime|manga)\/\d+)/i.exec(previousPage.pathname))?.[1];
+		const match1 = /\/((anime|manga)\/\d+)/i.exec(currentPage.pathname)?.[1];
+		const match2 = /\/((anime|manga)\/\d+)/i.exec(previousPage.pathname)?.[1];
 		return match1 !== match2 || isUI.mobile;
 	},
 

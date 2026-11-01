@@ -11,8 +11,8 @@ registerModule.mal({
 	async load() {
 		if ($('.mal-anilist-link')) return;
 
-		const malId = (/(?:anime|manga)(?:\/|\.php\?id=)(\d+)/.exec(location.href))?.[1];
-		const type = (/^\/(anime|manga)(?:\/|\.php)/.exec(location.pathname))?.[1];
+		const malId = /(?:anime|manga)(?:\/|\.php\?id=)(\d+)/.exec(location.href)?.[1];
+		const type = /^\/(anime|manga)(?:\/|\.php)/.exec(location.pathname)?.[1];
 
 		if (!malId) return;
 

@@ -46,8 +46,8 @@ if (location.host === 'anilist.co') {
 
 			console.log('Navigated:', currentPage.href);
 
-			const mediaType = (/^\/(anime|manga)\/\d+/.exec(location.pathname))?.[1];
-			const mediaId = (/^\/(?:anime|manga)\/(\d+)/.exec(location.pathname))?.[1];
+			const mediaType = /^\/(anime|manga)\/\d+/.exec(location.pathname)?.[1];
+			const mediaId = /^\/(?:anime|manga)\/(\d+)/.exec(location.pathname)?.[1];
 
 			// Media data to send to the modules when available.
 			const media: AnilistModuleLoadParams['media'] = {
