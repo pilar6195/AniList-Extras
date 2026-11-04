@@ -697,34 +697,39 @@ export const createSwitch = (options: {
 		},
 	});
 
-	const switchContainer = createElement('div', {
+	// Wrapping the input in a label lets the browser toggle it on click and keyboard (Space).
+	const controlElement = createElement('label', {
 		attributes: {
-			class: 'el-switch',
+			class: 'alextras--switch-control',
 		},
 		appendTo: mainContainer,
 	});
 
 	const inputElement = createElement('input', {
 		attributes: {
-			class: 'el-switch__input',
+			type: 'checkbox',
+			role: 'switch',
+			class: 'alextras--switch-input',
 		},
-		appendTo: switchContainer,
+		appendTo: controlElement,
 	}) as HTMLInputElement;
 
 	createElement('span', {
 		attributes: {
-			class: 'el-switch__core',
+			class: 'alextras--switch-track',
 		},
-		appendTo: switchContainer,
+		appendTo: controlElement,
 	});
 
-	const labelElement = createElement('span', {
-		attributes: {
-			class: 'el-switch__label el-switch__label--right',
-		},
-		textContent: label,
-		appendTo: switchContainer,
-	});
+	if (label) {
+		createElement('span', {
+			attributes: {
+				class: 'alextras--switch-label',
+			},
+			textContent: label,
+			appendTo: controlElement,
+		});
+	}
 
 	if (description) {
 		createElement('h5', {
@@ -752,11 +757,6 @@ export const createSwitch = (options: {
 
 			if (inputElement.checked === value) return;
 
-			switchContainer.classList[value ? 'add' : 'remove']('is-checked');
-			switchContainer.classList[value ? 'add' : 'remove']('is-checked');
-			labelElement.classList[value ? 'add' : 'remove']('is-active');
-			labelElement.classList[value ? 'add' : 'remove']('is-active');
-
 			inputElement.checked = value;
 			inputElement.dispatchEvent(new Event('change'));
 		},
@@ -777,11 +777,6 @@ export const createSwitch = (options: {
 			inputElement.removeEventListener(event, cb);
 		},
 	};
-
-	switchContainer.addEventListener('click', event => {
-		switchToggle.toggle();
-		event.preventDefault();
-	});
 
 	switchToggle.enabled = enabled;
 

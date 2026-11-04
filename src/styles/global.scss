@@ -88,13 +88,79 @@ $inputMargins: 0px 1em 1em 0;
 		margin-left: 4.5em;
 	}
 
-	.el-switch__core {
-		background: rgb(var(--color-background-300));
-		border-color: rgb(var(--color-background-300))
+	.alextras--switch-control {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		height: 20px;
+		font-size: 14px;
+		line-height: 20px;
+		vertical-align: middle;
+		cursor: pointer;
 	}
 
-	.el-switch__label:not(.is-active) {
+	.alextras--switch-input {
+		position: absolute;
+		width: 0;
+		height: 0;
+		margin: 0;
+		opacity: 0;
+	}
+
+	.alextras--switch-track {
+		position: relative;
+		display: inline-block;
+		box-sizing: border-box;
+		width: 40px;
+		height: 20px;
+		border: 1px solid rgb(var(--color-background-300));
+		border-radius: 10px;
+		background-color: rgb(var(--color-background-300));
+		vertical-align: middle;
+		transition: border-color .3s, background-color .3s;
+
+		&::after {
+			content: '';
+			position: absolute;
+			top: 1px;
+			left: 1px;
+			width: 16px;
+			height: 16px;
+			border-radius: 100%;
+			background-color: #fff;
+			transition: all .3s;
+		}
+	}
+
+	.alextras--switch-label {
+		display: inline-block;
+		height: 20px;
+		margin-left: 10px;
+		font-size: 14px;
+		font-weight: 500;
 		color: rgb(var(--color-text));
+		vertical-align: middle;
+		transition: .2s;
+	}
+
+	.alextras--switch-input:checked + .alextras--switch-track {
+		border-color: rgb(var(--color-blue));
+		background-color: rgb(var(--color-blue));
+
+		&::after {
+			left: 100%;
+			margin-left: -17px;
+		}
+	}
+
+	.alextras--switch-input:checked ~ .alextras--switch-label {
+		color: rgb(var(--color-blue));
+	}
+
+	// Only shows for keyboard focus, so mouse users see the original look.
+	.alextras--switch-input:focus-visible + .alextras--switch-track {
+		outline: 2px solid rgb(var(--color-blue));
+		outline-offset: 2px;
 	}
 }
 
