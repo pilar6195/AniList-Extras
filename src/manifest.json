@@ -4,6 +4,13 @@
 	"description": "Adds a few additional features to AniList.",
 	"minimum_chrome_version": "88",
 
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{6057b803-7484-4ce1-88fc-9e837c429b94}",
+			"strict_min_version": "140.0"
+		}
+	},
+
 	"icons": {
 		"128": "icon128.png"
 	},
