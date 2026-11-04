@@ -52,6 +52,16 @@
 - [Firefox](https://addons.mozilla.org/firefox/addon/violentmonkey/)
 - [Edge](https://microsoftedge.microsoft.com/addons/detail/eeagobfjdenkkddmbclomhiblgggliao)
 
+## Data & Privacy
+
+When installing on Firefox, you'll be told this add-on collects **browsing activity**. Here's what that means:
+
+- On AniList anime and manga pages, the MyAnimeList ID of the title you're viewing is sent to `api.tenrai.org`, a third-party MyAnimeList data API. This is how MAL scores, characters, and opening/ending themes are shown. Responses are cached locally for an hour.
+- On MyAnimeList pages, the ID of the title you're viewing is used to find the matching AniList page.
+- Other features query AniList's own API (`graphql.anilist.co`) for things like follower counts and review ratings. If you add an AniList API token in the settings, it is only ever sent to AniList.
+
+No analytics, no tracking, and no account info is sent anywhere else. Settings are stored locally in your browser.
+
 ## Building/Development
 
 To build the userscript/extension, you need [Bun](https://bun.sh/).
