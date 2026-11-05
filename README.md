@@ -30,9 +30,7 @@
 
 [**Chrome Web Store**][chrome]
 
-~~[**Firefox Add-ons**][firefox]~~
-
-> The browser extension on the Firefox Add-ons Store is currently outdated. Working out some issues getting it published. It will eventually be updated, but for now, please use the userscript or chrome version instead.
+[**Firefox Add-ons**][firefox]
 
 ### Userscript
 
