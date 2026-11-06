@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import fsAsync from 'node:fs/promises';
 import path from 'node:path';
+import { parseArgs } from 'node:util';
 import chokidar from 'chokidar';
 import archiver from 'archiver';
 import { compile as compileSass } from 'sass';
@@ -8,9 +9,35 @@ import { compile as compileSass } from 'sass';
 import offsetLines from 'offset-sourcemap-lines';
 import packageJson from './package.json';
 
-const watchFlag = process.argv.includes('--watch');
-const serveFlag = process.argv.includes('--serve');
-const includeSourceMaps = process.argv.includes('--include-sourcemap');
+const { values: cliFlags } = parseArgs({
+	args: process.argv.slice(2),
+	options: {
+		watch: { type: 'boolean', default: false },
+		serve: { type: 'boolean', default: false },
+		'include-sourcemap': { type: 'boolean', default: false },
+		port: { type: 'string' },
+	},
+});
+
+/**
+ * Parses the `--port` flag value. Port 0 lets the OS pick a random free port.
+ */
+const parseServePort = (portFlag: string | undefined): number => {
+	if (portFlag === undefined) {
+		return 0;
+	}
+
+	if (!/^\d+$/.test(portFlag) || Number(portFlag) > 65535) {
+		throw new RangeError(`Invalid --port "${portFlag}". Expected an integer between 0 and 65535.`);
+	}
+
+	return Number(portFlag);
+};
+
+const watchFlag = cliFlags.watch;
+const serveFlag = cliFlags.serve;
+const includeSourceMaps = cliFlags['include-sourcemap'];
+const servePort = parseServePort(cliFlags.port);
 
 const header = (env: 'extension' | 'userscript' = 'userscript') => `
 // ==UserScript==
@@ -212,7 +239,7 @@ if (watchFlag) {
 	// Also only serving if --watch is enabled. No point in serving if not watching.
 	if (serveFlag) {
 		const server = Bun.serve({
-			port: 0,
+			port: servePort,
 			fetch(request) {
 				const url = new URL(request.url);
 

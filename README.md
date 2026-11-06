@@ -69,7 +69,7 @@ To build the userscript/extension, you need [Bun](https://bun.sh/).
 3. Run `bun run build` to build the project. Built assets will be in the `dist` directory.
 	Unpackaged extension will be in the `.build` directory.
 	* Use `bun run watch` to watch for changes and rebuild automatically.
-	* Use `bun run watch:serve` to serve the userscript at `http://localhost:3000/anilist-extras.user.js` for easy development with Violentmonkey.
+	* Use `bun run watch:serve` to serve the userscript at `http://localhost:<port>/anilist-extras.user.js` for easy development with Violentmonkey. A random port is used by default. Use `bun run watch:serve --port 3000` to pick one.
 
 > Running `bun run watch` and `bun run watch:serve` will build with sourcemaps enabled for easier debugging. `bun run build` will not include sourcemaps by default but can be enabled by setting the `--include-sourcemap` flag.
 
