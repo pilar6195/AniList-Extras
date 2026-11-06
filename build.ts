@@ -42,6 +42,10 @@ async function bundle(env: 'extension' | 'userscript' = 'userscript') {
 		entrypoints: ['./src/anilist-extras.user.ts'],
 		target: 'browser',
 		sourcemap: (includeSourceMaps || watchFlag) ? 'external' : 'none',
+		minify: watchFlag ? false : {
+			whitespace: true,
+			syntax: true,
+		},
 		plugins: [
 			{
 				name: 'styles-loader',
