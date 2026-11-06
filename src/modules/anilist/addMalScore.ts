@@ -26,7 +26,9 @@ registerModule.anilist({
 		const targetLoaded = await waitFor('.sidebar .data-set');
 
 		// If the target element or mal id is not found, return.
-		if (!targetLoaded || !media.malId) return;
+		if (!targetLoaded || !media.malId) {
+			return;
+		}
 
 		// Fetch MAL data.
 		const { data: malData } = await malApi(`${media.type}/${media.malId}`, ONE_HOUR) as MalAnimeResponse;

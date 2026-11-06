@@ -103,7 +103,7 @@ type AnilistUserReviewsResponse = {
 				score: number;
 			}[];
 		};
-	}
+	};
 };
 
 type MalAnimeResponse = {
@@ -272,7 +272,7 @@ type AnilistModuleLoadParams = {
 	media: {
 		type: 'anime' | 'manga' | undefined;
 		id: number | undefined;
-		malId: number | false
+		malId: number | false;
 	};
 };
 
@@ -328,7 +328,7 @@ type BaseModule = {
 	/**
 	 * Name of the module.
 	 */
-	name?: string,
+	name?: string;
 	/**
 	 * Description of the module.
 	 */
@@ -354,7 +354,7 @@ type BaseModule = {
 	 */
 	settingsPage?: {
 		[key: string]: ModuleSettingColor | ModuleSettingNumber | ModuleSettingSelect | ModuleSettingText | ModuleSettingToggle;
-	}
+	};
 	/**
 	 * Styles that will be injected into the page when the module is enabled.
 	 * Use this to style any elements created by the module.

@@ -20,7 +20,9 @@ registerModule.anilist({
 		const targetLoaded = await waitFor('.activity-feed-wrap .feed-select .feed-type-toggle');
 
 		// If the target element is not found, return.
-		if (!targetLoaded) return;
+		if (!targetLoaded) {
+			return;
+		}
 
 		const target = $('.activity-feed-wrap .feed-select .feed-type-toggle')!;
 

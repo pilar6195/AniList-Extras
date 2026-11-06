@@ -25,13 +25,17 @@ registerModule.anilist({
 		const targetLoaded = await waitFor('.overview > .characters, .overview > .staff');
 
 		// If the target element or mal id is not found, return.
-		if (!targetLoaded || !media.malId) return;
+		if (!targetLoaded || !media.malId) {
+			return;
+		}
 
 		// Fetch the character data from the Cache/API.
 		const { data: characterData } = await malApi(`${media.type}/${media.malId}/characters`, ONE_HOUR) as MalCharactersResponse;
 
 		// If we don't have any character data to work with we stop here.
-		if (!characterData.length) return;
+		if (!characterData.length) {
+			return;
+		}
 
 		// Find an element we can snatch the required attributes for styling
 		const attrEl = $('.overview > .characters .character')
@@ -39,7 +43,9 @@ registerModule.anilist({
 			: $('.overview > .staff .staff');
 
 		// If we can't find said element then we abort.
-		if (!attrEl) return;
+		if (!attrEl) {
+			return;
+		}
 
 		// This is the attribute we need to properly style our newly created elements.
 		const attrName = attrEl.attributes[0].name;
@@ -264,7 +270,7 @@ registerModule.anilist({
 			appendTo: $('.characters .link')!,
 		});
 
-		characterToggle.addEventListener('click', (event) => {
+		characterToggle.addEventListener('click', event => {
 			if ($('.characters')!.classList.contains('alextras--mal')) {
 				characterToggle.textContent = 'Switch to MyAnimeList';
 				characterHeader.textContent = 'AniList Characters';
@@ -281,8 +287,10 @@ registerModule.anilist({
 		});
 
 		// Redirect to the MAL characters page when the header is clicked on if the MAL characters is the active view.
-		characterHeader.addEventListener('click', (event) => {
-			if (!$('.characters')!.classList.contains('alextras--mal')) return;
+		characterHeader.addEventListener('click', event => {
+			if (!$('.characters')!.classList.contains('alextras--mal')) {
+				return;
+			}
 
 			// A underscore is required in the path otherwise it will direct the user
 			// to the media page instead of the character page.

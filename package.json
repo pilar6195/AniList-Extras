@@ -1,12 +1,13 @@
 {
   "name": "anilist-extras",
   "version": "2.8.3",
+  "type": "module",
   "description": "Adds a few additional features to AniList.",
   "scripts": {
     "build": "bun run build.ts",
     "watch": "bun run build.ts --watch",
     "watch:serve": "bun run build.ts --watch --serve",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint"
   },
   "repository": "https://github.com/pilar6195/AniList-Extras.git",
   "author": "pilar6195 (https://github.com/pilar6195)",
@@ -23,9 +24,9 @@
     "@types/archiver": "^7.0.0",
     "@types/bun": "1.4.4",
     "@types/tampermonkey": "^5.0.5",
-    "eslint": "^8.57.1",
-    "eslint-config-neon": "^0.1.62",
-    "typescript": "^7.0.2"
+    "eslint": "^10.14.0",
+    "eslint-config-neon": "^0.5.4",
+    "typescript": "6"
   },
   "trustedDependencies": [
     "@parcel/watcher",

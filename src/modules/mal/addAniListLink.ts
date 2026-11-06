@@ -9,19 +9,27 @@ registerModule.mal({
 	},
 
 	async load() {
-		if ($('.mal-anilist-link')) return;
+		if ($('.mal-anilist-link')) {
+			return;
+		}
 
 		const malId = /(?:anime|manga)(?:\/|\.php\?id=)(\d+)/.exec(location.href)?.[1];
 		const type = /^\/(anime|manga)(?:\/|\.php)/.exec(location.pathname)?.[1];
 
-		if (!malId) return;
+		if (!malId) {
+			return;
+		}
 
 		const anilistId = await getAnilistId(Number.parseInt(malId, 10), type as 'anime' | 'manga');
-		if (!anilistId) return;
+		if (!anilistId) {
+			return;
+		}
 
 		const headerEl = $('.header-right');
 
-		if (!headerEl) return;
+		if (!headerEl) {
+			return;
+		}
 
 		createElement('a', {
 			attributes: {

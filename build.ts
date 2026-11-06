@@ -46,14 +46,14 @@ async function bundle(env: 'extension' | 'userscript' = 'userscript') {
 			{
 				name: 'styles-loader',
 				setup(build) {
-					build.onLoad({ filter: /\.css$/ }, async (args) => {
+					build.onLoad({ filter: /\.css$/ }, async args => {
 						const cssFile = Bun.file(args.path);
 						return {
 							contents: await cssFile.text(),
 							loader: 'text',
 						};
 					});
-					build.onLoad({ filter: /\.scss$/ }, (args) => {
+					build.onLoad({ filter: /\.scss$/ }, args => {
 						return {
 							contents: compileSass(args.path, {
 								style: watchFlag ? 'expanded' : 'compressed',
@@ -67,7 +67,10 @@ async function bundle(env: 'extension' | 'userscript' = 'userscript') {
 				name: 'remove-polyfill',
 				setup(build) {
 					// Don't include the polyfill in the userscript build.
-					if (env === 'extension') return;
+					if (env === 'extension') {
+						return;
+					}
+
 					build.onLoad({ filter: /Polyfill\.ts$/ }, () => ({
 						contents: '',
 						loader: 'ts',
@@ -77,7 +80,10 @@ async function bundle(env: 'extension' | 'userscript' = 'userscript') {
 			{
 				name: 'exclude-modules',
 				setup(build) {
-					if (!modulesToExclude.length) return;
+					if (!modulesToExclude.length) {
+						return;
+					}
+
 					build.onLoad({
 						filter: new RegExp(modulesToExclude.map(module => {
 							const modulePath = path.normalize(`modules/${module}`).replaceAll(/[.\\]/g, '\\$&');
@@ -126,7 +132,9 @@ async function bundle(env: 'extension' | 'userscript' = 'userscript') {
 async function buildUserscript() {
 	const output = await bundle('userscript');
 
-	if (!output) return;
+	if (!output) {
+		return;
+	}
 
 	/* Write userscript to dist directory */
 
@@ -137,7 +145,9 @@ async function buildUserscript() {
 async function buildExtension() {
 	const output = await bundle('extension');
 
-	if (!output) return;
+	if (!output) {
+		return;
+	}
 
 	/* Write extension to dist directory */
 

@@ -64,7 +64,10 @@ export default class RateLimit {
 	 * Drains the queue, executing callbacks as tokens permit and sleeping when exhausted.
 	 */
 	private async processQueue(): Promise<void> {
-		if (this.processing) return;
+		if (this.processing) {
+			return;
+		}
+
 		this.processing = true;
 
 		while (this.queue.length > 0) {

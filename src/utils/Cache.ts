@@ -31,7 +31,9 @@ const Cache = {
 		const store = await this.getStore(storeName);
 		const item: any = await store.getItem(key.toString());
 
-		if (!item) return;
+		if (!item) {
+			return;
+		}
 
 		if (Date.now() > item.ttl) {
 			await this.delete(storeName, key);

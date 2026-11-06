@@ -1,7 +1,7 @@
 export type CustomEventListener = (...args: any[]) => void;
 
 export default class EventEmitter {
-	private events: { [key: string]: CustomEventListener[] } = {};
+	private events: { [key: string]: CustomEventListener[]; } = {};
 
 	public on(event: string, listener: CustomEventListener): void {
 		if (!this.events[event]) {
@@ -12,13 +12,17 @@ export default class EventEmitter {
 	}
 
 	public off(event: string, listener: CustomEventListener): void {
-		if (!this.events[event]) return;
+		if (!this.events[event]) {
+			return;
+		}
 
 		this.events[event] = this.events[event].filter(l => l !== listener);
 	}
 
 	public emit(event: string, ...args: any[]): void {
-		if (!this.events[event]) return;
+		if (!this.events[event]) {
+			return;
+		}
 
 		for (const listener of this.events[event]) {
 			listener.apply(this, args);

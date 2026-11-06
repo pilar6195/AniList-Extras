@@ -1,8 +1,8 @@
 /* eslint-disable prefer-promise-reject-errors */
 if (ALEXTRAS_ENV === 'extension') {
-	// @ts-expect-error - Basic GM API Polyfill
 	// No where near 1:1, but should be enough.
 	window.GM = {
+		// @ts-expect-error - Basic GM.xmlHttpRequest API Polyfill
 		async xmlHttpRequest(details) {
 			return new Promise((resolve, reject) => {
 				const xhr = new XMLHttpRequest();
@@ -18,7 +18,7 @@ if (ALEXTRAS_ENV === 'extension') {
 				xhr.timeout = details.timeout ?? 0;
 				xhr.responseType = details.responseType as XMLHttpRequestResponseType ?? '';
 
-				xhr.onload = function() {
+				xhr.onload = function () {
 					const response = {
 						context: details.context,
 						finalUrl: xhr.responseURL,
@@ -41,7 +41,7 @@ if (ALEXTRAS_ENV === 'extension') {
 					resolve(response);
 				};
 
-				xhr.onerror = function() {
+				xhr.onerror = function () {
 					const errorResponse = {
 						readyState: xhr.readyState,
 						response: xhr.response,
@@ -60,7 +60,7 @@ if (ALEXTRAS_ENV === 'extension') {
 					reject(errorResponse);
 				};
 
-				xhr.ontimeout = function() {
+				xhr.ontimeout = function () {
 					if (details.ontimeout) {
 						details.ontimeout();
 					}
@@ -68,7 +68,7 @@ if (ALEXTRAS_ENV === 'extension') {
 					reject();
 				};
 
-				xhr.onabort = function() {
+				xhr.onabort = function () {
 					if (details.onabort) {
 						details.onabort();
 					}

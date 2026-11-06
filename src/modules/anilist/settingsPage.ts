@@ -1,4 +1,4 @@
-/* eslint-disable no-alert, @typescript-eslint/no-dynamic-delete */
+/* eslint-disable no-alert */
 import Storage from '@/utils/Storage';
 import Cache from '@/utils/Cache';
 import SettingsManager, { purgeUnusedSettings } from '@/utils/Settings';
@@ -28,7 +28,9 @@ registerModule.anilist({
 	async load() {
 		const targetLoaded = await waitFor('.settings .content .apps');
 
-		if (!targetLoaded) return;
+		if (!targetLoaded) {
+			return;
+		}
 
 		/* Create Settings Container */
 
@@ -61,10 +63,11 @@ registerModule.anilist({
 			appendTo: settingsContainer,
 		});
 
-
 		for (const module of anilistModules) {
 			const hasSettings = Object.keys(module.settingsPage ?? {}).length;
-			if (!module.toggleable && !hasSettings) continue;
+			if (!module.toggleable && !hasSettings) {
+				continue;
+			}
 
 			const ModuleSettings = new SettingsManager(module.id);
 
@@ -130,7 +133,7 @@ registerModule.anilist({
 					enabled: !module.disabled,
 				});
 
-				toggleModuleSwitch.on('change', async (event) => {
+				toggleModuleSwitch.on('change', async event => {
 					const checked = (event.target as HTMLInputElement).checked;
 
 					if (checked) {
@@ -141,7 +144,7 @@ registerModule.anilist({
 				});
 
 				// We watch the moduleStates to update the switch if the module's state is updated/reset.
-				const unwatch = Storage.watch('moduleStates', (moduleStates) => {
+				const unwatch = Storage.watch('moduleStates', moduleStates => {
 					const moduleState = moduleStates?.[module.id] ?? !(module.disabledDefault ?? false);
 					toggleModuleSwitch.enabled = moduleState;
 				});
@@ -171,7 +174,10 @@ registerModule.anilist({
 				events: {
 					click() {
 						const confirmResponse = window.confirm('Are you sure you want to reset this module settings? OK to confirm, Cancel to cancel.');
-						if (!confirmResponse) return;
+						if (!confirmResponse) {
+							return;
+						}
+
 						ModuleSettings.clear();
 						ModuleStates.remove(module.id);
 					},
@@ -212,8 +218,11 @@ registerModule.anilist({
 				}
 			});
 
-			const unwatchModuleSettings = Storage.watch('settings', (settings) => {
-				if (!hasSettings || !settings?.[module.id]) return;
+			const unwatchModuleSettings = Storage.watch('settings', settings => {
+				if (!hasSettings || !settings?.[module.id]) {
+					return;
+				}
+
 				if (hasDefaultSettings()) {
 					resetSettingsElement.style.display = 'none';
 				} else {
@@ -255,7 +264,10 @@ registerModule.anilist({
 				let modelOpen = false;
 
 				cogElement.addEventListener('click', () => {
-					if (modelOpen) return;
+					if (modelOpen) {
+						return;
+					}
+
 					modelOpen = true;
 					document.body.style.overflow = 'hidden';
 
@@ -347,7 +359,7 @@ registerModule.anilist({
 
 								optionElement = checkbox.element;
 
-								checkbox.on('change', (event) => {
+								checkbox.on('change', event => {
 									const checked = (event.target as HTMLInputElement).checked;
 									ModuleSettings.set(key, checked);
 								});
@@ -365,7 +377,7 @@ registerModule.anilist({
 
 								optionElement = switchToggle.element;
 
-								switchToggle.on('change', (event) => {
+								switchToggle.on('change', event => {
 									const checked = (event.target as HTMLInputElement).checked;
 									ModuleSettings.set(key, checked);
 								});
@@ -388,7 +400,7 @@ registerModule.anilist({
 
 								optionElement = input.element;
 
-								input.on('change', (event) => {
+								input.on('change', event => {
 									const value = (event.target as HTMLInputElement).value;
 									if (input.isValidInput) {
 										if (value === '') {
@@ -413,7 +425,7 @@ registerModule.anilist({
 
 								optionElement = input.element;
 
-								input.on('change', (event) => {
+								input.on('change', event => {
 									const value = (event.target as HTMLInputElement).value;
 									if (input.isValidInput) {
 										if (value === '') {
@@ -442,7 +454,7 @@ registerModule.anilist({
 
 								optionElement = input.element;
 
-								input.on('change', (event) => {
+								input.on('change', event => {
 									const value = (event.target as HTMLInputElement).value;
 									if (input.isValidInput) {
 										if (value === '') {
@@ -470,7 +482,7 @@ registerModule.anilist({
 
 								optionElement = textarea.element;
 
-								textarea.on('change', (event) => {
+								textarea.on('change', event => {
 									const value = (event.target as HTMLTextAreaElement).value;
 									if (textarea.isValidInput) {
 										if (value === '') {
@@ -492,7 +504,7 @@ registerModule.anilist({
 									selected: savedSetting,
 								});
 
-								select.on('change', (event) => {
+								select.on('change', event => {
 									const value = (event.target as HTMLSelectElement).value;
 									ModuleSettings.set(key, value);
 								});
@@ -531,7 +543,9 @@ registerModule.anilist({
 				change(event) {
 					const file = (event.target as HTMLInputElement).files?.[0];
 
-					if (!file) return;
+					if (!file) {
+						return;
+					}
 
 					if (file.type !== 'application/json') {
 						window.alert('Invalid file type. Please select a valid JSON file.');
@@ -631,7 +645,10 @@ registerModule.anilist({
 					events: {
 						async click() {
 							const confirmResponse = window.confirm('Are you sure you want to reset all AniList Extras settings? OK to confirm, Cancel to cancel.');
-							if (!confirmResponse) return;
+							if (!confirmResponse) {
+								return;
+							}
+
 							Storage.clear();
 						},
 					},

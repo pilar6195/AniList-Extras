@@ -44,7 +44,9 @@ registerModule.anilist({
 		const targetLoaded = await waitFor('.characters .link');
 
 		// If the target element is not found, return.
-		if (!targetLoaded) return;
+		if (!targetLoaded) {
+			return;
+		}
 
 		addViewToggle('.characters .link', '.characters .grid-wrap');
 	},
@@ -62,7 +64,9 @@ registerModule.anilist({
 		const targetLoaded = await waitFor('.media-characters .grid-wrap');
 
 		// If the target element is not found, return.
-		if (!targetLoaded) return;
+		if (!targetLoaded) {
+			return;
+		}
 
 		const header = createElement('h2', {
 			attributes: {
@@ -92,7 +96,9 @@ registerModule.anilist({
 		const targetLoaded = await waitFor('.staff .link');
 
 		// If the target element is not found, return.
-		if (!targetLoaded) return;
+		if (!targetLoaded) {
+			return;
+		}
 
 		addViewToggle('.staff .link', '.staff .grid-wrap');
 	},
@@ -110,7 +116,9 @@ registerModule.anilist({
 		const targetLoaded = await waitFor('.media-staff .grid-wrap');
 
 		// If the target element is not found, return.
-		if (!targetLoaded) return;
+		if (!targetLoaded) {
+			return;
+		}
 
 		const header = createElement('h2', {
 			attributes: {
@@ -135,7 +143,9 @@ function addViewToggle(containers: string, targets: string) {
 	const containerElements = $$(containers).filter(c => !c.querySelector('.alextras--view-switch-toggle'));
 	const targetElements = $$(targets).filter(t => !t.classList.contains('alextras--view-switch-target'));
 
-	if (!containerElements.length || !targetElements.length) return;
+	if (!containerElements.length || !targetElements.length) {
+		return;
+	}
 
 	for (const container of containerElements) {
 		const viewSwitch = createElement('div', {
@@ -149,7 +159,7 @@ function addViewToggle(containers: string, targets: string) {
 			appendTo: container,
 		});
 
-		viewSwitch.querySelector('.alextras--switch-grid')!.addEventListener('click', (event) => {
+		viewSwitch.querySelector('.alextras--switch-grid')!.addEventListener('click', event => {
 			for (const el of $$('.alextras--view-switch-toggle .alextras--active')) {
 				el.classList.remove('alextras--active');
 			}
@@ -166,7 +176,7 @@ function addViewToggle(containers: string, targets: string) {
 			event.stopPropagation();
 		});
 
-		viewSwitch.querySelector('.alextras--switch-list')!.addEventListener('click', (event) => {
+		viewSwitch.querySelector('.alextras--switch-list')!.addEventListener('click', event => {
 			for (const el of $$('.alextras--view-switch-toggle .alextras--active')) {
 				el.classList.remove('alextras--active');
 			}

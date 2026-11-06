@@ -13,7 +13,9 @@ export const purgeUnusedSettings = () => {
 	const settings = Storage.getAll();
 
 	for (const key of ['settings', 'moduleStates']) {
-		if (!settings[key]) continue;
+		if (!settings[key]) {
+			continue;
+		}
 
 		let changed = false;
 

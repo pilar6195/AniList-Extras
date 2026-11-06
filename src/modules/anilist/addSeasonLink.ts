@@ -25,7 +25,9 @@ registerModule.anilist({
 		const targetLoaded = await waitFor('.browse-wrap .dropdown .primary-links .secondary-links');
 
 		// If the target element is not found, return.
-		if (!targetLoaded) return;
+		if (!targetLoaded) {
+			return;
+		}
 
 		const attrName = $('.secondary-links > a')!.attributes[0].name;
 

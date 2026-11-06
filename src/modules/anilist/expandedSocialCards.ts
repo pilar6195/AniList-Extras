@@ -38,7 +38,9 @@ registerModule.anilist({
 		const targetLoaded = await waitFor('.user-social');
 
 		// If the target element is not found, return.
-		if (!targetLoaded) return;
+		if (!targetLoaded) {
+			return;
+		}
 
 		const styleType = await ModuleSettings.get('styleType', 'style1');
 

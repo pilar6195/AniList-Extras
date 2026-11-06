@@ -15,12 +15,12 @@ type AnilistUserScoresResponse = {
 				score: number;
 				user: {
 					mediaListOptions: {
-						scoreFormat: scoreFormat
-					}
-				}
+						scoreFormat: scoreFormat;
+					};
+				};
 			}[];
 		};
-	}
+	};
 };
 
 type ActivityScore = {
@@ -34,7 +34,9 @@ let running = false;
 let observer: MutationObserver;
 
 const processActivity = async () => {
-	if (running) return;
+	if (running) {
+		return;
+	}
 
 	running = true;
 
@@ -55,15 +57,17 @@ const processActivity = async () => {
 			// Due to how vue works, the element may have been updated with new data so we need to check if the
 			// data in the container is still the same as before and if not we'd need to reset this element.
 			if (
-				activityElement.dataset['scoreId'] &&
-				activityElement.dataset['scoreId'] !== `${username}:${mediaId}`
+				activityElement.dataset['scoreId']
+				&& activityElement.dataset['scoreId'] !== `${username}:${mediaId}`
 			) {
 				activityElement.dataset['scoreFetched'] = '';
 				activityElement.dataset['scoreId'] = '';
 				activityElement.querySelector('.alextras--activity-score')?.remove();
 			}
 
-			if (activityElement.dataset['scoreFetched']) continue;
+			if (activityElement.dataset['scoreFetched']) {
+				continue;
+			}
 
 			activities.push({
 				username,
@@ -72,7 +76,9 @@ const processActivity = async () => {
 			});
 		}
 
-		if (!activities.length) return;
+		if (!activities.length) {
+			return;
+		}
 
 		const activityScores: ActivityScore[] = [];
 
@@ -87,13 +93,17 @@ const processActivity = async () => {
 			if (activityScore) {
 				if (activityScores.some(a => {
 					return a.username === activity.username && a.mediaId === activity.mediaId;
-				})) continue;
+				})) {
+					continue;
+				}
 
 				activityScores.push(activityScore);
 			} else {
 				if (uncachedActivityScores.some(a => {
 					return a.username === activity.username && a.mediaId === activity.mediaId;
-				})) continue;
+				})) {
+					continue;
+				}
 
 				uncachedActivityScores.push({
 					username: activity.username,
@@ -145,7 +155,9 @@ const processActivity = async () => {
 				activity.container.dataset['scoreFetched'] = 'true';
 				activity.container.dataset['scoreId'] = `${activityScore.username}:${activityScore.mediaId}`;
 
-				if (activityScore.score === 0) continue;
+				if (activityScore.score === 0) {
+					continue;
+				}
 
 				let scoreLabel = '';
 
@@ -216,16 +228,18 @@ registerModule.anilist({
 	styles: moduleStyles,
 
 	validate({ currentPage }) {
-		return currentPage.pathname.startsWith('/home') ||
-			/^\/(anime|manga)\/\d+\/.+\/social$/.test(currentPage.pathname) ||
-			/^\/user\/[^/]+\/?$/.test(currentPage.pathname);
+		return currentPage.pathname.startsWith('/home')
+			|| /^\/(anime|manga)\/\d+\/.+\/social$/.test(currentPage.pathname)
+			|| /^\/user\/[^/]+\/?$/.test(currentPage.pathname);
 	},
 
 	async load() {
 		const targetLoaded = await waitFor('.activity-feed');
 
 		// If the target element is not found, return.
-		if (!targetLoaded) return;
+		if (!targetLoaded) {
+			return;
+		}
 
 		observer = observe($('.activity-feed')!, () => void processActivity());
 		void processActivity();

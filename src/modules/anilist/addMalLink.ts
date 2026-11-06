@@ -25,7 +25,9 @@ registerModule.anilist({
 		const targetLoaded = await waitFor('.sidebar');
 
 		// If the target element or mal id is not found, return.
-		if (!targetLoaded || !media.malId) return;
+		if (!targetLoaded || !media.malId) {
+			return;
+		}
 
 		let attrName: string;
 
@@ -101,7 +103,6 @@ registerModule.anilist({
 				: $('.external-links .external-links-wrap')!,
 		});
 	},
-
 
 	unload() {
 		removeElements('.alextras--mal-link, .alextras--external-links');

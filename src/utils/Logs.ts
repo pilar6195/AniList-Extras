@@ -10,7 +10,6 @@ type ToggleableMethod = typeof toggleableMethods[number];
 
 let enableLogs = true;
 
-// eslint-disable-next-line no-global-assign
 window.console = new Proxy(window.console, {
 	get(console, prop) {
 		// Return the original console method if it's not a method we want to modify
@@ -37,7 +36,7 @@ if (!Storage.get('enableLogs', ALEXTRAS_DEV)) {
 	enableLogs = false;
 }
 
-Storage.watch('enableLogs', (value) => {
+Storage.watch('enableLogs', value => {
 	const enable = typeof value === 'boolean' ? value : ALEXTRAS_DEV;
 	if (enable) {
 		enableLogs = true;

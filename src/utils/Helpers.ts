@@ -5,18 +5,15 @@ import RateLimit from './RateLimit';
 import { ONE_HOUR, ONE_DAY, ONE_WEEK } from './Constants';
 import type * as CSS from 'csstype';
 
-
 declare global {
 	namespace Tampermonkey {
-		// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 		interface Response<TContext, T = object> {
-			json: any
+			json: any;
 		}
 	}
 }
 
 declare module 'csstype' {
-	// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 	interface Properties {
 		[index: `--${string}`]: any;
 	}
@@ -184,14 +181,20 @@ export const waitFor = async (selectorOrFn: string | (() => boolean), timeout = 
 			}
 
 			observer = observe(document, () => {
-				if (!$(selectorOrFn)) return;
+				if (!$(selectorOrFn)) {
+					return;
+				}
+
 				clearTimeout(waitTimeout);
 				resolve(true);
 				return true;
 			});
 		} else if (typeof selectorOrFn === 'function') {
 			waitInterval = setInterval(async () => {
-				if (!selectorOrFn()) return;
+				if (!selectorOrFn()) {
+					return;
+				}
+
 				clearInterval(waitInterval);
 				clearTimeout(waitTimeout);
 				resolve(true);
@@ -307,7 +310,7 @@ export const anilistApi = async (
 			const errorMessage = response.json?.errors?.[0]?.message;
 			if (errorMessage?.includes('disabled')) {
 				console.error(errorMessage);
-				// eslint-disable-next-line @typescript-eslint/no-throw-literal
+				// eslint-disable-next-line @typescript-eslint/only-throw-error
 				throw response;
 			}
 		}
@@ -327,7 +330,7 @@ export const anilistApi = async (
 
 			if (retryCount >= retries) {
 				console.error(`Request failed with status code ${response.status}.`, response);
-				// eslint-disable-next-line @typescript-eslint/no-throw-literal
+				// eslint-disable-next-line @typescript-eslint/only-throw-error
 				throw response;
 			}
 
@@ -373,7 +376,7 @@ export const malApi = async (path: string, cacheTime: number | false = ONE_HOUR)
 
 		if (response.status === 429) {
 			if (attempt < maxRetries) {
-				const delay = 1000 * 2**attempt;
+				const delay = 1000 * 2 ** attempt;
 				await sleep(delay);
 				return performRequest(attempt + 1);
 			} else {
@@ -421,7 +424,9 @@ export const getUserId = async (username: string): Promise<number | undefined> =
 		}
 	`, { username }) as AnilistUserIdResponse;
 
-	if (!data.User) return;
+	if (!data.User) {
+		return;
+	}
 
 	// Cache id-username match for 1 hour.
 	await Cache.set('userids-map', username, data.User.id, ONE_HOUR);
@@ -635,7 +640,9 @@ export const createCheckbox = (options: {
 				throw new TypeError('Expected boolean.');
 			}
 
-			if (inputElement.checked === value) return;
+			if (inputElement.checked === value) {
+				return;
+			}
 
 			labelContainer.classList[value ? 'add' : 'remove']('is-checked');
 			inputContainer.classList[value ? 'add' : 'remove']('is-checked');
@@ -755,7 +762,9 @@ export const createSwitch = (options: {
 				throw new TypeError('Expected boolean.');
 			}
 
-			if (inputElement.checked === value) return;
+			if (inputElement.checked === value) {
+				return;
+			}
 
 			inputElement.checked = value;
 			inputElement.dispatchEvent(new Event('change'));
@@ -922,7 +931,10 @@ export const createInput = (options: (ColorInputOptions | NumberInputOptions | T
 				click() {
 					const currentValue = inputElement.value;
 					inputElement.stepUp();
-					if (currentValue === inputElement.value) return;
+					if (currentValue === inputElement.value) {
+						return;
+					}
+
 					inputElement.dispatchEvent(new Event('change'));
 				},
 			},
@@ -944,7 +956,10 @@ export const createInput = (options: (ColorInputOptions | NumberInputOptions | T
 				click() {
 					const currentValue = inputElement.value;
 					inputElement.stepDown();
-					if (currentValue === inputElement.value) return;
+					if (currentValue === inputElement.value) {
+						return;
+					}
+
 					inputElement.dispatchEvent(new Event('change'));
 				},
 			},
@@ -1023,7 +1038,10 @@ export const createInput = (options: (ColorInputOptions | NumberInputOptions | T
 		},
 
 		set value(value: string) {
-			if (inputElement.value === value.toString()) return;
+			if (inputElement.value === value.toString()) {
+				return;
+			}
+
 			inputElement.value = value.toString();
 			inputElement.dispatchEvent(new Event('change'));
 		},

@@ -24,8 +24,6 @@ addStyles(globalStyles);
 // Clean up unused settings.
 purgeUnusedSettings();
 
-/* eslint-disable promise/prefer-await-to-then */
-
 let currentPage: URL;
 
 if (location.host === 'anilist.co') {
@@ -64,7 +62,9 @@ if (location.host === 'anilist.co') {
 			}
 
 			for (const module of anilistModules) {
-				if (module.disabled) continue;
+				if (module.disabled) {
+					continue;
+				}
 
 				// Insert Styles, if any.
 				module.insertStyles();
@@ -72,7 +72,9 @@ if (location.host === 'anilist.co') {
 				// This is inside a iife so modules don't delay each other.
 				// eslint-disable-next-line @typescript-eslint/no-loop-func
 				(async (currentPage, previousPage, media, currentContextId) => {
-					if (currentContextId !== contextId) return;
+					if (currentContextId !== contextId) {
+						return;
+					}
 
 					try {
 						if (typeof module.unload === 'function' && activeModules.has(module.id)) {
@@ -101,13 +103,18 @@ if (location.host === 'anilist.co') {
 						ModuleEmitter.emit(ModuleEvents.UnloadError, module.id, error);
 					}
 
-					if (activeModules.has(module.id)) return;
+					if (activeModules.has(module.id)) {
+						return;
+					}
 
 					const loadStartTime = performance.now();
 
 					try {
 						const shouldLoad = await module.validate({ currentPage, previousPage, media });
-						if (!shouldLoad) return;
+						if (!shouldLoad) {
+							return;
+						}
+
 						ModuleEmitter.emit(ModuleEvents.Validate, module.id);
 					} catch (error: any) {
 						console.error('Module validation error:', module.id, error);
@@ -116,7 +123,9 @@ if (location.host === 'anilist.co') {
 					}
 
 					// If the contextId has changed, it means the user navigated.
-					if (currentContextId !== contextId) return;
+					if (currentContextId !== contextId) {
+						return;
+					}
 
 					try {
 						await module.load({ currentPage, previousPage, media });
@@ -141,7 +150,9 @@ if (location.host === 'myanimelist.net') {
 	console.log('Navigated:', currentPage.href);
 
 	for (const module of malModules) {
-		if (module.disabled) continue;
+		if (module.disabled) {
+			continue;
+		}
 
 		module.insertStyles();
 
@@ -151,7 +162,10 @@ if (location.host === 'myanimelist.net') {
 
 			try {
 				const shouldLoad = await module.validate(currentPage);
-				if (!shouldLoad) return;
+				if (!shouldLoad) {
+					return;
+				}
+
 				ModuleEmitter.emit(ModuleEvents.Validate, module.id);
 			} catch (error: any) {
 				console.error('Module validation error:', module.id, error);

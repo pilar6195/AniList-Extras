@@ -43,7 +43,9 @@ registerModule.anilist({
 			const iframes = $$('iframe[src*="youtube.com"], iframe[src*="youtube-nocookie.com"]') as HTMLIFrameElement[];
 
 			for (const iframe of iframes) {
-				if (iframe.dataset['volumeSet']) continue;
+				if (iframe.dataset['volumeSet']) {
+					continue;
+				}
 
 				iframe.setAttribute('onload', `this.contentWindow.postMessage(JSON.stringify({
 					event: 'command',

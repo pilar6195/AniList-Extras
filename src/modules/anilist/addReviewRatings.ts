@@ -9,7 +9,9 @@ let running = false;
 let observer: MutationObserver;
 
 const processReviews = async () => {
-	if (running) return;
+	if (running) {
+		return;
+	}
 
 	running = true;
 
@@ -20,7 +22,9 @@ const processReviews = async () => {
 		for (const reviewElement of reviewElements) {
 			const content: HTMLElement = reviewElement.querySelector('.content')!;
 
-			if (content.dataset['scoreFetched']) continue;
+			if (content.dataset['scoreFetched']) {
+				continue;
+			}
 
 			let reviewId = reviewElement.getAttribute('href') ?? content.getAttribute('href');
 			reviewId = reviewId!.replace(/\D+/, '');
@@ -30,7 +34,9 @@ const processReviews = async () => {
 		const reviewIds = Object.keys(reviewContainers).map(Number);
 
 		// Don't continue if theres nothing
-		if (!reviewIds.length) return;
+		if (!reviewIds.length) {
+			return;
+		}
 
 		type Review = {
 			id: number;
@@ -65,7 +71,7 @@ const processReviews = async () => {
 		}
 
 		const reviewsData = reviewIds.map(reviewId => {
-			const review = reviews.find(r => r && r.id === reviewId);
+			const review = reviews.find(r => r?.id === reviewId);
 			return review ?? { id: reviewId, score: null };
 		});
 
@@ -76,7 +82,9 @@ const processReviews = async () => {
 			reviewContainers[reivewId].dataset['scoreFetched'] = 'true';
 
 			// The public api cannot fetch adult content without auth so it will return nothing
-			if (reviewScore === null) continue;
+			if (reviewScore === null) {
+				continue;
+			}
 
 			createElement('div', {
 				attributes: {
@@ -127,16 +135,18 @@ registerModule.anilist({
 	styles: moduleStyles,
 
 	validate({ currentPage }) {
-		return (currentPage.pathname.startsWith('/home') && isUI.desktop) || // Starts with /home. More than likely the user is on the homepage.
-				currentPage.pathname.endsWith('/reviews') || // Ends with /reviews. Either on the overall reviews or anime reviews page.
-				/^\/(anime|manga)\/\d+\/.+\/?$/.test(currentPage.pathname); // Reviews also appear on the base anime/manga pages
+		return (currentPage.pathname.startsWith('/home') && isUI.desktop) // Starts with /home. More than likely the user is on the homepage.
+			|| currentPage.pathname.endsWith('/reviews') // Ends with /reviews. Either on the overall reviews or anime reviews page.
+			|| /^\/(anime|manga)\/\d+\/.+\/?$/.test(currentPage.pathname); // Reviews also appear on the base anime/manga pages
 	},
 
 	async load() {
 		const targetLoaded = await waitFor('.review-wrap');
 
 		// If the target element is not found, return.
-		if (!targetLoaded) return;
+		if (!targetLoaded) {
+			return;
+		}
 
 		observer = observe($('.review-wrap')!, () => void processReviews());
 		void processReviews();

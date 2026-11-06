@@ -21,19 +21,25 @@ registerModule.anilist({
 		const targetLoaded = await waitFor('.user-social .filters');
 
 		// If the target element is not found, return.
-		if (!targetLoaded) return;
+		if (!targetLoaded) {
+			return;
+		}
 
 		// Get the username from the URL.
 		const username = /\/user\/(.+)\/social/.exec(location.pathname)?.[1];
 
 		// If the username is not found, return.
-		if (!username) return;
+		if (!username) {
+			return;
+		}
 
 		// Get the user ID from the username.
 		const userId = await getUserId(username);
 
 		// If the user ID is not found, return.
-		if (!userId) return;
+		if (!userId) {
+			return;
+		}
 
 		let threadsCount: number | undefined = await Cache.get('user-threads-count', userId.toString());
 		let threadCommentsCount: number | undefined = await Cache.get('user-threadComments-count', userId.toString());

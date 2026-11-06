@@ -46,15 +46,17 @@ registerModule.anilist({
 			return false;
 		}
 
-		return currentPage.pathname === '/404' &&
-			/^\/user\/.+/.test(previousPage.pathname);
+		return currentPage.pathname === '/404'
+			&& /^\/user\/.+/.test(previousPage.pathname);
 	},
 
 	async load({ previousPage }) {
 		const type = previousPage!.pathname.split('/')[1];
 		const id = previousPage!.pathname.split('/')[2];
 
-		if (type !== 'user') return;
+		if (type !== 'user') {
+			return;
+		}
 
 		// ModChan is a fake account used by site moderators.
 		if (id.toLowerCase() === 'modchan') {

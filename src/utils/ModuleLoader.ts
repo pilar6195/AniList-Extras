@@ -97,7 +97,7 @@ export const ModuleStates = {
 };
 
 export const registerModule = {
-	anilist(module: (AnilistModule & { tags?: ModuleTags[] })) {
+	anilist(module: (AnilistModule & { tags?: ModuleTags[]; })) {
 		if (!module.id) {
 			console.error('Module id is required to register a module.');
 			return;
@@ -115,13 +115,19 @@ export const registerModule = {
 			...module,
 			disabled: !moduleState,
 			enable() {
-				if (!this.disabled) return;
+				if (!this.disabled) {
+					return;
+				}
+
 				this.disabled = false;
 				ModuleStates.set(this.id, true);
 				this.insertStyles();
 			},
 			async disable() {
-				if (this.disabled) return;
+				if (this.disabled) {
+					return;
+				}
+
 				this.disabled = true;
 				ModuleStates.set(this.id, false);
 				this.removeStyles();
@@ -143,7 +149,10 @@ export const registerModule = {
 				}
 			},
 			insertStyles() {
-				if (!module.styles || $(`style.alextras--module-${module.id}-styles`)) return;
+				if (!module.styles || $(`style.alextras--module-${module.id}-styles`)) {
+					return;
+				}
+
 				addStyles(module.styles, `alextras--module-${module.id}-styles`);
 			},
 			removeStyles() {
@@ -164,7 +173,6 @@ export const registerModule = {
 			return;
 		}
 
-
 		const moduleState = ModuleStates.get(module.id, !(module.disabledDefault ?? false));
 
 		malModules.push({
@@ -182,7 +190,10 @@ export const registerModule = {
 				this.removeStyles();
 			},
 			insertStyles() {
-				if (!module.styles || $(`style.alextras--module-${module.id}-styles`)) return;
+				if (!module.styles || $(`style.alextras--module-${module.id}-styles`)) {
+					return;
+				}
+
 				addStyles(module.styles, `alextras--module-${module.id}-styles`);
 			},
 			removeStyles() {

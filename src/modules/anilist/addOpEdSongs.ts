@@ -23,7 +23,9 @@ registerModule.anilist({
 		const targetLoaded = await waitFor('.overview > .staff, .overview > .characters');
 
 		// If the target element or mal id is not found, return.
-		if (!targetLoaded || !media.malId) return;
+		if (!targetLoaded || !media.malId) {
+			return;
+		}
 
 		// Fetch the song data from the Cache/API.
 		const { data: songData } = await malApi(`anime/${media.malId}/themes`, ONE_HOUR) as MalAnimeThemesResponse;
@@ -32,7 +34,9 @@ registerModule.anilist({
 		const attrEl = $('.sidebar > .tags .tag');
 
 		// If we can't find said element then we abort.
-		if (!attrEl) return;
+		if (!attrEl) {
+			return;
+		}
 
 		// This is the attribute we need to properly style our newly created elements.
 		const attrName = attrEl.attributes[0].name;

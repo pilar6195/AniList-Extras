@@ -27,7 +27,9 @@ registerModule.anilist({
 		});
 
 		// If the target element is not found, return.
-		if (!targetLoaded) return;
+		if (!targetLoaded) {
+			return;
+		}
 
 		// Fetch Anilist score.
 		const scoreElement = $$('.sidebar .data-set').find(el => /weighted score/i.test(el.textContent!));

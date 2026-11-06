@@ -25,7 +25,9 @@ registerModule.anilist({
 		const targetLoaded = await waitFor('.sidebar');
 
 		// If the target element or mal id is not found, return.
-		if (!targetLoaded || !media.malId) return;
+		if (!targetLoaded || !media.malId) {
+			return;
+		}
 
 		let attrName: string;
 
@@ -60,7 +62,9 @@ registerModule.anilist({
 
 		const statusNode = $$('.data-set').find(el => /status/i.test(el.textContent!));
 
-		if (statusNode?.querySelector('.value')?.textContent === 'Not Yet Released') return;
+		if (statusNode?.querySelector('.value')?.textContent === 'Not Yet Released') {
+			return;
+		}
 
 		const query = new URLSearchParams({
 			q: `subreddit:anime self:true (flair:Episode OR Discussion) (selftext:"${media.type}/${media.id}" OR selftext:"${media.type}/${media.malId}")`,
