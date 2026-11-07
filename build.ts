@@ -5,8 +5,6 @@ import { parseArgs } from 'node:util';
 import chokidar from 'chokidar';
 import archiver from 'archiver';
 import { compile as compileSass } from 'sass';
-// @ts-expect-error - No types available
-import offsetLines from 'offset-sourcemap-lines';
 import packageJson from './package.json';
 
 const { values: cliFlags } = parseArgs({
@@ -158,9 +156,9 @@ async function bundle(env: 'extension' | 'userscript' = 'userscript') {
 	/* Fix sourcemap offset */
 	// We have to do this if we want the sourcemap to work correctly due to the header we added.
 	if (result.outputs[0].sourcemap) {
-		const sourceMap = await result.outputs[0].sourcemap?.json();
+		const sourceMap: SourceMap = await result.outputs[0].sourcemap?.json();
 		const offset = header(env).split('\n').length - 1;
-		const updatedSourceMap = offsetLines(sourceMap, offset);
+		const updatedSourceMap = offsetSourceMapLines(sourceMap, offset);
 		const b64encoded = Buffer.from(JSON.stringify(updatedSourceMap)).toString('base64');
 		output += `//# sourceMappingURL=data:application/json;base64,${b64encoded}`;
 	}
@@ -228,6 +226,21 @@ async function buildExtension() {
 async function buildAll() {
 	await buildUserscript();
 	await buildExtension();
+}
+
+type SourceMap = {
+	mappings: string;
+	[key: string]: unknown;
+};
+
+/**
+ * Shifts a source map down by the given number of lines.
+ */
+function offsetSourceMapLines(sourceMap: SourceMap, lineOffset: number): SourceMap {
+	return {
+		...sourceMap,
+		mappings: ';'.repeat(lineOffset) + sourceMap.mappings,
+	};
 }
 
 // Watch for changes and rebuild

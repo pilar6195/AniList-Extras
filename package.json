@@ -17,7 +17,6 @@
     "chokidar": "^5.0.0",
     "csstype": "^3.2.3",
     "localforage": "^1.10.0",
-    "offset-sourcemap-lines": "^1.0.1",
     "sass": "^1.97.3"
   },
   "devDependencies": {
