@@ -14,13 +14,13 @@ const { values: cliFlags } = parseArgs({
 	options: {
 		watch: { type: 'boolean', default: false },
 		serve: { type: 'boolean', default: false },
-		'include-sourcemap': { type: 'boolean', default: false },
-		port: { type: 'string' },
+		'serve-port': { type: 'string' },
+		sourcemap: { type: 'boolean', default: false },
 	},
 });
 
 /**
- * Parses the `--port` flag value. Port 0 lets the OS pick a random free port.
+ * Parses the `--serve-port` flag value. Port 0 lets the OS pick a random free port.
  */
 const parseServePort = (portFlag: string | undefined): number => {
 	if (portFlag === undefined) {
@@ -28,7 +28,7 @@ const parseServePort = (portFlag: string | undefined): number => {
 	}
 
 	if (!/^\d+$/.test(portFlag) || Number(portFlag) > 65535) {
-		throw new RangeError(`Invalid --port "${portFlag}". Expected an integer between 0 and 65535.`);
+		throw new RangeError(`Invalid --serve-port "${portFlag}". Expected an integer between 0 and 65535.`);
 	}
 
 	return Number(portFlag);
@@ -36,8 +36,16 @@ const parseServePort = (portFlag: string | undefined): number => {
 
 const watchFlag = cliFlags.watch;
 const serveFlag = cliFlags.serve;
-const includeSourceMaps = cliFlags['include-sourcemap'];
-const servePort = parseServePort(cliFlags.port);
+const includeSourceMaps = cliFlags.sourcemap;
+const servePort = parseServePort(cliFlags['serve-port']);
+
+if (serveFlag && !watchFlag) {
+	console.warn('--serve is ignored without --watch.');
+}
+
+if (cliFlags['serve-port'] !== undefined && !serveFlag) {
+	console.warn('--serve-port is ignored without --serve.');
+}
 
 const header = (env: 'extension' | 'userscript' = 'userscript') => `
 // ==UserScript==
