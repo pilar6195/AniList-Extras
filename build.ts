@@ -3,7 +3,7 @@ import fsAsync from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import chokidar from 'chokidar';
-import archiver from 'archiver';
+import { ZipArchive } from 'archiver';
 import { compile as compileSass } from 'sass';
 import packageJson from './package.json';
 
@@ -211,7 +211,7 @@ async function buildExtension() {
 	if (!watchFlag) {
 		// Zip extension
 		const filePath = `./dist/anilist-extras.browser-${packageJson.version}.zip`;
-		const archive = archiver('zip', {
+		const archive = new ZipArchive({
 			zlib: { level: 9 },
 		}).directory('./.build', false);
 

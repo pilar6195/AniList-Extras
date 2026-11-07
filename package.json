@@ -13,16 +13,16 @@
   "author": "pilar6195 (https://github.com/pilar6195)",
   "license": "MIT",
   "dependencies": {
-    "archiver": "^7.0.1",
+    "archiver": "^8.0.0",
     "chokidar": "^5.0.0",
     "csstype": "^3.2.3",
     "localforage": "^1.10.0",
-    "sass": "^1.97.3"
+    "sass": "^1.108.1"
   },
   "devDependencies": {
-    "@types/archiver": "^7.0.0",
+    "@types/archiver": "^8.0.0",
     "@types/bun": "1.4.4",
-    "@types/tampermonkey": "^5.0.5",
+    "@types/tampermonkey": "^5.5.0",
     "eslint": "^10.14.0",
     "eslint-config-neon": "^0.5.4",
     "typescript": "6"
