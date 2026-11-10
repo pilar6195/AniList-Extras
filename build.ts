@@ -7,6 +7,12 @@ import { ZipArchive } from 'archiver';
 import { compile as compileSass } from 'sass';
 import packageJson from './package.json';
 
+const createAnsiColor = (code: string) => (text: string): string => Bun.enableANSIColors ? `\u001B[${code}m${text}\u001B[39m` : text;
+const cyan = createAnsiColor('36');
+const gray = createAnsiColor('90');
+const green = createAnsiColor('32');
+const red = createAnsiColor('31');
+
 const { values: cliFlags } = parseArgs({
 	args: process.argv.slice(2),
 	options: {
@@ -37,15 +43,7 @@ const serveFlag = cliFlags.serve;
 const includeSourceMaps = cliFlags.sourcemap;
 const servePort = parseServePort(cliFlags['serve-port']);
 
-if (serveFlag && !watchFlag) {
-	console.warn('--serve is ignored without --watch.');
-}
-
-if (cliFlags['serve-port'] !== undefined && !serveFlag) {
-	console.warn('--serve-port is ignored without --serve.');
-}
-
-const header = (env: 'extension' | 'userscript' = 'userscript') => `
+const header = (env: 'extension' | 'userscript' = 'userscript'): string => `
 // ==UserScript==
 // @name         AniList Extras (Unofficial)
 // @namespace    https://github.com/pilar6195
@@ -68,7 +66,7 @@ const ALEXTRAS_DEV = ${watchFlag};
 const ALEXTRAS_ENV = '${env}';
 `;
 
-async function bundle(env: 'extension' | 'userscript' = 'userscript') {
+async function bundle(env: 'extension' | 'userscript' = 'userscript'): Promise<string> {
 	const modulesToExclude: string[] = [];
 
 	const result = await Bun.build({
@@ -135,19 +133,6 @@ async function bundle(env: 'extension' | 'userscript' = 'userscript') {
 		],
 	});
 
-	if (!result.success) {
-		console.error(`\n[${env}] Build failed with errors:\n`);
-		for (const log of result.logs) {
-			console.error(log);
-		}
-
-		if (watchFlag) {
-			return;
-		} else {
-			process.exit(1);
-		}
-	}
-
 	/* Prepend userscript header to output */
 
 	const content = await result.outputs[0].text();
@@ -156,7 +141,7 @@ async function bundle(env: 'extension' | 'userscript' = 'userscript') {
 	/* Fix sourcemap offset */
 	// We have to do this if we want the sourcemap to work correctly due to the header we added.
 	if (result.outputs[0].sourcemap) {
-		const sourceMap: SourceMap = await result.outputs[0].sourcemap?.json();
+		const sourceMap: SourceMap = await result.outputs[0].sourcemap.json();
 		const offset = header(env).split('\n').length - 1;
 		const updatedSourceMap = offsetSourceMapLines(sourceMap, offset);
 		const b64encoded = Buffer.from(JSON.stringify(updatedSourceMap)).toString('base64');
@@ -166,27 +151,29 @@ async function bundle(env: 'extension' | 'userscript' = 'userscript') {
 	return output;
 }
 
-async function buildUserscript() {
+/**
+ * Build userscript version.
+ */
+async function buildUserscript(): Promise<void> {
 	const output = await bundle('userscript');
-
-	if (!output) {
-		return;
-	}
 
 	/* Write userscript to dist directory */
 
 	await Bun.write('./dist/anilist-extras.user.js', output);
-	console.log(`[${new Date().toISOString()}]`, 'Userscript built. Output written to "./dist/anilist-extras.user.js"');
+
+	// Watch mode shows the output paths in its status block instead.
+	if (!watchFlag) {
+		console.log(gray(`[${new Date().toISOString()}]`), `Userscript built. Output written to ${cyan('./dist/anilist-extras.user.js')}`);
+	}
 }
 
-async function buildExtension() {
+/**
+ * Build browser extension version.
+ */
+async function buildExtension(): Promise<void> {
 	const output = await bundle('extension');
 
-	if (!output) {
-		return;
-	}
-
-	/* Write extension to dist directory */
+	/* Write extension to .build directory */
 
 	// Full path is needed here due to a bun 1.3.x -> 1.4.x regression where Windows paths are not being normalized.
 	await fsAsync.rm(path.join(import.meta.dir, '.build'), { recursive: true, force: true });
@@ -198,17 +185,17 @@ async function buildExtension() {
 	const manifest = await manifestFile.json();
 	manifest.version = packageJson.version;
 
-	// Write manifest file to dist directory
+	// Write manifest file to .build directory
 	await Bun.write('./.build/manifest.json', JSON.stringify(manifest));
 
 	// Copy extension icon
 	const iconFile = Bun.file('./src/images/icon128.png');
 	await Bun.write('./.build/icon128.png', iconFile);
 
-	console.log(`[${new Date().toISOString()}]`, 'Extension built. Output written to "./.build" directory. It can be loaded as an unpacked extension in your browser.');
-
-	// If we're watching for changes, we don't want to zip the extension every time we build.
+	// Watch mode shows the output paths in its status block instead, and we don't want to zip the extension on every rebuild.
 	if (!watchFlag) {
+		console.log(gray(`[${new Date().toISOString()}]`), `Extension built. Output written to ${cyan('./.build')} directory.`);
+
 		// Zip extension
 		const filePath = `./dist/anilist-extras.browser-${packageJson.version}.zip`;
 		const archive = new ZipArchive({
@@ -219,11 +206,14 @@ async function buildExtension() {
 
 		await archive.finalize();
 
-		console.log(`[${new Date().toISOString()}]`, `Extension packaged into "${filePath}"`);
+		console.log(gray(`[${new Date().toISOString()}]`), `Extension packaged into ${cyan(filePath)}`);
 	}
 }
 
-async function buildAll() {
+/**
+ * Build both userscript and browser extension versions.
+ */
+async function buildAll(): Promise<void> {
 	await buildUserscript();
 	await buildExtension();
 }
@@ -243,38 +233,131 @@ function offsetSourceMapLines(sourceMap: SourceMap, lineOffset: number): SourceM
 	};
 }
 
+/**
+ * Formats the block shown at the top of the terminal in watch mode.
+ */
+function formatWatchStatus(userscriptUrl: string | undefined): string {
+	// The userscript URL only exists when serving.
+	const mode = userscriptUrl ? 'watch mode, serving' : 'watch mode';
+
+	return [
+		`AniList Extras (${mode})`,
+		`  Userscript: ${cyan(userscriptUrl ?? './dist/anilist-extras.user.js')}`,
+		`  Extension:  ${cyan('./.build')} ${gray('(load unpacked)')}`,
+		'',
+	].join('\n');
+}
+
+/**
+ * Describes what started a build, based on the files that changed.
+ */
+function describeBuildTrigger(changedPaths: string[]): string {
+	if (changedPaths.length === 0) {
+		return 'Initial build';
+	}
+
+	if (changedPaths.length === 1) {
+		return `${cyan(changedPaths[0])} changed`;
+	}
+
+	return `${changedPaths.length} files changed`;
+}
+
+/**
+ * Formats the one-line result of a watch mode build.
+ */
+function formatBuildSummary({ changedPaths, succeeded, durationMs }: {
+	changedPaths: string[];
+	succeeded: boolean;
+	durationMs: number;
+}): string {
+	const result = succeeded ? green(`Built in ${durationMs}ms.`) : red(`Build failed after ${durationMs}ms.`);
+	return `${gray(`[${new Date().toLocaleTimeString()}]`)} ${describeBuildTrigger(changedPaths)}. ${result}`;
+}
+
 // Watch for changes and rebuild
 if (watchFlag) {
-	chokidar.watch('./src/', {
-		ignoreInitial: true,
-	})
-		.on('add', () => void buildAll())
-		.on('change', () => void buildAll())
-		.on('unlink', () => void buildAll());
-
-	await buildAll();
-
-	console.log('Watching for changes...');
+	const rebuildDebounceMs = 100;
+	let userscriptUrl: string | undefined;
 
 	// Serve userscript for easy development with Violentmonkey
 	// Also only serving if --watch is enabled. No point in serving if not watching.
+	// Started before the first build so the status block can show the URL.
 	if (serveFlag) {
 		const server = Bun.serve({
 			port: servePort,
-			fetch(request) {
-				const url = new URL(request.url);
-
-				if (request.method === 'GET' && url.pathname === '/anilist-extras.user.js') {
-					return new Response(Bun.file('./dist/anilist-extras.user.js'));
-				}
-
-				return new Response('Not Found', { status: 404 });
+			routes: {
+				'/anilist-extras.user.js': {
+					GET: () => new Response(Bun.file('./dist/anilist-extras.user.js')),
+				},
 			},
 		});
 
-		console.log(`Serving userscript at ${server.url}anilist-extras.user.js`);
+		userscriptUrl = `${server.url}anilist-extras.user.js`;
 	}
+
+	// Files changed while a build is running are collected here and picked up by the next build.
+	const pendingChangedPaths = new Set<string>();
+	let isBuilding = false;
+	let rebuildTimer: ReturnType<typeof setTimeout> | undefined;
+
+	const runWatchBuild = async () => {
+		if (isBuilding) {
+			return;
+		}
+
+		isBuilding = true;
+		clearTimeout(rebuildTimer);
+		const changedPaths = [...pendingChangedPaths];
+		pendingChangedPaths.clear();
+
+		// Only clear when the terminal is interactive so piped logs stay intact.
+		if (process.stdout.isTTY) {
+			console.clear();
+		}
+
+		console.log(formatWatchStatus(userscriptUrl));
+
+		const startTime = performance.now();
+		let succeeded = false;
+
+		try {
+			await buildAll();
+			succeeded = true;
+		} catch (error) {
+			// Build errors and anything unexpected, like file system errors, end up here so watching continues.
+			console.error(error);
+		}
+
+		const durationMs = Math.round(performance.now() - startTime);
+		console.log(formatBuildSummary({ changedPaths, succeeded, durationMs }));
+		console.log(gray('Watching for changes...'));
+
+		// eslint-disable-next-line require-atomic-updates -- Only one runWatchBuild call gets past the guard at a time.
+		isBuilding = false;
+
+		// Pick up files that changed while this build was running.
+		if (pendingChangedPaths.size > 0) {
+			void runWatchBuild();
+		}
+	};
+
+	// Debounced so saving several files at once only triggers one build.
+	const scheduleRebuild = (changedPath: string) => {
+		pendingChangedPaths.add(changedPath);
+		clearTimeout(rebuildTimer);
+		rebuildTimer = setTimeout(() => void runWatchBuild(), rebuildDebounceMs);
+	};
+
+	chokidar.watch('./src/', {
+		ignoreInitial: true,
+	})
+		.on('add', scheduleRebuild)
+		.on('change', scheduleRebuild)
+		.on('unlink', scheduleRebuild);
+
+	await runWatchBuild();
 // Build once and exit
 } else {
-	void buildAll();
+	await buildAll();
 }
