@@ -1,6 +1,6 @@
 {
   "name": "anilist-extras",
-  "version": "2.8.3",
+  "version": "2.8.4",
   "type": "module",
   "description": "Adds a few additional features to AniList.",
   "scripts": {
