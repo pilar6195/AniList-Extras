@@ -119,12 +119,15 @@ async function bundle(env: 'extension' | 'userscript' = 'userscript'): Promise<s
 						return;
 					}
 
-					build.onLoad({
-						filter: new RegExp(modulesToExclude.map(module => {
-							const modulePath = path.normalize(`modules/${module}`).replaceAll(/[.\\]/g, '\\$&');
-							return `(${modulePath}$)`;
-						}).join('|')),
-					}, () => ({
+					const modulePatterns = modulesToExclude.map(moduleName => moduleName
+						.replace(/\.ts$/, '')
+						.split('/')
+						.join(String.raw`[\\/]`));
+
+					// Matches by file name or with the folder. Folders after "modules" are optional, and either path separator works.
+					const excludeFilter = new RegExp(String.raw`[\\/]modules[\\/](?:.+[\\/])?(?:${modulePatterns.join('|')})\.ts$`);
+
+					build.onLoad({ filter: excludeFilter }, () => ({
 						contents: '',
 						loader: 'ts',
 					}));
