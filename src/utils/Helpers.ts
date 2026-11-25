@@ -215,6 +215,15 @@ export const sleep = async (ms: number): Promise<void> => {
 };
 
 /**
+ * Randomly varies a duration by up to the given ratio in either direction.
+ * Used for cache times so items cached together don't all expire together.
+ */
+export const jitterDuration = (durationMs: number, maxVariationRatio = 0.2): number => {
+	const variation = (Math.random() * 2 - 1) * maxVariationRatio;
+	return Math.round(durationMs * (1 + variation));
+};
+
+/**
  * Check if a value is JSON serializable.
  */
 export const validateJSONSerializable = (value: any): boolean => {

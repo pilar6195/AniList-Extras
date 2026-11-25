@@ -1,6 +1,6 @@
 import Cache from '@/utils/Cache';
-import { $, $$, waitFor, observe, createElement, anilistApi, isUI } from '@/utils/Helpers';
-import { ONE_DAY } from '@/utils/Constants';
+import { $, $$, waitFor, observe, createElement, anilistApi, isUI, jitterDuration } from '@/utils/Helpers';
+import { ONE_HOUR, ONE_WEEK } from '@/utils/Constants';
 import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 
 import moduleStyles from '@/styles/addReviewRatings.scss';
@@ -66,7 +66,9 @@ const processReviews = async () => {
 			});
 			reviews.push(...newReviews);
 			for (const review of newReviews) {
-				await Cache.set('anilist-review', review.id.toString(), review, ONE_DAY);
+				// Review scores rarely change, so cache them for about a week. Reviews without a score are only cached for about an hour
+				const cacheTime = review.score === null ? ONE_HOUR : ONE_WEEK;
+				await Cache.set('anilist-review', review.id.toString(), review, jitterDuration(cacheTime));
 			}
 		}
 
@@ -123,7 +125,7 @@ registerModule.anilist({
 	name: 'Review Ratings',
 	description: 'Adds the review ratings to the review cards on the homepage and review pages.',
 	notice: `
-		Reviews are cached for 1 day to avoid API rate limits.
+		Reviews are cached for about a week to avoid API rate limits.
 		Reviews for media marked as "Adult" cannot be fetched without authenticating
 		with AniList due to API restrictions. You can authenticate below.
 	`,

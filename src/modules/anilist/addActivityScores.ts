@@ -1,6 +1,6 @@
 import Cache from '@/utils/Cache';
-import { $, $$, waitFor, observe, createElement, anilistApi } from '@/utils/Helpers';
-import { ONE_HOUR } from '@/utils/Constants';
+import { $, $$, waitFor, observe, createElement, anilistApi, jitterDuration } from '@/utils/Helpers';
+import { ONE_HOUR, ONE_DAY } from '@/utils/Constants';
 import { registerModule, ModuleTags } from '@/utils/ModuleLoader';
 import SvgIcons from '@/utils/SvgIcons';
 
@@ -141,8 +141,10 @@ const processActivity = async () => {
 			activityScores.push(...newActivityScores);
 
 			for (const activityScore of newActivityScores) {
-				// Cache the score for 1 hour. This may be to short, we can adjust it later.
-				await Cache.set('activity-score', `${activityScore.username}:${activityScore.mediaId}`, activityScore, ONE_HOUR);
+				// Scores rarely change once set, so cache them for about a day. Unrated entries are only cached for
+				// about an hour since users usually rate shortly after finishing.
+				const cacheTime = activityScore.score === 0 ? ONE_HOUR : ONE_DAY;
+				await Cache.set('activity-score', `${activityScore.username}:${activityScore.mediaId}`, activityScore, jitterDuration(cacheTime));
 			}
 		}
 
@@ -218,7 +220,7 @@ registerModule.anilist({
 	id: 'addActivityScores',
 	name: 'Media Activity Scores',
 	description: 'Displays the score a user gives to an anime or manga in activity feeds.',
-	notice: 'Scores are cached for 1 hour to avoid API rate limits.',
+	notice: 'Scores are cached for about a day (an hour for unrated entries) to avoid API rate limits.',
 	tags: [
 		ModuleTags.Media,
 		ModuleTags.Social,
