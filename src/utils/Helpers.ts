@@ -256,8 +256,14 @@ const parseResponseHeaders = (headersString: string) => {
 	const headerLines = headersString.trim().trim().split(/[\n\r]+/);
 
 	for (const line of headerLines) {
-		const [name, value] = line.split(':', 2);
-		headers.set(name.trim(), value?.trim() ?? '');
+		// Only split on the first colon since values can contain colons too (e.g. dates).
+		const separatorIndex = line.indexOf(':');
+
+		if (separatorIndex === -1) {
+			continue;
+		}
+
+		headers.set(line.slice(0, separatorIndex).trim(), line.slice(separatorIndex + 1).trim());
 	}
 
 	return headers;
