@@ -97,7 +97,7 @@ type AnilistUserThreadCommentsResponse = {
 
 type AnilistUserReviewsResponse = {
 	data: {
-		[key: string]: {
+		Page: {
 			reviews: {
 				id: number;
 				score: number;

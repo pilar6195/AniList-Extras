@@ -19,4 +19,24 @@
 		font-size: 1.3rem;
 		font-weight: bold;
 	}
+
+	.alextras--review-score-placeholder,
+	.alextras--review-score-unavailable {
+		background: rgb(var(--color-background));
+		color: rgb(var(--color-text-light));
+	}
+
+	.alextras--review-score-placeholder {
+		cursor: pointer;
+	}
+
+	.alextras--review-score-loading {
+		animation: alextras--review-score-pulse 0.6s ease-in-out infinite alternate;
+	}
+}
+
+@keyframes alextras--review-score-pulse {
+	to {
+		opacity: 0.4;
+	}
 }
