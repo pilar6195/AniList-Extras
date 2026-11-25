@@ -340,7 +340,9 @@ export const anilistApi = async (
 			}
 		}
 
-		if (response.status >= 400 && response.status !== 429) {
+		const responseHeaders = parseResponseHeaders(response.responseHeaders);
+
+		if (response.status >= 400) {
 			retryCount++;
 
 			if (retryCount >= retries) {
@@ -349,22 +351,18 @@ export const anilistApi = async (
 				throw response;
 			}
 
-			console.error(`Request failed with status code ${response.status}. Retrying... (${retryCount}/${retries})`, response);
+			// Rate limited requests wait as long as AniList asks (a minute if it doesn't say), other errors back off a little more each retry.
+			const retryAfterSeconds = Number.parseInt(responseHeaders.get('retry-after') ?? '', 10) || 60;
+			const retryDelayMs = response.status === 429 ? retryAfterSeconds * 1000 : 1000 * retryCount;
 
-			await sleep(1000 * retryCount);
+			console.error(`Request failed with status code ${response.status}. Retrying in ${retryDelayMs / 1000}s... (${retryCount}/${retries})`, response);
+
+			await sleep(retryDelayMs);
 			continue;
 		}
 
-		const responseHeaders = parseResponseHeaders(response.responseHeaders);
-
-		if (responseHeaders.get('retry-after')) {
-			const retryAfter = Number.parseInt(responseHeaders.get('retry-after')!, 10);
-			await sleep(retryAfter * 1000);
-			return anilistApi(query, variables, useApiToken, retry);
-		} else {
-			console.debug(`DEBUG: AniList rate limit remaining: ${responseHeaders.get('x-ratelimit-remaining')}`);
-			// console.trace();
-		}
+		console.debug(`DEBUG: AniList rate limit remaining: ${responseHeaders.get('x-ratelimit-remaining')}`);
+		// console.trace();
 
 		return response.json;
 	}
