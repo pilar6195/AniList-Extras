@@ -297,7 +297,7 @@ const anilistRateLimitTimeoutMs = 60_000;
 const anilistApiRateLimit = new RateLimit({
 	label: 'anilistApi',
 	limits: [
-		// The extra 100ms covers network delay, since AniList counts requests when they arrive, not when we send them.
+		// The extra 100ms covers network delay
 		{ maxCalls: 4, intervalMs: 1100 },
 		{ maxCalls: 30, intervalMs: 60_100 },
 	],
@@ -383,7 +383,8 @@ export const anilistApi = async (
 		if (response.status >= 400) {
 			retryCount++;
 
-			if (retryCount >= retries) {
+			// I don't think there is any point in retrying a 500 error.
+			if (retryCount >= retries || response.status === 500) {
 				console.error(`Request failed with status code ${response.status}.`, response);
 				// eslint-disable-next-line @typescript-eslint/only-throw-error
 				throw response;
@@ -415,7 +416,7 @@ export const anilistApi = async (
 const malApiRateLimit = new RateLimit({
 	label: 'malApi',
 	limits: [
-		// The extra 100ms covers network delay, since Tenrai counts requests when they arrive, not when we send them.
+		// The extra 100ms covers network delay
 		{ maxCalls: 4, intervalMs: 1100 },
 		{ maxCalls: 120, intervalMs: 60_100 },
 	],

@@ -97,7 +97,7 @@ export default class RateLimit {
 
 			this.recentStartTimes.push(now);
 			const callback = this.queue.shift()!;
-			console.log(this.logPrefix, `Starting callback. Remaining: ${this.describeRemainingCalls(now)}. Callbacks still waiting: ${this.queue.length}`);
+			console.log(this.logPrefix, `Started. Remaining: ${this.describeRemainingCalls(now)}. Queued: ${this.queue.length}`);
 			// Not awaited, so one slow callback doesn't hold up the rest. The wrapper from push() handles its result and errors.
 			void callback();
 		}
