@@ -291,6 +291,9 @@ export const request = async (
 	return response;
 };
 
+// AniList times out rate limited clients for a minute.
+const anilistRateLimitTimeoutMs = 60_000;
+
 /**
  * Send a request to the AniList API.
  */
@@ -315,11 +318,31 @@ export const anilistApi = async (
 	let retryCount = 0;
 
 	while (retryCount < retries) {
-		const response = await request('https://graphql.anilist.co', {
-			method: 'POST',
-			headers,
-			data: JSON.stringify({ query, variables }),
-		});
+		let response: Awaited<ReturnType<typeof request>>;
+
+		try {
+			response = await request('https://graphql.anilist.co', {
+				method: 'POST',
+				headers,
+				data: JSON.stringify({ query, variables }),
+			});
+		} catch (error) {
+			retryCount++;
+
+			if (retryCount >= retries) {
+				console.error('Request failed.', error);
+				throw error;
+			}
+
+			// The extension's requests come from the page, and AniList's 429 responses have no CORS headers, so the browser
+			// reports them as network errors. Since we can't tell them apart from real ones, wait out a possible rate limit.
+			const retryDelayMs = ALEXTRAS_ENV === 'extension' ? anilistRateLimitTimeoutMs : 1000 * retryCount;
+
+			console.error(`Request failed. Retrying in ${retryDelayMs / 1000}s... (${retryCount}/${retries})`, error);
+
+			await sleep(retryDelayMs);
+			continue;
+		}
 
 		if (response.status === 403) {
 			const errorMessage = response.json?.errors?.[0]?.message;
@@ -351,9 +374,9 @@ export const anilistApi = async (
 				throw response;
 			}
 
-			// Rate limited requests wait as long as AniList asks (a minute if it doesn't say), other errors back off a little more each retry.
-			const retryAfterSeconds = Number.parseInt(responseHeaders.get('retry-after') ?? '', 10) || 60;
-			const retryDelayMs = response.status === 429 ? retryAfterSeconds * 1000 : 1000 * retryCount;
+			// Rate limited requests wait as long as AniList asks, other errors back off a little more each retry.
+			const retryAfterMs = Number.parseInt(responseHeaders.get('retry-after') ?? '', 10) * 1000 || anilistRateLimitTimeoutMs;
+			const retryDelayMs = response.status === 429 ? retryAfterMs : 1000 * retryCount;
 
 			console.error(`Request failed with status code ${response.status}. Retrying in ${retryDelayMs / 1000}s... (${retryCount}/${retries})`, response);
 
