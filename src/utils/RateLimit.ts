@@ -1,28 +1,34 @@
 import { sleep } from './Helpers';
 
+type RateLimitRule = {
+	maxCalls: number;
+	intervalMs: number;
+};
+
 export default class RateLimit {
 	private readonly queue: (() => Promise<void> | void)[] = [];
 
-	private readonly rateLimit: number;
+	private readonly limits: RateLimitRule[];
 
-	private readonly interval: number;
-
-	private tokens: number;
+	private readonly longestIntervalMs: number;
 
 	private readonly label: string | undefined;
 
-	private lastRefill: number = Date.now();
+	// When each recent callback started, oldest first. Kept for as long as the longest limit's interval.
+	private readonly recentStartTimes: number[] = [];
 
 	private processing: boolean = false;
 
+	private pausedUntil: number = 0;
+
 	/**
-	 * Creates a new RateLimit instance with the given token count and refill interval in milliseconds.
+	 * Creates a new RateLimit instance. Callbacks only start when every limit has room,
+	 * e.g. `{ maxCalls: 4, intervalMs: 1000 }` allows at most 4 callbacks to start within any second.
 	 */
-	public constructor(rateLimit: number, interval: number, label?: string) {
-		this.rateLimit = rateLimit;
-		this.interval = interval;
-		this.tokens = rateLimit;
+	public constructor({ label, limits }: { label?: string; limits: RateLimitRule[]; }) {
 		this.label = label;
+		this.limits = limits;
+		this.longestIntervalMs = Math.max(...limits.map(limit => limit.intervalMs));
 	}
 
 	private get logPrefix(): string {
@@ -42,8 +48,6 @@ export default class RateLimit {
 		Error.captureStackTrace?.(callSite, this.push);
 		const isV8Stack = /\n\s+at\s/.test(callSite.stack ?? '');
 
-		console.log(this.logPrefix, 'Pushing new callback to queue. Tokens available:', this.tokens);
-
 		return new Promise<T>((resolve, reject) => {
 			this.queue.push(async () => {
 				try {
@@ -56,12 +60,22 @@ export default class RateLimit {
 					reject(error);
 				}
 			});
+			console.log(this.logPrefix, 'Queued callback. Callbacks waiting:', this.queue.length);
 			void this.processQueue();
 		});
 	}
 
 	/**
-	 * Drains the queue, executing callbacks as tokens permit and sleeping when exhausted.
+	 * Holds back every queued callback for the given time, e.g. after the API says we're rate limited.
+	 * Callbacks that already started aren't affected.
+	 */
+	public pause(durationMs: number): void {
+		this.pausedUntil = Math.max(this.pausedUntil, Date.now() + durationMs);
+	}
+
+	/**
+	 * Drains the queue. Callbacks start right away while every limit has room and it isn't paused, otherwise it sleeps until then.
+	 * Every limit is a sliding window, so unlike a fixed window, two windows' worth of callbacks can never run back to back.
 	 */
 	private async processQueue(): Promise<void> {
 		if (this.processing) {
@@ -71,45 +85,66 @@ export default class RateLimit {
 		this.processing = true;
 
 		while (this.queue.length > 0) {
-			this.refillTokens();
+			const now = Date.now();
+			this.forgetExpiredStartTimes(now);
+			const waitTime = Math.max(this.pausedUntil - now, this.getWaitTime(now));
 
-			if (this.tokens >= 1) {
-				this.tokens--;
-				const callback = this.queue.shift();
-				if (callback) {
-					try {
-						console.log(this.logPrefix, 'Executing callback from queue. Tokens left:', this.tokens);
-						await callback();
-					} catch (error) {
-						console.error(this.logPrefix, 'Callback failed inside queue:', error);
-					}
-				}
-			} else {
-				const timePerToken = this.interval / this.rateLimit;
-				const now = Date.now();
-				const timeSinceRefill = now - this.lastRefill;
-				const waitTime = timePerToken - (timeSinceRefill % timePerToken);
-
-				console.log(`${this.logPrefix} No tokens available. Waiting for ${waitTime}ms before retrying.`);
-
+			if (waitTime > 0) {
+				console.log(`${this.logPrefix} Waiting for ${waitTime}ms before starting the next callback.`);
 				await sleep(waitTime);
+				continue;
 			}
+
+			this.recentStartTimes.push(now);
+			const callback = this.queue.shift()!;
+			console.log(this.logPrefix, `Starting callback. Remaining: ${this.describeRemainingCalls(now)}. Callbacks still waiting: ${this.queue.length}`);
+			// Not awaited, so one slow callback doesn't hold up the rest. The wrapper from push() handles its result and errors.
+			void callback();
 		}
 
 		this.processing = false;
 	}
 
 	/**
-	 * Gradually refills tokens proportional to elapsed time, preventing fixed-window bursts.
+	 * How long until every limit has room for another callback. 0 means one can start now.
 	 */
-	private refillTokens(): void {
-		const now = Date.now();
-		const diff = now - this.lastRefill;
-		const tokensToAdd = Math.floor((diff / this.interval) * this.rateLimit);
+	private getWaitTime(now: number): number {
+		const waitTimes = this.limits.map(({ maxCalls, intervalMs }) => {
+			const startsInInterval = this.getStartsInInterval(now, intervalMs);
 
-		if (tokensToAdd > 0) {
-			this.tokens = Math.min(this.rateLimit, this.tokens + tokensToAdd);
-			this.lastRefill += tokensToAdd * (this.interval / this.rateLimit);
+			if (startsInInterval.length < maxCalls) {
+				return 0;
+			}
+
+			// The start that has to leave the interval before there's room again.
+			return startsInInterval[startsInInterval.length - maxCalls] + intervalMs - now;
+		});
+
+		return Math.max(0, ...waitTimes);
+	}
+
+	/**
+	 * Describes how many more callbacks each limit allows right now, e.g. "3/4 per 1100ms, 29/30 per 60100ms".
+	 */
+	private describeRemainingCalls(now: number): string {
+		return this.limits.map(({ maxCalls, intervalMs }) => {
+			return `${maxCalls - this.getStartsInInterval(now, intervalMs).length}/${maxCalls} per ${intervalMs}ms`;
+		}).join(', ');
+	}
+
+	/**
+	 * The start times that are still inside the given interval, oldest first.
+	 */
+	private getStartsInInterval(now: number, intervalMs: number): number[] {
+		return this.recentStartTimes.filter(startTime => now - startTime < intervalMs);
+	}
+
+	/**
+	 * Drops start times older than the longest interval, since no limit counts them anymore.
+	 */
+	private forgetExpiredStartTimes(now: number): void {
+		while (this.recentStartTimes.length > 0 && now - this.recentStartTimes[0] >= this.longestIntervalMs) {
+			this.recentStartTimes.shift();
 		}
 	}
 }

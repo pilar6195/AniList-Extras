@@ -294,6 +294,15 @@ export const request = async (
 // AniList times out rate limited clients for a minute.
 const anilistRateLimitTimeoutMs = 60_000;
 
+const anilistApiRateLimit = new RateLimit({
+	label: 'anilistApi',
+	limits: [
+		// The extra 100ms covers network delay, since AniList counts requests when they arrive, not when we send them.
+		{ maxCalls: 4, intervalMs: 1100 },
+		{ maxCalls: 30, intervalMs: 60_100 },
+	],
+});
+
 /**
  * Send a request to the AniList API.
  */
@@ -321,11 +330,11 @@ export const anilistApi = async (
 		let response: Awaited<ReturnType<typeof request>>;
 
 		try {
-			response = await request('https://graphql.anilist.co', {
+			response = await anilistApiRateLimit.push(async () => request('https://graphql.anilist.co', {
 				method: 'POST',
 				headers,
 				data: JSON.stringify({ query, variables }),
-			});
+			}));
 		} catch (error) {
 			retryCount++;
 
@@ -340,7 +349,13 @@ export const anilistApi = async (
 
 			console.error(`Request failed. Retrying in ${retryDelayMs / 1000}s... (${retryCount}/${retries})`, error);
 
-			await sleep(retryDelayMs);
+			if (ALEXTRAS_ENV === 'extension') {
+				// Every AniList request waits, since AniList would reject them anyway. The retry below waits in the queue too.
+				anilistApiRateLimit.pause(retryDelayMs);
+			} else {
+				await sleep(retryDelayMs);
+			}
+
 			continue;
 		}
 
@@ -380,7 +395,13 @@ export const anilistApi = async (
 
 			console.error(`Request failed with status code ${response.status}. Retrying in ${retryDelayMs / 1000}s... (${retryCount}/${retries})`, response);
 
-			await sleep(retryDelayMs);
+			if (response.status === 429) {
+				// Every AniList request waits, since AniList would reject them anyway. The retry below waits in the queue too.
+				anilistApiRateLimit.pause(retryDelayMs);
+			} else {
+				await sleep(retryDelayMs);
+			}
+
 			continue;
 		}
 
@@ -391,7 +412,14 @@ export const anilistApi = async (
 	}
 };
 
-const malApiRateLimit = new RateLimit(4, 2000, 'malApi');
+const malApiRateLimit = new RateLimit({
+	label: 'malApi',
+	limits: [
+		// The extra 100ms covers network delay, since Tenrai counts requests when they arrive, not when we send them.
+		{ maxCalls: 4, intervalMs: 1100 },
+		{ maxCalls: 120, intervalMs: 60_100 },
+	],
+});
 
 /**
  * Send a request to the Tenrai API. Returns cached data if available.
@@ -408,7 +436,7 @@ export const malApi = async (path: string, cacheTime: number | false = ONE_HOUR)
 	const maxRetries = 3;
 
 	const performRequest = async (attempt: number = 0): Promise<any> => {
-		const response = await request(`https://api.tenrai.org/v1/${path}`);
+		const response = await malApiRateLimit.push(async () => request(`https://api.tenrai.org/v1/${path}`));
 
 		if (response.status === 429) {
 			if (attempt < maxRetries) {
@@ -428,14 +456,12 @@ export const malApi = async (path: string, cacheTime: number | false = ONE_HOUR)
 		return response.json;
 	};
 
-	return malApiRateLimit.push(async () => {
-		const data = await performRequest();
-		if (cacheTime !== false && data) {
-			await Cache.set('mal-api-response', path, data, cacheTime);
-		}
+	const data = await performRequest();
+	if (cacheTime !== false && data) {
+		await Cache.set('mal-api-response', path, data, cacheTime);
+	}
 
-		return data;
-	});
+	return data;
 };
 
 /**
