@@ -45,7 +45,7 @@ registerModule.anilist({
 		let followersCount: number | undefined = await Cache.get('user-followers-count', userId.toString());
 		let mutualsCount: number | undefined = await Cache.get('user-mutuals-count', userId.toString());
 
-		if (!followingCount) {
+		if (followingCount === undefined) {
 			const { data: followingData } = await anilistApi(`
 				query ($userId: Int!) {
 					Page {
@@ -67,7 +67,7 @@ registerModule.anilist({
 			await Cache.set('user-following-count', userId.toString(), followingCount, ONE_MINUTE * 5);
 		}
 
-		if (!followersCount) {
+		if (followersCount === undefined) {
 			const { data: followersData } = await anilistApi(`
 				query ($userId: Int!) {
 					Page {
@@ -86,7 +86,7 @@ registerModule.anilist({
 			await Cache.set('user-followers-count', userId.toString(), followersCount, ONE_MINUTE * 5);
 		}
 
-		if (!mutualsCount) {
+		if (mutualsCount === undefined) {
 			const { data: mutualsData } = await anilistApi(`
 				query ($userId: Int!) {
 					Page {

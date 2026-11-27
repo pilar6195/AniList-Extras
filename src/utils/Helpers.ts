@@ -465,16 +465,13 @@ export const malApi = async (path: string, cacheTime: number | false = ONE_HOUR)
 	return data;
 };
 
+// Lookups that are still running, so callers asking for the same user at the same time share one request.
+const userIdLookups = new Map<string, Promise<number | undefined>>();
+
 /**
- * Finds the Id of a user using their username.
+ * Internal use. Finds a user's Id in the cache, or asks AniList if it isn't cached.
  */
-export const getUserId = async (username: string): Promise<number | undefined> => {
-	if (typeof username !== 'string') {
-		throw new TypeError('Missing username.');
-	}
-
-	username = username.toLowerCase();
-
+const lookUpUserId = async (username: string): Promise<number | undefined> => {
 	const cachedItem = await Cache.get('userids-map', username) as number | undefined;
 
 	if (cachedItem) {
@@ -495,6 +492,35 @@ export const getUserId = async (username: string): Promise<number | undefined> =
 	await Cache.set('userids-map', username, data.User.id, ONE_HOUR);
 
 	return data.User.id;
+};
+
+/**
+ * Finds the Id of a user using their username.
+ */
+export const getUserId = async (username: string): Promise<number | undefined> => {
+	if (typeof username !== 'string') {
+		throw new TypeError('Missing username.');
+	}
+
+	username = username.toLowerCase();
+
+	// If more than one lookup for the same username comes in before the first lookup is
+	// finished and cached, we will have subsequent lookups wait for that first response
+	// to avoid duplicate requests.
+	let lookup = userIdLookups.get(username);
+
+	if (!lookup) {
+		lookup = (async () => {
+			try {
+				return await lookUpUserId(username);
+			} finally {
+				userIdLookups.delete(username);
+			}
+		})();
+		userIdLookups.set(username, lookup);
+	}
+
+	return lookup;
 };
 
 /**

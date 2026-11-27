@@ -44,7 +44,7 @@ registerModule.anilist({
 		let threadsCount: number | undefined = await Cache.get('user-threads-count', userId.toString());
 		let threadCommentsCount: number | undefined = await Cache.get('user-threadComments-count', userId.toString());
 
-		if (!threadsCount) {
+		if (threadsCount === undefined) {
 			const { data: threadsData } = await anilistApi(`
 				query ($userId: Int!) {
 					Page {
@@ -63,7 +63,7 @@ registerModule.anilist({
 			await Cache.set('user-threads-count', userId.toString(), threadsCount, ONE_MINUTE * 5);
 		}
 
-		if (!threadCommentsCount) {
+		if (threadCommentsCount === undefined) {
 			const { data: threadCommentsData } = await anilistApi(`
 				query ($userId: Int!) {
 					Page {
